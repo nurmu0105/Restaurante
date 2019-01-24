@@ -16,6 +16,7 @@ class Main:
         self.venacerca = b.get_object("venacerca")
         self.venerror = b.get_object("venerror")
         self.venconfirma = b.get_object("venconfirma")
+        print('HOLA')
 
     # Botones:
         self.btnAbout = b.get_object("btnAbout")
