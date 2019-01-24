@@ -111,6 +111,7 @@ class Main:
         database.cargarCamarero(self.camareros)
         database.cargarProducto(self.productos)
         self.cargarComunidades()
+        print('Hola')
 
     # Cerrar ventanas:
         self.venprincipal.connect('delete-event', lambda w, e: w.hide() or True)
