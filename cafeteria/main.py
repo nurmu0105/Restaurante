@@ -14,7 +14,6 @@ class Main:
         self.venlogin = b.get_object("venlogin")
         self.venprincipal = b.get_object("venprincipal")
         self.venacerca = b.get_object("venacerca")
-        self.vencantidad = b.get_object("vencantidad")
         self.venerror = b.get_object("venerror")
         self.venconfirma = b.get_object("venconfirma")
 
@@ -64,7 +63,7 @@ class Main:
         self.cleanProduct = b.get_object("cleanProduct")
 
     # Gestion:
-        self.idCamarero = b.get_object("idCamarero")
+        self.lblFCamarero = b.get_object("lblFCamarero")
         self.clienteDNI = b.get_object("clienteDNI")
         self.clienteNombre = b.get_object("clienteNombre")
         self.clienteApellido = b.get_object("clienteApellido")
@@ -111,12 +110,10 @@ class Main:
         database.cargarCamarero(self.camareros)
         database.cargarProducto(self.productos)
         self.cargarComunidades()
-        print('Hola')
 
     # Cerrar ventanas:
         self.venprincipal.connect('delete-event', lambda w, e: w.hide() or True)
         self.venacerca.connect('delete-event', lambda w, e: w.hide() or True)
-        self.vencantidad.connect('delete-event', lambda w, e: w.hide() or True)
         self.venerror.connect('delete-event', lambda w, e: w.hide() or True)
         self.venconfirma.connect('delete-event', lambda w, e: w.hide() or True)
         self.venlogin.connect('delete-event', lambda w, e: w.hide() or True)
@@ -310,7 +307,7 @@ class Main:
                 self.venlogin.hide()
                 self.venprincipal.show()
                 print("Iniciando sesión")
-                self.idCamarero.set_text(user)
+                self.lblFCamarero.set_text(user)
             else:
                 self.lblError.set_text("Usuario o contraseña no encontrado")
                 self.abrirError(widget)
