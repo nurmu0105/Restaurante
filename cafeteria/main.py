@@ -25,6 +25,8 @@ class Main:
         self.btnLogout = b.get_object("btnLogout")
         self.cancelConfirma = b.get_object("cancelConfirma")
         self.aceptConfirma = b.get_object("aceptConfirma")
+        self.cancelCliente = b.get_object("cancelCliente")
+        self.aceptCliente = b.get_object("aceptCliente")
 
     # Recursos:
         self.treeProductos = b.get_object("treeProductos")
@@ -65,6 +67,9 @@ class Main:
 
     # Gestion:
         self.lblFCamarero = b.get_object("lblFCamarero")
+        self.lblFCliente = b.get_object("lblFCliente")
+        self.btnFCliente = b.get_object("btnFCliente")
+        self.lblFMesa = b.get_object("lblFMesa")
         self.clienteDNI = b.get_object("clienteDNI")
         self.clienteNombre = b.get_object("clienteNombre")
         self.clienteApellido = b.get_object("clienteApellido")
@@ -74,6 +79,17 @@ class Main:
         self.comunidad = ''
         self.provincia = ''
         self.ciudad = ''
+
+    # Mesas:
+        self.lblmesa1 = b.get_object("lblmesa1")
+        self.lblmesa2 = b.get_object("lblmesa2")
+        self.lblmesa3 = b.get_object("lblmesa3")
+        self.lblmesa4 = b.get_object("lblmesa4")
+        self.lblmesa5 = b.get_object("lblmesa5")
+        self.lblmesa6 = b.get_object("lblmesa6")
+        self.lblmesa7 = b.get_object("lblmesa7")
+        self.lblmesa8 = b.get_object("lblmesa8")
+        self.lblmesa9 = b.get_object("lblmesa9")
 
 
         dic = {'on_btnSalir_activate':self.salir,
@@ -101,6 +117,18 @@ class Main:
                'on_treeProductos_cursor_changed':self.seleccionaProducto,
                'on_clienteComu_changed':self.actualizarProvincias,
                'on_clienteProv_changed':self.actualizarMunicipios,
+               'on_btnFCliente_clicked':self.abrirCliente,
+               'on_cancelCliente_clicked':self.cerrarCliente,
+               'on_aceptCliente_clicked':self.altaCliente,
+               'on_mesa1_clicked':self.mesa1,
+               'on_mesa2_clicked': self.mesa2,
+               'on_mesa3_clicked': self.mesa3,
+               'on_mesa4_clicked': self.mesa4,
+               'on_mesa5_clicked': self.mesa5,
+               'on_mesa6_clicked': self.mesa6,
+               'on_mesa7_clicked': self.mesa7,
+               'on_mesa8_clicked': self.mesa8,
+               'on_mesa9_clicked': self.mesa9,
                }
 
         b.connect_signals(dic)
@@ -214,6 +242,25 @@ class Main:
         self.limpiarProd(widget)
         self.lblAviso.set_markup("<span color='gray'>Baja de producto completada con éxito</span>")
 
+    def altaCliente(self, widget):
+        self.clienteNombre.set_text(self.clienteNombre.get_text().title())
+        self.clienteApellido.set_text(self.clienteApellido.get_text().title())
+        dni = self.clienteDNI.get_text()
+        nombre = self.clienteNombre.get_text()
+        apellido = self.clienteApellido.get_text()
+        comunidad = str(self.clienteComu.get_active_text())
+        provincia = str(self.clienteProv.get_active_text())
+        ciudad = str(self.clienteCiu.get_active_text())
+        if len(dni) > 8 and len(nombre) > 0 and len(apellido) > 0 and comunidad != "None" and provincia != "None" and ciudad != "None":
+            fila = (dni, apellido, nombre, comunidad, provincia, ciudad)
+            database.altaCliente(fila)
+            self.limpiarCli(widget)
+            self.lblFCliente.set_text(dni)
+            self.cerrarCliente(widget)
+        else:
+            self.lblError.set_text("Debe cubrir todos los campos")
+            self.abrirError(widget)
+
 
 
     # Metodos recurso:
@@ -233,6 +280,11 @@ class Main:
         self.lblPrecio.set_text("")
         self.lblAviso.set_text("")
 
+    def limpiarCli(self, widget):
+        self.clienteDNI.set_text("")
+        self.clienteNombre.set_text("")
+        self.clienteApellido.set_text("")
+
     def cargarComunidades(self):
         lista = database.cargaComunidad()
         for name in lista:
@@ -240,6 +292,7 @@ class Main:
 
     def actualizarProvincias(self, widget):
         self.comunidad = str(self.clienteComu.get_active_text())
+        print(self.comunidad)
         self.cargarProvincias(widget)
 
     def cargarProvincias(self, widget):
@@ -258,9 +311,52 @@ class Main:
         for name in lista:
             self.clienteCiu.append_text(name[0])
 
-    #def cargarProvincias(self, widget):
+    # Selección de mesas:
+    def mesa1(self, widget):
+        self.mesa = 1
+        self.estado = self.lblmesa1.get_text()
+        self.lblFMesa.set_text(str(self.mesa))
 
-    #def cargarCiudades(self, widget):
+    def mesa2(self, widget):
+        self.mesa = 2
+        self.estado = self.lblmesa2.get_text()
+        self.lblFMesa.set_text(str(self.mesa))
+
+    def mesa3(self, widget):
+        self.mesa = 3
+        self.estado = self.lblmesa3.get_text()
+        self.lblFMesa.set_text(str(self.mesa))
+
+    def mesa4(self, widget):
+        self.mesa = 4
+        self.estado = self.lblmesa4.get_text()
+        self.lblFMesa.set_text(str(self.mesa))
+
+    def mesa5(self, widget):
+        self.mesa = 5
+        self.estado = self.lblmesa5.get_text()
+        self.lblFMesa.set_text(str(self.mesa))
+
+    def mesa6(self, widget):
+        self.mesa = 6
+        self.estado = self.lblmesa6.get_text()
+        self.lblFMesa.set_text(str(self.mesa))
+
+    def mesa7(self, widget):
+        self.mesa = 7
+        self.estado = self.lblmesa7.get_text()
+        self.lblFMesa.set_text(str(self.mesa))
+
+    def mesa8(self, widget):
+        self.mesa = 8
+        self.estado = self.lblmesa8.get_text()
+        self.lblFMesa.set_text(str(self.mesa))
+
+    def mesa9(self, widget):
+        self.mesa = 9
+        self.estado = self.lblmesa9.get_text()
+        self.lblFMesa.set_text(str(self.mesa))
+
 
     # Métodos gestión de ventanas:
     def abrirAbout(self, widget):
@@ -292,7 +388,11 @@ class Main:
     def cerrarConfirma(self, widget):
         self.venconfirma.hide()
 
+    def abrirCliente(self, widget):
+        self.vencliente.show()
+
     def cerrarCliente(self, widget):
+        self.limpiarCli(widget)
         self.vencliente.hide()
 
     def aceptarConfirma(self, widget):

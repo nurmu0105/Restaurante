@@ -95,6 +95,14 @@ def bajaProducto(id, productos):
     except sqlite3.Error as e:
         print(e)
 
+def altaCliente(fila):
+    try:
+        cur.execute("insert into clientes (dni, apellidos, nombre, comunidad, provincia, ciudad) values (?, ?, ?, ?, ?, ?)", fila)
+        conexion.commit()
+        print("Alta de cliente realizada con éxito")
+    except sqlite3.Error as e:
+        print(e)
+
 # Recursos:
 def buscaPWD(id):
     try:

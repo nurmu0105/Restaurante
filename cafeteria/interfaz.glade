@@ -39,6 +39,11 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">imgs/mesa1-freepik.png</property>
   </object>
+  <object class="GtkImage" id="image10">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -973,21 +978,6 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="lblFCliente">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="margin_left">10</property>
-                            <property name="margin_right">10</property>
-                            <property name="margin_bottom">10</property>
-                            <property name="label" translatable="yes">Seleccionar cliente</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -1048,7 +1038,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkLabel" id="lblFFecha">
                                 <property name="width_request">90</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
@@ -1064,7 +1054,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkButton">
+                              <object class="GtkButton" id="btnFFecha">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -1082,6 +1072,46 @@
                           </object>
                           <packing>
                             <property name="left_attach">3</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="lblFCliente">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_left">10</property>
+                                <property name="margin_bottom">10</property>
+                                <property name="label" translatable="yes">Seleccionar cliente</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="btnFCliente">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="margin_left">10</property>
+                                <property name="margin_bottom">10</property>
+                                <property name="image">image10</property>
+                                <signal name="clicked" handler="on_btnFCliente_clicked" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
                             <property name="top_attach">1</property>
                           </packing>
                         </child>
@@ -1316,6 +1346,7 @@
                         <property name="receives_default">True</property>
                         <property name="image">m1</property>
                         <property name="relief">none</property>
+                        <signal name="clicked" handler="on_mesa1_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -1329,6 +1360,7 @@
                         <property name="receives_default">True</property>
                         <property name="image">image3</property>
                         <property name="relief">none</property>
+                        <signal name="clicked" handler="on_mesa3_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -1343,6 +1375,7 @@
                         <property name="halign">center</property>
                         <property name="image">image2</property>
                         <property name="relief">none</property>
+                        <signal name="clicked" handler="on_mesa2_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1356,6 +1389,7 @@
                         <property name="receives_default">True</property>
                         <property name="image">image6</property>
                         <property name="relief">none</property>
+                        <signal name="clicked" handler="on_mesa6_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -1369,6 +1403,7 @@
                         <property name="receives_default">True</property>
                         <property name="image">image1</property>
                         <property name="relief">none</property>
+                        <signal name="clicked" handler="on_mesa4_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -1382,6 +1417,7 @@
                         <property name="receives_default">True</property>
                         <property name="image">image7</property>
                         <property name="relief">none</property>
+                        <signal name="clicked" handler="on_mesa7_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -1395,6 +1431,7 @@
                         <property name="receives_default">True</property>
                         <property name="image">image9</property>
                         <property name="relief">none</property>
+                        <signal name="clicked" handler="on_mesa9_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -1409,6 +1446,7 @@
                         <property name="halign">center</property>
                         <property name="image">image5</property>
                         <property name="relief">none</property>
+                        <signal name="clicked" handler="on_mesa5_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1437,6 +1475,7 @@
                         <property name="receives_default">True</property>
                         <property name="image">image8</property>
                         <property name="relief">none</property>
+                        <signal name="clicked" handler="on_mesa8_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1565,6 +1604,260 @@ Freepik - Iconos de mesas</property>
         </child>
         <child>
           <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="vencliente">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Registro de cliente</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="gravity">center</property>
+    <property name="transient_for">venprincipal</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_top">5</property>
+            <property name="label" translatable="yes">Datos del cliente</property>
+            <attributes>
+              <attribute name="foreground" value="#bababdbdb6b6"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkGrid">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_left">10</property>
+            <property name="margin_right">10</property>
+            <property name="margin_top">10</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="margin_bottom">10</property>
+                <property name="label" translatable="yes">DNI:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="clienteDNI">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
+                <property name="margin_bottom">10</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="margin_bottom">10</property>
+                <property name="label" translatable="yes">Nombre:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="margin_bottom">10</property>
+                <property name="label" translatable="yes">Apellidos:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="clienteNombre">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
+                <property name="margin_bottom">10</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="clienteApellido">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
+                <property name="margin_bottom">10</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="margin_bottom">10</property>
+                <property name="label" translatable="yes">Comunidad:</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="clienteComu">
+                <property name="height_request">33</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">10</property>
+                <property name="margin_bottom">10</property>
+                <signal name="changed" handler="on_clienteComu_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">3</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="margin_bottom">10</property>
+                <property name="label" translatable="yes">Provincia:</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="margin_bottom">10</property>
+                <property name="label" translatable="yes">Ciudad:</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="clienteProv">
+                <property name="height_request">33</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">10</property>
+                <property name="margin_bottom">10</property>
+                <signal name="changed" handler="on_clienteProv_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">3</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="clienteCiu">
+                <property name="height_request">33</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">10</property>
+                <property name="margin_bottom">10</property>
+              </object>
+              <packing>
+                <property name="left_attach">3</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButtonBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="margin_bottom">10</property>
+            <property name="layout_style">start</property>
+            <child>
+              <object class="GtkButton" id="cancelCliente">
+                <property name="label" translatable="yes">Cancelar</property>
+                <property name="width_request">70</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="margin_right">10</property>
+                <signal name="clicked" handler="on_cancelCliente_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="aceptCliente">
+                <property name="label" translatable="yes">Aceptar</property>
+                <property name="width_request">80</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="margin_right">10</property>
+                <signal name="clicked" handler="on_aceptCliente_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
         </child>
       </object>
     </child>
@@ -1867,250 +2160,5 @@ Freepik - Iconos de mesas</property>
       <!-- column-name idproducto -->
       <column type="gint"/>
     </columns>
-  </object>
-  <object class="GtkWindow" id="vencliente">
-    <property name="can_focus">False</property>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_top">5</property>
-            <property name="label" translatable="yes">Datos del cliente</property>
-            <attributes>
-              <attribute name="foreground" value="#bababdbdb6b6"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkGrid">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_left">10</property>
-            <property name="margin_right">10</property>
-            <property name="margin_top">10</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="margin_bottom">10</property>
-                <property name="label" translatable="yes">DNI:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="clienteDNI">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="margin_left">10</property>
-                <property name="margin_right">10</property>
-                <property name="margin_bottom">10</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="margin_bottom">10</property>
-                <property name="label" translatable="yes">Nombre:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="margin_bottom">10</property>
-                <property name="label" translatable="yes">Apellidos:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="clienteNombre">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="margin_left">10</property>
-                <property name="margin_right">10</property>
-                <property name="margin_bottom">10</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="clienteApellido">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="margin_left">10</property>
-                <property name="margin_right">10</property>
-                <property name="margin_bottom">10</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="margin_bottom">10</property>
-                <property name="label" translatable="yes">Comunidad:</property>
-              </object>
-              <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="clienteComu">
-                <property name="height_request">33</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">10</property>
-                <property name="margin_bottom">10</property>
-                <signal name="changed" handler="on_clienteComu_changed" swapped="no"/>
-              </object>
-              <packing>
-                <property name="left_attach">3</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="margin_bottom">10</property>
-                <property name="label" translatable="yes">Provincia:</property>
-              </object>
-              <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="margin_bottom">10</property>
-                <property name="label" translatable="yes">Ciudad:</property>
-              </object>
-              <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="clienteProv">
-                <property name="height_request">33</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">10</property>
-                <property name="margin_bottom">10</property>
-                <signal name="changed" handler="on_clienteProv_changed" swapped="no"/>
-              </object>
-              <packing>
-                <property name="left_attach">3</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="clienteCiu">
-                <property name="height_request">33</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">10</property>
-                <property name="margin_bottom">10</property>
-              </object>
-              <packing>
-                <property name="left_attach">3</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButtonBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="halign">end</property>
-            <property name="margin_bottom">10</property>
-            <property name="layout_style">start</property>
-            <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">Cancelar</property>
-                <property name="width_request">70</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="margin_right">10</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">Aceptar</property>
-                <property name="width_request">80</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="margin_right">10</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-      </object>
-    </child>
   </object>
 </interface>
