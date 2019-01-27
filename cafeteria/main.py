@@ -16,7 +16,7 @@ class Main:
         self.venacerca = b.get_object("venacerca")
         self.venerror = b.get_object("venerror")
         self.venconfirma = b.get_object("venconfirma")
-        print('HOL')
+        self.vencliente = b.get_object("vencliente")
 
     # Botones:
         self.btnAbout = b.get_object("btnAbout")
@@ -117,6 +117,7 @@ class Main:
         self.venacerca.connect('delete-event', lambda w, e: w.hide() or True)
         self.venerror.connect('delete-event', lambda w, e: w.hide() or True)
         self.venconfirma.connect('delete-event', lambda w, e: w.hide() or True)
+        self.vencliente.connect('delete-event', lambda w, e: w.hide() or True)
         self.venlogin.connect('delete-event', lambda w, e: w.hide() or True)
 
 
@@ -290,6 +291,9 @@ class Main:
 
     def cerrarConfirma(self, widget):
         self.venconfirma.hide()
+
+    def cerrarCliente(self, widget):
+        self.vencliente.hide()
 
     def aceptarConfirma(self, widget):
         panel = self.Pestanas.get_current_page()
