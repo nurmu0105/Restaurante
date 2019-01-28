@@ -279,6 +279,8 @@ class Main:
             self.abrirError(widget)
 
 
+    
+
     # Validaciones:
     def validaDNI(self, widget):
         dni = self.clienteDNI.get_text()
@@ -494,12 +496,12 @@ class Main:
 
     def abrirConfirma(self,widget):
         panel = self.Pestanas.get_current_page()
-        if panel == 2:
+        if panel == 1:
             if self.lblCamarero.get_text() == "Seleccionar camarero":
                 self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún camarero</span>")
             else:
                 self.venconfirma.show()
-        if panel == 3:
+        if panel == 2:
             if self.lblProducto.get_text() == "Seleccionar producto":
                 self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún producto</span>")
             else:
@@ -523,9 +525,9 @@ class Main:
 
     def aceptarConfirma(self, widget):
         panel = self.Pestanas.get_current_page()
-        if panel == 2:
+        if panel == 1:
             self.bajaCamarero(widget)
-        if panel == 3:
+        if panel == 2:
             self.bajaProducto(widget)
         self.venconfirma.hide()
 

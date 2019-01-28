@@ -126,6 +126,15 @@ def bajaProducto(id, productos):
     except sqlite3.Error as e:
         print(e)
 
+def altaFactura(fila, facturas, idmesa):
+    try:
+        cur.execute('insert into facturas (idcliente, idcamarero, idmesa, fecha) values(?,?,?,?)', fila)
+        conexion.commit()
+        print("Alta de factura realizada con éxito")
+        cargarFactura(facturas,idmesa)
+    except sqlite3.Error as e:
+        print(e)
+
  # Gestion líneas de venta:
 def altaLinea(fila, comandas, servicio):
     try:
