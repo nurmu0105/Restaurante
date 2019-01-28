@@ -17,6 +17,7 @@ class Main:
         self.venerror = b.get_object("venerror")
         self.venconfirma = b.get_object("venconfirma")
         self.vencliente = b.get_object("vencliente")
+        self.vencomanda = b.get_object("vencomanda")
 
     # Botones:
         self.btnAbout = b.get_object("btnAbout")
@@ -33,12 +34,15 @@ class Main:
         self.productos = b.get_object("productos")
         self.treeCamareros = b.get_object("treeCamareros")
         self.camareros = b.get_object("camareros")
+        self.treeFacturas = b.get_object("treeFacturas")
+        self.facturas = b.get_object("facturas")
         self.Pestanas = b.get_object("Pestanas")
         self.lblError = b.get_object("lblError")
         self.btnError = b.get_object("btnError")
         self.lblAviso = b.get_object("lblAviso")
         self.lblConfirma = b.get_object("lblConfirma")
         self.password = ""
+        self.eDni = True
 
     # Login:
         self.loginEnter = b.get_object("loginEnter")
@@ -66,6 +70,8 @@ class Main:
         self.cleanProduct = b.get_object("cleanProduct")
 
     # Gestion:
+        self.addFactura = b.get_object("addFactura")
+        self.printFactura = b.get_object("printFactura")
         self.lblFCamarero = b.get_object("lblFCamarero")
         self.lblFCliente = b.get_object("lblFCliente")
         self.btnFCliente = b.get_object("btnFCliente")
@@ -90,6 +96,7 @@ class Main:
         self.lblmesa7 = b.get_object("lblmesa7")
         self.lblmesa8 = b.get_object("lblmesa8")
         self.lblmesa9 = b.get_object("lblmesa9")
+        self.mesas = (self.lblmesa1, self.lblmesa2, self.lblmesa3, self.lblmesa4, self.lblmesa5, self.lblmesa6, self.lblmesa7, self.lblmesa8, self.lblmesa9)
 
 
         dic = {'on_btnSalir_activate':self.salir,
@@ -113,6 +120,9 @@ class Main:
                'on_deleteProduct_clicked':self.abrirConfirma,
                'on_inputNombre_focus_out_event':self.mayus,
                'on_lblNombre_focus_out_event':self.mayus,
+               'on_clienteApellido_focus_out_event':self.mayus,
+               'on_clienteDNI_focus_out_event':self.mayus,
+               'on_clienteNombre_focus_out_event':self.mayus,
                'on_treeCamareros_cursor_changed':self.seleccionaCamarero,
                'on_treeProductos_cursor_changed':self.seleccionaProducto,
                'on_clienteComu_changed':self.actualizarProvincias,
@@ -120,6 +130,7 @@ class Main:
                'on_btnFCliente_clicked':self.abrirCliente,
                'on_cancelCliente_clicked':self.cerrarCliente,
                'on_aceptCliente_clicked':self.altaCliente,
+               'on_addFactura_clicked':self.abrirComandas,
                'on_mesa1_clicked':self.mesa1,
                'on_mesa2_clicked': self.mesa2,
                'on_mesa3_clicked': self.mesa3,
@@ -138,7 +149,9 @@ class Main:
         print("Iniciando el programa")
         database.cargarCamarero(self.camareros)
         database.cargarProducto(self.productos)
+        database.cargarFactura(self.facturas, 0)
         self.cargarComunidades()
+        self.cargaMesas()
 
     # Cerrar ventanas:
         self.venprincipal.connect('delete-event', lambda w, e: w.hide() or True)
@@ -147,6 +160,7 @@ class Main:
         self.venconfirma.connect('delete-event', lambda w, e: w.hide() or True)
         self.vencliente.connect('delete-event', lambda w, e: w.hide() or True)
         self.venlogin.connect('delete-event', lambda w, e: w.hide() or True)
+        self.vencomanda.connect('delete-event', lambda w, e: w.hide() or True)
 
 
     # Seleccion
@@ -245,6 +259,7 @@ class Main:
     def altaCliente(self, widget):
         self.clienteNombre.set_text(self.clienteNombre.get_text().title())
         self.clienteApellido.set_text(self.clienteApellido.get_text().title())
+        self.clienteDNI.set_text(self.clienteDNI.get_text().upper())
         dni = self.clienteDNI.get_text()
         nombre = self.clienteNombre.get_text()
         apellido = self.clienteApellido.get_text()
@@ -252,21 +267,56 @@ class Main:
         provincia = str(self.clienteProv.get_active_text())
         ciudad = str(self.clienteCiu.get_active_text())
         if len(dni) > 8 and len(nombre) > 0 and len(apellido) > 0 and comunidad != "None" and provincia != "None" and ciudad != "None":
-            fila = (dni, apellido, nombre, comunidad, provincia, ciudad)
-            database.altaCliente(fila)
-            self.limpiarCli(widget)
-            self.lblFCliente.set_text(dni)
-            self.cerrarCliente(widget)
+            self.validaDNI(widget)
+            if self.eDni == False:
+                fila = (dni, apellido, nombre, comunidad, provincia, ciudad)
+                database.altaCliente(fila)
+                self.limpiarCli(widget)
+                self.lblFCliente.set_text(dni)
+                self.cerrarCliente(widget)
         else:
             self.lblError.set_text("Debe cubrir todos los campos")
             self.abrirError(widget)
 
 
+    # Validaciones:
+    def validaDNI(self, widget):
+        dni = self.clienteDNI.get_text()
+        try:
+            tabla = "TRWAGMYFPDXBNJZSQVHLCKE"
+            dig_ext = "XYZ"
+            reemp_dig_ext = {'X': '0', 'Y': '1', 'Z': '2'}
+            numeros = "1234567890"
+            dni = dni.upper()
+            if len(dni) == 9:
+                dig_control = dni[8]
+                dni = dni[:8]
+                if dni[0] in dig_ext:
+                    dni = dni.replace(dni[0], reemp_dig_ext[dni[0]])
+                if len(dni) == len([n for n in dni if n in numeros]) and tabla[int(dni) % 23] == dig_control:
+                    self.eDni = False
+                    self.lblAviso.set_text('')
+                else:
+                    self.eDni = True
+                    self.lblError.set_text("El DNI introducido debe ser un DNI válido")
+                    self.abrirError(widget)
+            else:
+                self.eDni = True
+                self.lblError.set_text("El DNI introducido debe ser un DNI válido")
+                self.abrirError(widget)
+        except:
+            self.eDni = True
+            self.lblError.set_text("El DNI introducido debe ser un DNI válido")
+            self.abrirError(widget)
 
     # Metodos recurso:
     def mayus(self, widget, date = None):
         self.inputNombre.set_text(self.inputNombre.get_text().title())
         self.lblNombre.set_text(self.lblNombre.get_text().title())
+        self.lblNombre.set_text(self.lblNombre.get_text().title())
+        self.clienteDNI.set_text(self.clienteDNI.get_text().upper())
+        self.clienteNombre.set_text(self.clienteNombre.get_text().title())
+        self.clienteApellido.set_text(self.clienteApellido.get_text().title())
 
     def limpiarCam(self, widget):
         self.lblCamarero.set_text("Seleccionar camarero")
@@ -284,6 +334,9 @@ class Main:
         self.clienteDNI.set_text("")
         self.clienteNombre.set_text("")
         self.clienteApellido.set_text("")
+        self.clienteComu.set_active(-1)
+        self.clienteProv.set_active(-1)
+        self.clienteCiu.set_active(-1)
 
     def cargarComunidades(self):
         lista = database.cargaComunidad()
@@ -311,51 +364,118 @@ class Main:
         for name in lista:
             self.clienteCiu.append_text(name[0])
 
-    # Selección de mesas:
+    # Gestion de mesas:
+    def cargaMesas(self):
+        i = 0
+        listado = database.cargaMesas()
+        for n in listado:
+            estado = str(listado[i])
+            for char in "(),'":
+                estado = estado.replace(char, '')
+            if estado == "No disponible":
+                self.mesas[i].set_markup("<span color='red'>No disponible</span>")
+            else:
+                self.mesas[i].set_markup("<span color='green'>Disponible</span>")
+            i = i + 1
+
     def mesa1(self, widget):
         self.mesa = 1
         self.estado = self.lblmesa1.get_text()
-        self.lblFMesa.set_text(str(self.mesa))
+        database.cargarFactura(self.facturas, 1)
+        if self.estado == "No disponible":
+            self.lblFMesa.set_text("Seleccionar mesa")
+            self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+        else:
+            self.lblFMesa.set_text(str(self.mesa))
+            self.lblAviso.set_text("")
 
     def mesa2(self, widget):
         self.mesa = 2
         self.estado = self.lblmesa2.get_text()
-        self.lblFMesa.set_text(str(self.mesa))
+        database.cargarFactura(self.facturas, 2)
+        if self.estado == "No disponible":
+            self.lblFMesa.set_text("Seleccionar mesa")
+            self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+        else:
+            self.lblFMesa.set_text(str(self.mesa))
+            self.lblAviso.set_text("")
 
     def mesa3(self, widget):
         self.mesa = 3
         self.estado = self.lblmesa3.get_text()
-        self.lblFMesa.set_text(str(self.mesa))
+        database.cargarFactura(self.facturas, 3)
+        if self.estado == "No disponible":
+            self.lblFMesa.set_text("Seleccionar mesa")
+            self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+        else:
+            self.lblFMesa.set_text(str(self.mesa))
+            self.lblAviso.set_text("")
 
     def mesa4(self, widget):
         self.mesa = 4
         self.estado = self.lblmesa4.get_text()
-        self.lblFMesa.set_text(str(self.mesa))
+        database.cargarFactura(self.facturas, 4)
+        if self.estado == "No disponible":
+            self.lblFMesa.set_text("Seleccionar mesa")
+            self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+        else:
+            self.lblFMesa.set_text(str(self.mesa))
+            self.lblAviso.set_text("")
 
     def mesa5(self, widget):
         self.mesa = 5
         self.estado = self.lblmesa5.get_text()
-        self.lblFMesa.set_text(str(self.mesa))
+        database.cargarFactura(self.facturas, 5)
+        if self.estado == "No disponible":
+            self.lblFMesa.set_text("Seleccionar mesa")
+            self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+        else:
+            self.lblFMesa.set_text(str(self.mesa))
+            self.lblAviso.set_text("")
 
     def mesa6(self, widget):
         self.mesa = 6
         self.estado = self.lblmesa6.get_text()
-        self.lblFMesa.set_text(str(self.mesa))
+        database.cargarFactura(self.facturas, 6)
+        if self.estado == "No disponible":
+            self.lblFMesa.set_text("Seleccionar mesa")
+            self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+        else:
+            self.lblFMesa.set_text(str(self.mesa))
+            self.lblAviso.set_text("")
 
     def mesa7(self, widget):
         self.mesa = 7
         self.estado = self.lblmesa7.get_text()
-        self.lblFMesa.set_text(str(self.mesa))
+        database.cargarFactura(self.facturas, 7)
+        if self.estado == "No disponible":
+            self.lblFMesa.set_text("Seleccionar mesa")
+            self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+        else:
+            self.lblFMesa.set_text(str(self.mesa))
+            self.lblAviso.set_text("")
 
     def mesa8(self, widget):
         self.mesa = 8
         self.estado = self.lblmesa8.get_text()
-        self.lblFMesa.set_text(str(self.mesa))
+        database.cargarFactura(self.facturas, 8)
+        if self.estado == "No disponible":
+            self.lblFMesa.set_text("Seleccionar mesa")
+            self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+        else:
+            self.lblFMesa.set_text(str(self.mesa))
+            self.lblAviso.set_text("")
 
     def mesa9(self, widget):
         self.mesa = 9
         self.estado = self.lblmesa9.get_text()
-        self.lblFMesa.set_text(str(self.mesa))
+        database.cargarFactura(self.facturas, 9)
+        if self.estado == "No disponible":
+            self.lblFMesa.set_text("Seleccionar mesa")
+            self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+        else:
+            self.lblFMesa.set_text(str(self.mesa))
+            self.lblAviso.set_text("")
 
 
     # Métodos gestión de ventanas:
@@ -390,6 +510,12 @@ class Main:
 
     def abrirCliente(self, widget):
         self.vencliente.show()
+
+    def abrirComandas(self, widget):
+        if self.lblFCliente.get_text() != "Seleccionar cliente" and self.lblFMesa.get_text() != "Seleccionar mesa":
+            self.vencomanda.show()
+        else:
+            self.lblAviso.set_markup("<span color='gray'>Debe seleccionar un cliente y una mesa</span>")
 
     def cerrarCliente(self, widget):
         self.limpiarCli(widget)

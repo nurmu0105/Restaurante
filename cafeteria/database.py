@@ -11,6 +11,7 @@ try:
 except sqlite3.OperationalError as e:
     print(e)
 
+ # Cargar tablas:
 def cargarCamarero(camareros):
     try:
         cur.execute("SELECT * FROM CAMAREROS ORDER BY(idCamarero)")
@@ -37,8 +38,38 @@ def cargarProducto(productos):
         print(e)
         conexion.rollback()
 
+def cargarFactura(facturas, mesa):
+    try:
+        if mesa == 0:
+            cur.execute("SELECT * FROM FACTURAS ORDER BY(idFactura)")
+            listado = cur.fetchall()
+            facturas.clear()
+            for n in listado:
+                facturas.append(n)
+        else:
+            cur.execute("SELECT * FROM FACTURAS WHERE IDMESA = '"+str(mesa)+"' ORDER BY(idFactura)")
+            listado = cur.fetchall()
+            facturas.clear()
+            for n in listado:
+                facturas.append(n)
+        conexion.commit()
+        print("Carga de facturas realizada con éxito")
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
 
-# Camareros:
+def cargarComanda(comandas):
+    try:
+        cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
+        factura = cur.fetchone()
+        #CONTINUAR
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
+
+
+
+# Gestion de camareros:
 def altaCamarero(fila, camareros):
     try:
         cur.execute('insert into camareros (nombre, password) values(?,?)', fila)
@@ -67,7 +98,7 @@ def bajaCamarero(id, camareros):
     except sqlite3.Error as e:
         print(e)
 
-# Productos:
+# Gestion de productos:
 def altaProducto(fila, productos):
     try:
         cur.execute('insert into servicios (servicio, precio) values(?,?)', fila)
@@ -95,6 +126,41 @@ def bajaProducto(id, productos):
     except sqlite3.Error as e:
         print(e)
 
+ # Gestion líneas de venta:
+def altaLinea(fila, comandas, servicio):
+    try:
+        cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
+        factura = cur.fetchone()
+        for char in "(),'":
+            factura = factura.replace(char, '')
+        cur.execute("SELECT CANTIDAD FROM LINEAFACTURAS WHERE IDSERVICIO = '"+servicio+"' AND IDFACTURA = '"+factura+"'")
+        cantidad = cur.fetchone()
+        for char in "(),'":
+            cantidad = cantidad.replace(char, '')
+        if cantidad != "None":
+            cantidad = int(cantidad + 1)
+            cur.execute("SELECT IDVENTA FROM LINEAFACTURAS WHERE IDSERVICIO = '" + servicio + "' AND IDFACTURA = '" + factura + "'")
+            id = cur.fetchone()
+            cur.execute("update lineafacturas set cantidad = '" + cantidad + " where idventa = '" + id + "'")
+        else:
+            cantidad = 1;
+            fila = fila + cantidad;
+            cur.execute('insert into lineafacturas (idfactura, idservicio, cantidad) values(?,?,?)', fila)
+        conexion.commit()
+        print("Inserción de línea de venta realizada con éxito")
+        #cargarProducto(productos)
+    except sqlite3.Error as e:
+        print(e)
+
+def altaFactura(fila, facturas):
+    try:
+        cur.execute('insert into facturas (dnicliente, idcamarero, idmesa, fecha) values(?,?,?,?)', fila)
+        conexion.commit()
+        print("Alta de factura realizada con éxito")
+    except sqlite3.Error as e:
+        print(e)
+
+ # Gestion de clientes:
 def altaCliente(fila):
     try:
         cur.execute("insert into clientes (dni, apellidos, nombre, comunidad, provincia, ciudad) values (?, ?, ?, ?, ?, ?)", fila)
@@ -164,5 +230,16 @@ def cargaMunicipios(provincia):
         i = i + 1
         list.append([row[0]])
     return list
+
+def cargaMesas():
+    try:
+        cur.execute("SELECT ESTADO FROM MESAS ORDER BY(idMesa)")
+        listado = cur.fetchall()
+        conexion.commit()
+        print("Carga de productos realizada con éxito")
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
+    return listado
 
 
