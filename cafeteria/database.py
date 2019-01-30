@@ -61,8 +61,14 @@ def cargarFactura(facturas, mesa):
 def cargarComanda(comandas):
     try:
         cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
-        factura = cur.fetchone()
-        #CONTINUAR
+        factura = str(cur.fetchone())
+        for char in "(),'":
+            factura = factura.replace(char, '')
+        cur.execute("SELECT IDSERVICIO, CANTIDAD FROM LINEAFACTURAS WHERE IDFACTURA = '"+factura+"'")
+        listado = cur.fetchall()
+        comandas.clear()
+        for n in listado:
+            comandas.append(n)
     except sqlite3.Error as e:
         print(e)
         conexion.rollback()
@@ -136,28 +142,31 @@ def altaFactura(fila, facturas, idmesa):
         print(e)
 
  # Gestion líneas de venta:
-def altaLinea(fila, comandas, servicio):
+def altaLinea(comandas, servicio):
     try:
         cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
-        factura = cur.fetchone()
+        factura = str(cur.fetchone())
         for char in "(),'":
             factura = factura.replace(char, '')
         cur.execute("SELECT CANTIDAD FROM LINEAFACTURAS WHERE IDSERVICIO = '"+servicio+"' AND IDFACTURA = '"+factura+"'")
-        cantidad = cur.fetchone()
+        cantidad = str(cur.fetchone())
         for char in "(),'":
             cantidad = cantidad.replace(char, '')
+
+        print("Cantidad:"+cantidad)
+
         if cantidad != "None":
             cantidad = int(cantidad + 1)
             cur.execute("SELECT IDVENTA FROM LINEAFACTURAS WHERE IDSERVICIO = '" + servicio + "' AND IDFACTURA = '" + factura + "'")
-            id = cur.fetchone()
+            id = str(cur.fetchone())
             cur.execute("update lineafacturas set cantidad = '" + cantidad + " where idventa = '" + id + "'")
         else:
             cantidad = 1;
-            fila = fila + cantidad;
+            fila = (factura, servicio, cantidad)
             cur.execute('insert into lineafacturas (idfactura, idservicio, cantidad) values(?,?,?)', fila)
         conexion.commit()
         print("Inserción de línea de venta realizada con éxito")
-        #cargarProducto(productos)
+        cargarComanda(comandas)
     except sqlite3.Error as e:
         print(e)
 

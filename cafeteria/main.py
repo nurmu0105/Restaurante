@@ -35,6 +35,9 @@ class Main:
         self.treeCamareros = b.get_object("treeCamareros")
         self.camareros = b.get_object("camareros")
         self.treeFacturas = b.get_object("treeFacturas")
+        self.treeProductos2 = b.get_object("treeProductos2")
+        self.treeComandas = b.get_object("treeComandas")
+        self.comandas = b.get_object("comandas")
         self.facturas = b.get_object("facturas")
         self.Pestanas = b.get_object("Pestanas")
         self.lblError = b.get_object("lblError")
@@ -85,6 +88,7 @@ class Main:
         self.comunidad = ''
         self.provincia = ''
         self.ciudad = ''
+        self.servicio = ''
 
     # Mesas:
         self.lblmesa1 = b.get_object("lblmesa1")
@@ -131,6 +135,7 @@ class Main:
                'on_cancelCliente_clicked':self.cerrarCliente,
                'on_aceptCliente_clicked':self.altaCliente,
                'on_addFactura_clicked':self.abrirComandas,
+               'on_addLinea_clicked':self.gestionComandas,
                'on_mesa1_clicked':self.mesa1,
                'on_mesa2_clicked': self.mesa2,
                'on_mesa3_clicked': self.mesa3,
@@ -181,6 +186,11 @@ class Main:
             for char in '€':
                 precio = precio.replace(char, '')
             self.lblPrecio.set_text(precio)
+
+    def seleccionaProducto2(self, widget):
+        model, iter = self.treeProductos2.get_selection().get_selected()
+        if iter != None:
+            self.servicio = str(model.get_value(iter,0))
 
     # Camareros
     def altaCamarero(self, widget):
@@ -278,6 +288,15 @@ class Main:
             self.lblError.set_text("Debe cubrir todos los campos")
             self.abrirError(widget)
 
+    def gestionComandas(self, widget):
+        camarero = self.lblFCamarero.get_text()
+        cliente = self.lblFCliente.get_text()
+        mesa = self.lblFMesa.get_text()
+        fecha = self.lblFMesa.get_text()
+        fila = (cliente, camarero, mesa, fecha)
+        database.altaFactura(fila, self.facturas)
+        database.altaLinea(self.comandas, self.servicio)
+        database.cargarFactura(self.facturas,self.mesa)
 
     
 
