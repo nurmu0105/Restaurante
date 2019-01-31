@@ -143,6 +143,7 @@ class Main:
                'on_deleteLinea_clicked':self.eliminarComandas,
                'on_aceptComanda_clicked':self.aceptarComanda,
                'on_cancelComanda_clicked':self.cancelarComanda,
+               'on_cleanFactura_clicked': self.limpiarFact,
                'on_mesa1_clicked':self.mesa1,
                'on_mesa2_clicked': self.mesa2,
                'on_mesa3_clicked': self.mesa3,
@@ -308,9 +309,12 @@ class Main:
 
     def cancelarComanda(self, widget):
         database.bajaFactura(self.facturas)
+        self.vencomanda.hide()
 
     def aceptarComanda(self, widget):
         database.cargarFactura(self.facturas, self.lblFMesa.get_text())
+        self.vencomanda.hide()
+        self.lblAviso.set_markup("<span color='gray'>Alta de factura completada con éxito</span>")
 
     #def aceptarCOmenda(self, widget):
 
@@ -372,6 +376,15 @@ class Main:
         self.clienteComu.set_active(-1)
         self.clienteProv.set_active(-1)
         self.clienteCiu.set_active(-1)
+
+    def limpiarFact(self, widget):
+        self. lblFMesa.set_text("Seleccionar mesa")
+        self.lblFCliente.set_text("Seleccionar cliente")
+        self.mesa = ""
+        self.servicio = ""
+        self.comunidad = ""
+        self.provincia = ""
+        self.ciudad = ""
 
     def cargarComunidades(self):
         lista = database.cargaComunidad()
