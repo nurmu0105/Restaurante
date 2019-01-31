@@ -114,6 +114,8 @@ class Main:
                'on_aceptConfirma_clicked':self.aceptarConfirma,
                'on_venprincipal_destroy':self.salir,
                'on_venprincipal_delete_event':self.salir,
+               'on_venlogin_destroy':self.salir,
+               'on_venlogin_delete_event':self.salir,
                'on_cleanCam_clicked':self.limpiarCam,
                'on_addCam_clicked':self.altaCamarero,
                'on_updateCam_clicked':self.modificaCamarero,
@@ -129,6 +131,8 @@ class Main:
                'on_clienteNombre_focus_out_event':self.mayus,
                'on_treeCamareros_cursor_changed':self.seleccionaCamarero,
                'on_treeProductos_cursor_changed':self.seleccionaProducto,
+               'on_treeProductos2_cursor_changed':self.seleccionaProducto2,
+               'on_treeComandas_cursor_changed':self.seleccionaComanda,
                'on_clienteComu_changed':self.actualizarProvincias,
                'on_clienteProv_changed':self.actualizarMunicipios,
                'on_btnFCliente_clicked':self.abrirCliente,
@@ -136,6 +140,9 @@ class Main:
                'on_aceptCliente_clicked':self.altaCliente,
                'on_addFactura_clicked':self.abrirComandas,
                'on_addLinea_clicked':self.gestionComandas,
+               'on_deleteLinea_clicked':self.eliminarComandas,
+               'on_aceptComanda_clicked':self.aceptarComanda,
+               'on_cancelComanda_clicked':self.cancelarComanda,
                'on_mesa1_clicked':self.mesa1,
                'on_mesa2_clicked': self.mesa2,
                'on_mesa3_clicked': self.mesa3,
@@ -190,7 +197,12 @@ class Main:
     def seleccionaProducto2(self, widget):
         model, iter = self.treeProductos2.get_selection().get_selected()
         if iter != None:
-            self.servicio = str(model.get_value(iter,0))
+            self.servicio = str(model.get_value(iter, 0))
+
+    def seleccionaComanda(self, widget):
+        model, iter = self.treeComandas.get_selection().get_selected()
+        if iter != None:
+            self.servicio = str(model.get_value(iter, 0))
 
     # Camareros
     def altaCamarero(self, widget):
@@ -289,16 +301,18 @@ class Main:
             self.abrirError(widget)
 
     def gestionComandas(self, widget):
-        camarero = self.lblFCamarero.get_text()
-        cliente = self.lblFCliente.get_text()
-        mesa = self.lblFMesa.get_text()
-        fecha = self.lblFMesa.get_text()
-        fila = (cliente, camarero, mesa, fecha)
-        database.altaFactura(fila, self.facturas)
         database.altaLinea(self.comandas, self.servicio)
-        database.cargarFactura(self.facturas,self.mesa)
 
-    
+    def eliminarComandas(self, widget):
+        database.bajaLinea(self.comandas, self.servicio)
+
+    def cancelarComanda(self, widget):
+        database.bajaFactura(self.facturas)
+
+    def aceptarComanda(self, widget):
+        database.cargarFactura(self.facturas, self.lblFMesa.get_text())
+
+    #def aceptarCOmenda(self, widget):
 
     # Validaciones:
     def validaDNI(self, widget):
@@ -534,6 +548,12 @@ class Main:
 
     def abrirComandas(self, widget):
         if self.lblFCliente.get_text() != "Seleccionar cliente" and self.lblFMesa.get_text() != "Seleccionar mesa":
+            camarero = self.lblFCamarero.get_text()
+            cliente = self.lblFCliente.get_text()
+            mesa = self.lblFMesa.get_text()
+            fecha = self.lblFMesa.get_text()
+            fila = (cliente, camarero, mesa, fecha)
+            database.altaFactura(fila, self.facturas)
             self.vencomanda.show()
         else:
             self.lblAviso.set_markup("<span color='gray'>Debe seleccionar un cliente y una mesa</span>")

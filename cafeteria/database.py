@@ -69,6 +69,7 @@ def cargarComanda(comandas):
         comandas.clear()
         for n in listado:
             comandas.append(n)
+        conexion.commit()
     except sqlite3.Error as e:
         print(e)
         conexion.rollback()
@@ -144,23 +145,26 @@ def altaFactura(fila, facturas, idmesa):
  # Gestion líneas de venta:
 def altaLinea(comandas, servicio):
     try:
+        #Obtenemos el id de la última factura registrada
         cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
         factura = str(cur.fetchone())
         for char in "(),'":
             factura = factura.replace(char, '')
+        #Obtenemos la cantidad del producto registrado con el id que le envíamos desde el main
         cur.execute("SELECT CANTIDAD FROM LINEAFACTURAS WHERE IDSERVICIO = '"+servicio+"' AND IDFACTURA = '"+factura+"'")
         cantidad = str(cur.fetchone())
         for char in "(),'":
             cantidad = cantidad.replace(char, '')
 
-        print("Cantidad:"+cantidad)
-
-        if cantidad != "None":
+        if cantidad != "None": #En caso de no ser null, sumamos uno a la cantidad y actualizamos la línea sacando antes su id mediante consulta
+            cantidad = int(cantidad)
             cantidad = int(cantidad + 1)
             cur.execute("SELECT IDVENTA FROM LINEAFACTURAS WHERE IDSERVICIO = '" + servicio + "' AND IDFACTURA = '" + factura + "'")
             id = str(cur.fetchone())
-            cur.execute("update lineafacturas set cantidad = '" + cantidad + " where idventa = '" + id + "'")
-        else:
+            for char in "(),'":
+                id = id.replace(char, '')
+            cur.execute("update lineafacturas set cantidad = " + str(cantidad) + " where idventa = " + id + "")
+        else: #En caso contrario, insertamos la linea con cantidad a 1
             cantidad = 1;
             fila = (factura, servicio, cantidad)
             cur.execute('insert into lineafacturas (idfactura, idservicio, cantidad) values(?,?,?)', fila)
@@ -170,11 +174,54 @@ def altaLinea(comandas, servicio):
     except sqlite3.Error as e:
         print(e)
 
-def altaFactura(fila, facturas):
+def bajaLinea(comandas, servicio):
+    try:
+        #Obtenemos el id de la última factura registrada y el id de la linea de venta asociada a ese servicio y factura
+        cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
+        factura = str(cur.fetchone())
+        for char in "(),'":
+            factura = factura.replace(char, '')
+
+        cur.execute("SELECT IDVENTA FROM LINEAFACTURAS WHERE IDSERVICIO = '" + servicio + "' AND IDFACTURA = '" + factura + "'")
+        id = str(cur.fetchone())
+        for char in "(),'":
+            id = id.replace(char, '')
+
+        # Obtenemos la cantidad del producto registrado con el id que le envíamos desde el main
+        cur.execute("SELECT CANTIDAD FROM LINEAFACTURAS WHERE IDVENTA = '"+id+"'")
+        cantidad = str(cur.fetchone())
+        for char in "(),'":
+            cantidad = cantidad.replace(char, '')
+        if cantidad != "None":
+            cantidad = int(cantidad)
+        if cantidad == 1:
+            cur.execute("delete from lineafacturas where idventa = " + id + "")
+        else:
+            cantidad = cantidad - 1
+            cur.execute("update lineafacturas set cantidad = " + str(cantidad) + " where idventa = " + id + "")
+        print("Baja de línea de venta realizada con éxito")
+        conexion.commit()
+        cargarComanda(comandas)
+    except sqlite3.Error as e:
+        print(e)
+
+def altaFactura(fila):
     try:
         cur.execute('insert into facturas (dnicliente, idcamarero, idmesa, fecha) values(?,?,?,?)', fila)
         conexion.commit()
         print("Alta de factura realizada con éxito")
+    except sqlite3.Error as e:
+        print(e)
+
+def bajaFactura(facturas):
+    try:
+        cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
+        factura = str(cur.fetchone())
+        for char in "(),'":
+            factura = factura.replace(char, '')
+        cur.execute("delete from facturas where idFactura = " + factura + "")
+        cur.execute("delete from lineafacturas where idFactura= " + factura + "")
+        cargarFactura(facturas)
     except sqlite3.Error as e:
         print(e)
 

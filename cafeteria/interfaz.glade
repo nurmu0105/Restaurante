@@ -1955,6 +1955,7 @@ Freepik - Iconos de mesas</property>
                     <property name="can_focus">True</property>
                     <property name="model">productos</property>
                     <property name="ubuntu_almost_fixed_height_mode">True</property>
+                    <signal name="cursor-changed" handler="on_treeProductos2_cursor_changed" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
@@ -2020,11 +2021,12 @@ Freepik - Iconos de mesas</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToolButton">
+                  <object class="GtkToolButton" id="deleteLinea">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Eliminar</property>
                     <property name="use_underline">True</property>
+                    <signal name="clicked" handler="on_deleteLinea_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -2051,6 +2053,7 @@ Freepik - Iconos de mesas</property>
                     <property name="can_focus">True</property>
                     <property name="model">comandas</property>
                     <property name="ubuntu_almost_fixed_height_mode">True</property>
+                    <signal name="cursor-changed" handler="on_treeComandas_cursor_changed" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
@@ -2106,6 +2109,7 @@ Freepik - Iconos de mesas</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_cancelComanda_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -2120,6 +2124,7 @@ Freepik - Iconos de mesas</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_aceptComanda_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -2289,6 +2294,8 @@ Freepik - Iconos de mesas</property>
     <property name="urgency_hint">True</property>
     <property name="gravity">center</property>
     <property name="transient_for">venprincipal</property>
+    <signal name="delete-event" handler="on_venlogin_delete_event" swapped="no"/>
+    <signal name="destroy" handler="on_venlogin_destroy" swapped="no"/>
     <child>
       <placeholder/>
     </child>
