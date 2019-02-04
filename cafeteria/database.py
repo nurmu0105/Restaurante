@@ -1,4 +1,10 @@
+import locale
+import os
+
 import gi
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+
 gi.require_version('Gtk','3.0')
 from gi.repository import Gtk
 import sqlite3
@@ -41,13 +47,21 @@ def cargarProducto(productos):
 def cargarFactura(facturas, mesa):
     try:
         if mesa == 0:
-            cur.execute("SELECT * FROM FACTURAS ORDER BY(idFactura)")
+            cur.execute("SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura) "
+                        "FROM Facturas left join LineaFacturas "
+                        "on LineaFacturas.IdFactura = Facturas.IdFactura "
+                        "GROUP BY Facturas.IdFactura;")
             listado = cur.fetchall()
             facturas.clear()
             for n in listado:
                 facturas.append(n)
         else:
-            cur.execute("SELECT * FROM FACTURAS WHERE IDMESA = '"+str(mesa)+"' ORDER BY(idFactura)")
+            cur.execute(
+                "SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura) "
+                "FROM Facturas left join LineaFacturas "
+                "on LineaFacturas.IdFactura = Facturas.IdFactura "
+                "WHERE Facturas.IDMESA = '"+str(mesa)+"'"
+                "GROUP BY Facturas.IdFactura;")
             listado = cur.fetchall()
             facturas.clear()
             for n in listado:
@@ -61,8 +75,15 @@ def cargarFactura(facturas, mesa):
 def cargarComanda(comandas):
     try:
         cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
-        factura = cur.fetchone()
-        #CONTINUAR
+        factura = str(cur.fetchone())
+        for char in "(),'":
+            factura = factura.replace(char, '')
+        cur.execute("SELECT IDSERVICIO, CANTIDAD FROM LINEAFACTURAS WHERE IDFACTURA = '"+factura+"'")
+        listado = cur.fetchall()
+        comandas.clear()
+        for n in listado:
+            comandas.append(n)
+        conexion.commit()
     except sqlite3.Error as e:
         print(e)
         conexion.rollback()
@@ -136,38 +157,138 @@ def altaFactura(fila, facturas, idmesa):
         print(e)
 
  # Gestion líneas de venta:
-def altaLinea(fila, comandas, servicio):
+def altaLinea(comandas, servicio):
     try:
+        #Obtenemos el id de la última factura registrada
         cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
-        factura = cur.fetchone()
+        factura = str(cur.fetchone())
         for char in "(),'":
             factura = factura.replace(char, '')
+        #Obtenemos la cantidad del producto registrado con el id que le envíamos desde el main
         cur.execute("SELECT CANTIDAD FROM LINEAFACTURAS WHERE IDSERVICIO = '"+servicio+"' AND IDFACTURA = '"+factura+"'")
-        cantidad = cur.fetchone()
+        cantidad = str(cur.fetchone())
         for char in "(),'":
             cantidad = cantidad.replace(char, '')
-        if cantidad != "None":
+
+        if cantidad != "None": #En caso de no ser null, sumamos uno a la cantidad y actualizamos la línea sacando antes su id mediante consulta
+            cantidad = int(cantidad)
             cantidad = int(cantidad + 1)
             cur.execute("SELECT IDVENTA FROM LINEAFACTURAS WHERE IDSERVICIO = '" + servicio + "' AND IDFACTURA = '" + factura + "'")
-            id = cur.fetchone()
-            cur.execute("update lineafacturas set cantidad = '" + cantidad + " where idventa = '" + id + "'")
-        else:
+            id = str(cur.fetchone())
+            for char in "(),'":
+                id = id.replace(char, '')
+            cur.execute("update lineafacturas set cantidad = " + str(cantidad) + " where idventa = " + id + "")
+        else: #En caso contrario, insertamos la linea con cantidad a 1
             cantidad = 1;
-            fila = fila + cantidad;
+            fila = (factura, servicio, cantidad)
             cur.execute('insert into lineafacturas (idfactura, idservicio, cantidad) values(?,?,?)', fila)
         conexion.commit()
         print("Inserción de línea de venta realizada con éxito")
-        #cargarProducto(productos)
+        cargarComanda(comandas)
     except sqlite3.Error as e:
         print(e)
 
-def altaFactura(fila, facturas):
+def bajaLinea(comandas, servicio):
+    try:
+        #Obtenemos el id de la última factura registrada y el id de la linea de venta asociada a ese servicio y factura
+        cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
+        factura = str(cur.fetchone())
+        for char in "(),'":
+            factura = factura.replace(char, '')
+
+        cur.execute("SELECT IDVENTA FROM LINEAFACTURAS WHERE IDSERVICIO = '" + servicio + "' AND IDFACTURA = '" + factura + "'")
+        id = str(cur.fetchone())
+        for char in "(),'":
+            id = id.replace(char, '')
+
+        # Obtenemos la cantidad del producto registrado con el id que le envíamos desde el main
+        cur.execute("SELECT CANTIDAD FROM LINEAFACTURAS WHERE IDVENTA = '"+id+"'")
+        cantidad = str(cur.fetchone())
+        for char in "(),'":
+            cantidad = cantidad.replace(char, '')
+        if cantidad != "None":
+            cantidad = int(cantidad)
+        if cantidad == 1:
+            cur.execute("delete from lineafacturas where idventa = " + id + "")
+        else:
+            cantidad = cantidad - 1
+            cur.execute("update lineafacturas set cantidad = " + str(cantidad) + " where idventa = " + id + "")
+        print("Baja de línea de venta realizada con éxito")
+        conexion.commit()
+        cargarComanda(comandas)
+    except sqlite3.Error as e:
+        print(e)
+
+def altaFactura(fila):
     try:
         cur.execute('insert into facturas (dnicliente, idcamarero, idmesa, fecha) values(?,?,?,?)', fila)
         conexion.commit()
         print("Alta de factura realizada con éxito")
     except sqlite3.Error as e:
         print(e)
+
+def bajaFactura(facturas):
+    try:
+        cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS")
+        factura = str(cur.fetchone())
+        for char in "(),'":
+            factura = factura.replace(char, '')
+        cur.execute("delete from facturas where idFactura = " + factura + "")
+        cur.execute("delete from lineafacturas where idFactura= " + factura + "")
+        cargarFactura(facturas)
+    except sqlite3.Error as e:
+        print(e)
+
+def imprimirFactura(idFactura):
+    try:
+        cser = canvas.Canvas(str(idFactura) + '.pdf', pagesize=A4)
+        cur.execute("select IDVENTA, S.SERVICIO, CANTIDAD, S.PRECIO "
+                    "from lineaFacturas L, servicios S "
+                    "where L.idFactura = "+str(idFactura)+" and S.idServicio = L.idServicio")
+        listado = cur.fetchall()
+        conexion.commit()
+        textlistado = 'Factura'
+        cser.drawString(255, 705, textlistado)
+        cser.line(50, 700, 525, 700)
+        x = 50
+        y = 680
+        total = 0
+        for registro in listado:
+            for i in range(4):
+                if i <= 1:
+                    cser.drawString(x, y, str(registro[i]))
+                    x = x + 40
+                else:
+                    x = x + 120
+                    cser.drawString(x, y, str(registro[i]))
+                var1 = int(registro[2])
+                var2 = registro[3].split()[0]
+                var2 = locale.atof(var2)
+                var2 = round(float(var2),2)
+                subtotal = var1*var2
+            total = total + subtotal
+            subtotal = locale.currency(subtotal)
+            x= x + 120
+            cser.drawString(x, y, str(subtotal))
+            y = y - 20
+            x = 50
+        y = y - 20
+        cser.line(50, y, 525, y)
+        y = y - 20
+        x = 400
+        cser.drawString(x, y, 'Total:')
+        x = 485
+        total = round(float(total),2)
+        total = locale.currency(total)
+        cser.drawString(x, y, str(total))
+        cser.showPage()
+        cser.save()
+        dir = os.getcwd()
+        os.system('/usr/bin/xdg-open '+dir+'/'+str(idFactura)+'.pdf')
+        print('Factura preparada para impresión')
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
 
  # Gestion de clientes:
 def altaCliente(fila):
@@ -250,5 +371,13 @@ def cargaMesas():
         print(e)
         conexion.rollback()
     return listado
+
+def ocuparMesa(estado, mesa):
+    try:
+        cur.execute("update mesas set estado = '"+estado+"' where idmesa = '"+mesa+"'")
+        conexion.commit()
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
 
 

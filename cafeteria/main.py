@@ -20,6 +20,7 @@ class Main:
         self.venconfirma = b.get_object("venconfirma")
         self.vencliente = b.get_object("vencliente")
         self.vencomanda = b.get_object("vencomanda")
+        self.vencalendario = b.get_object("vencalendario")
 
     # Botones:
         self.btnAbout = b.get_object("btnAbout")
@@ -37,6 +38,9 @@ class Main:
         self.treeCamareros = b.get_object("treeCamareros")
         self.camareros = b.get_object("camareros")
         self.treeFacturas = b.get_object("treeFacturas")
+        self.treeProductos2 = b.get_object("treeProductos2")
+        self.treeComandas = b.get_object("treeComandas")
+        self.comandas = b.get_object("comandas")
         self.facturas = b.get_object("facturas")
         self.Pestanas = b.get_object("Pestanas")
         self.lblError = b.get_object("lblError")
@@ -86,9 +90,12 @@ class Main:
         self.clienteProv = b.get_object("clienteProv")
         self.clienteCiu = b.get_object("clienteCiu")
         self.clienteComu = b.get_object("clienteComu")
+        self.calendar = b.get_object("calendar")
         self.comunidad = ''
         self.provincia = ''
         self.ciudad = ''
+        self.servicio = ''
+        self.idFactura = ''
 
     # Mesas:
         self.lblmesa1 = b.get_object("lblmesa1")
@@ -102,13 +109,6 @@ class Main:
         self.lblmesa9 = b.get_object("lblmesa9")
         self.mesas = (self.lblmesa1, self.lblmesa2, self.lblmesa3, self.lblmesa4, self.lblmesa5, self.lblmesa6, self.lblmesa7, self.lblmesa8, self.lblmesa9)
 
-    # Fecha actual:
-        dia = datetime.datetime.now().strftime("%d")
-        mes = datetime.datetime.now().strftime("%m")
-        ano = datetime.datetime.now().strftime("%Y")
-        mes = int(mes) - 1
-        self.fecha = "%s/" % dia + "%s/" % (mes + 1) + "%s" % ano
-        self.lblFFecha.set_text(self.fecha)
 
         dic = {'on_btnSalir_activate':self.salir,
                'on_loginExit_clicked':self.salir,
@@ -121,6 +121,8 @@ class Main:
                'on_aceptConfirma_clicked':self.aceptarConfirma,
                'on_venprincipal_destroy':self.salir,
                'on_venprincipal_delete_event':self.salir,
+               'on_venlogin_destroy':self.salir,
+               'on_venlogin_delete_event':self.salir,
                'on_cleanCam_clicked':self.limpiarCam,
                'on_addCam_clicked':self.altaCamarero,
                'on_updateCam_clicked':self.modificaCamarero,
@@ -136,12 +138,23 @@ class Main:
                'on_clienteNombre_focus_out_event':self.mayus,
                'on_treeCamareros_cursor_changed':self.seleccionaCamarero,
                'on_treeProductos_cursor_changed':self.seleccionaProducto,
+               'on_treeProductos2_cursor_changed':self.seleccionaProducto2,
+               'on_treeComandas_cursor_changed':self.seleccionaComanda,
                'on_clienteComu_changed':self.actualizarProvincias,
                'on_clienteProv_changed':self.actualizarMunicipios,
                'on_btnFCliente_clicked':self.abrirCliente,
                'on_cancelCliente_clicked':self.cerrarCliente,
                'on_aceptCliente_clicked':self.altaCliente,
                'on_addFactura_clicked':self.abrirComandas,
+               'on_addLinea_clicked':self.gestionComandas,
+               'on_deleteLinea_clicked':self.eliminarComandas,
+               'on_aceptComanda_clicked':self.aceptarComanda,
+               'on_cancelComanda_clicked':self.cancelarComanda,
+               'on_cleanFactura_clicked': self.limpiarFact,
+               'on_btnFFecha_clicked':self.abrirCalendario,
+               'on_calendar_day_selected_double_click':self.cerrarCalendario,
+               'on_treeFacturas_cursor_changed':self.seleccionaFactura,
+               'on_printFactura_clicked':self.imprimeFactura,
                'on_mesa1_clicked':self.mesa1,
                'on_mesa2_clicked': self.mesa2,
                'on_mesa3_clicked': self.mesa3,
@@ -163,6 +176,7 @@ class Main:
         database.cargarFactura(self.facturas, 0)
         self.cargarComunidades()
         self.cargaMesas()
+        self.inicializarCalendario()
 
     # Cerrar ventanas:
         self.venprincipal.connect('delete-event', lambda w, e: w.hide() or True)
@@ -172,6 +186,7 @@ class Main:
         self.vencliente.connect('delete-event', lambda w, e: w.hide() or True)
         self.venlogin.connect('delete-event', lambda w, e: w.hide() or True)
         self.vencomanda.connect('delete-event', lambda w, e: w.hide() or True)
+        self.vencalendario.connect('delete-event', lambda w, e: w.hide() or True)
 
 
     # Seleccion
@@ -192,6 +207,21 @@ class Main:
             for char in '€':
                 precio = precio.replace(char, '')
             self.lblPrecio.set_text(precio)
+
+    def seleccionaProducto2(self, widget):
+        model, iter = self.treeProductos2.get_selection().get_selected()
+        if iter != None:
+            self.servicio = str(model.get_value(iter, 0))
+
+    def seleccionaComanda(self, widget):
+        model, iter = self.treeComandas.get_selection().get_selected()
+        if iter != None:
+            self.servicio = str(model.get_value(iter, 0))
+
+    def seleccionaFactura(self, widget):
+        model, iter = self.treeFacturas.get_selection().get_selected()
+        if iter != None:
+            self.idFactura = model.get_value(iter, 0)
 
     # Camareros
     def altaCamarero(self, widget):
@@ -289,8 +319,24 @@ class Main:
             self.lblError.set_text("Debe cubrir todos los campos")
             self.abrirError(widget)
 
+    def gestionComandas(self, widget):
+        database.altaLinea(self.comandas, self.servicio)
 
+    def eliminarComandas(self, widget):
+        database.bajaLinea(self.comandas, self.servicio)
 
+    def cancelarComanda(self, widget):
+        database.bajaFactura(self.facturas)
+        self.vencomanda.hide()
+
+    def aceptarComanda(self, widget):
+        database.ocuparMesa("No disponible", self.lblFMesa.get_text())
+        database.cargarFactura(self.facturas, self.lblFMesa.get_text())
+        self.cargaMesas()
+        self.vencomanda.hide()
+        self.lblAviso.set_markup("<span color='gray'>Alta de factura completada con éxito</span>")
+
+    #def aceptarCOmenda(self, widget):
 
     # Validaciones:
     def validaDNI(self, widget):
@@ -351,6 +397,17 @@ class Main:
         self.clienteProv.set_active(-1)
         self.clienteCiu.set_active(-1)
 
+    def limpiarFact(self, widget):
+        self. lblFMesa.set_text("Seleccionar mesa")
+        self.lblFCliente.set_text("Seleccionar cliente")
+        database.cargarFactura(self.facturas, 0)
+        self.inicializarCalendario()
+        self.mesa = ""
+        self.servicio = ""
+        self.comunidad = ""
+        self.provincia = ""
+        self.ciudad = ""
+
     def cargarComunidades(self):
         lista = database.cargaComunidad()
         for name in lista:
@@ -376,6 +433,17 @@ class Main:
         lista = database.cargaMunicipios(self.provincia)
         for name in lista:
             self.clienteCiu.append_text(name[0])
+
+    def inicializarCalendario(self):
+        dia = datetime.datetime.now().strftime("%d")
+        mes = datetime.datetime.now().strftime("%m")
+        ano = datetime.datetime.now().strftime("%Y")
+        mes = int(mes) - 1
+        self.fecha = "%s/" % dia + "%s/" % (mes + 1) + "%s" % ano
+        self.lblFFecha.set_text(self.fecha)
+
+    def imprimeFactura(self, widget):
+        database.imprimirFactura(self.idFactura)
 
     # Gestion de mesas:
     def cargaMesas(self):
@@ -505,6 +573,21 @@ class Main:
         self.venerror.hide()
         self.lblError.set_text("")
 
+    def abrirCalendario(self, widget):
+        dia = datetime.datetime.now().strftime("%d")
+        mes = datetime.datetime.now().strftime("%m")
+        ano = datetime.datetime.now().strftime("%Y")
+        mes = int(mes) - 1
+        self.calendar.select_month(int(mes), int(ano))
+        self.calendar.select_day(int(dia))
+        self.vencalendario.show()
+
+    def cerrarCalendario(self, widget):
+        ano, mes, dia = self.calendar.get_date()
+        self.fecha = "%s/" % dia + "%s/" % (mes + 1) + "%s" % ano
+        self.lblFFecha.set_text(self.fecha)
+        self.vencalendario.hide()
+
     def abrirConfirma(self,widget):
         panel = self.Pestanas.get_current_page()
         if panel == 1:
@@ -526,6 +609,12 @@ class Main:
 
     def abrirComandas(self, widget):
         if self.lblFCliente.get_text() != "Seleccionar cliente" and self.lblFMesa.get_text() != "Seleccionar mesa":
+            camarero = self.lblFCamarero.get_text()
+            cliente = self.lblFCliente.get_text()
+            mesa = self.lblFMesa.get_text()
+            fecha = self.lblFMesa.get_text()
+            fila = (cliente, camarero, mesa, fecha)
+            database.altaFactura(fila)
             self.vencomanda.show()
         else:
             self.lblAviso.set_markup("<span color='gray'>Debe seleccionar un cliente y una mesa</span>")
