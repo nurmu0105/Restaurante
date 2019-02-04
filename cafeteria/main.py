@@ -1,3 +1,5 @@
+import datetime
+
 import gi
 gi.require_version('Gtk','3.0')
 import database
@@ -76,6 +78,8 @@ class Main:
         self.lblFCliente = b.get_object("lblFCliente")
         self.btnFCliente = b.get_object("btnFCliente")
         self.lblFMesa = b.get_object("lblFMesa")
+        self.lblFFecha = b.get_object("lblFFecha")
+        self.btnFFecha = b.get_object("btnFFecha")
         self.clienteDNI = b.get_object("clienteDNI")
         self.clienteNombre = b.get_object("clienteNombre")
         self.clienteApellido = b.get_object("clienteApellido")
@@ -98,6 +102,13 @@ class Main:
         self.lblmesa9 = b.get_object("lblmesa9")
         self.mesas = (self.lblmesa1, self.lblmesa2, self.lblmesa3, self.lblmesa4, self.lblmesa5, self.lblmesa6, self.lblmesa7, self.lblmesa8, self.lblmesa9)
 
+    # Fecha actual:
+        dia = datetime.datetime.now().strftime("%d")
+        mes = datetime.datetime.now().strftime("%m")
+        ano = datetime.datetime.now().strftime("%Y")
+        mes = int(mes) - 1
+        self.fecha = "%s/" % dia + "%s/" % (mes + 1) + "%s" % ano
+        self.lblFFecha.set_text(self.fecha)
 
         dic = {'on_btnSalir_activate':self.salir,
                'on_loginExit_clicked':self.salir,
@@ -279,7 +290,7 @@ class Main:
             self.abrirError(widget)
 
 
-    
+
 
     # Validaciones:
     def validaDNI(self, widget):
