@@ -3,6 +3,7 @@ import datetime
 import gi
 gi.require_version('Gtk','3.0')
 import database
+import gtk
 from gi.repository import Gtk
 
 
@@ -21,6 +22,7 @@ class Main:
         self.vencliente = b.get_object("vencliente")
         self.vencomanda = b.get_object("vencomanda")
         self.vencalendario = b.get_object("vencalendario")
+        self.venjornada = b.get_object("venjornada")
 
     # Botones:
         self.btnAbout = b.get_object("btnAbout")
@@ -47,6 +49,7 @@ class Main:
         self.btnError = b.get_object("btnError")
         self.lblAviso = b.get_object("lblAviso")
         self.lblConfirma = b.get_object("lblConfirma")
+        self.jornadaPwd = b.get_object("jornadaPwd")
         self.password = ""
         self.eDni = True
 
@@ -96,6 +99,7 @@ class Main:
         self.ciudad = ''
         self.servicio = ''
         self.idFactura = ''
+        self.idMesa = ''
 
     # Mesas:
         self.lblmesa1 = b.get_object("lblmesa1")
@@ -114,6 +118,10 @@ class Main:
                'on_loginExit_clicked':self.salir,
                'on_loginEnter_clicked':self.login,
                'on_ btnLogout_activate':self.logout,
+               'on_btnFinJornada_activate':self.abrirJornada,
+               'on_aceptJornada_clicked':self.terminarJornada,
+               'on_cancelJornada_clicked':self.cerrarJornada,
+               'on_btnMaximize_activate':self.maximizarVentana,
                'on_btnAbout_activate':self.abrirAbout,
                'on_btnAcerca_clicked':self.cerrarAbout,
                'on_btnError_clicked':self.cerrarError,
@@ -187,9 +195,15 @@ class Main:
         self.venlogin.connect('delete-event', lambda w, e: w.hide() or True)
         self.vencomanda.connect('delete-event', lambda w, e: w.hide() or True)
         self.vencalendario.connect('delete-event', lambda w, e: w.hide() or True)
+        self.venjornada.connect('delete-event', lambda w, e: w.hide() or True)
 
 
-    # Seleccion
+    def draw_pixbuf(self, widget):
+        path = 'imgs/prueba.jpeg'
+        pixbuf = gtk.gdk.pixbuf_new_from_file(path)
+        self.venprincipal.draw_pixbuf(widget.style.bg_gc[gtk.STATE_NORMAL], pixbuf, 0, 0, 0, 0)
+
+    # MÉTODOS DE SELECCIÓN PARA LOS TREEVIEW
     def seleccionaCamarero(self, widget):
         model, iter = self.treeCamareros.get_selection().get_selected()
         if iter != None:
@@ -222,8 +236,9 @@ class Main:
         model, iter = self.treeFacturas.get_selection().get_selected()
         if iter != None:
             self.idFactura = model.get_value(iter, 0)
+            self.idMesa = model.get_value(iter, 3)
 
-    # Camareros
+    # MÉTODOS RELACIONADOS CON EL ALTA DE CAMAREROS
     def altaCamarero(self, widget):
         self.inputNombre.set_text(self.inputNombre.get_text().title())
         nombre = self.inputNombre.get_text()
@@ -307,7 +322,7 @@ class Main:
         comunidad = str(self.clienteComu.get_active_text())
         provincia = str(self.clienteProv.get_active_text())
         ciudad = str(self.clienteCiu.get_active_text())
-        if len(dni) > 8 and len(nombre) > 0 and len(apellido) > 0 and comunidad != "None" and provincia != "None" and ciudad != "None":
+        if len(nombre) > 0 and len(apellido) > 0 and comunidad != "None" and provincia != "None" and ciudad != "None":
             self.validaDNI(widget)
             if self.eDni == False:
                 fila = (dni, apellido, nombre, comunidad, provincia, ciudad)
@@ -336,7 +351,7 @@ class Main:
         self.vencomanda.hide()
         self.lblAviso.set_markup("<span color='gray'>Alta de factura completada con éxito</span>")
 
-    #def aceptarCOmenda(self, widget):
+
 
     # Validaciones:
     def validaDNI(self, widget):
@@ -361,7 +376,7 @@ class Main:
                     self.abrirError(widget)
             else:
                 self.eDni = True
-                self.lblError.set_text("El DNI introducido debe ser un DNI válido")
+                self.lblError.set_text("La longitud del DNI debe ser de 9 caracteres")
                 self.abrirError(widget)
         except:
             self.eDni = True
@@ -370,6 +385,7 @@ class Main:
 
     # Metodos recurso:
     def mayus(self, widget, date = None):
+        ''' Pone las iniciales y la letra del DNI en mayúsculas '''
         self.inputNombre.set_text(self.inputNombre.get_text().title())
         self.lblNombre.set_text(self.lblNombre.get_text().title())
         self.lblNombre.set_text(self.lblNombre.get_text().title())
@@ -378,18 +394,21 @@ class Main:
         self.clienteApellido.set_text(self.clienteApellido.get_text().title())
 
     def limpiarCam(self, widget):
+        ''' Resetea todos los atributos de la pestaña Camareros '''
         self.lblCamarero.set_text("Seleccionar camarero")
         self.inputNombre.set_text("")
         self.inputPassword.set_text("")
         self.lblAviso.set_text("")
 
     def limpiarProd(self, widget):
+        ''' Resetea todos los atributos de la pestaña Productos '''
         self.lblProducto.set_text("Seleccionar producto")
         self.lblNombre.set_text("")
         self.lblPrecio.set_text("")
         self.lblAviso.set_text("")
 
     def limpiarCli(self, widget):
+        ''' Resetea todos los atributos de la ventana Clientes '''
         self.clienteDNI.set_text("")
         self.clienteNombre.set_text("")
         self.clienteApellido.set_text("")
@@ -398,9 +417,10 @@ class Main:
         self.clienteCiu.set_active(-1)
 
     def limpiarFact(self, widget):
+        ''' Resetea todos los atributos y variables recurso de la pestaña Facturas '''
         self. lblFMesa.set_text("Seleccionar mesa")
         self.lblFCliente.set_text("Seleccionar cliente")
-        database.cargarFactura(self.facturas, 0)
+        database.cargarFactura(self.facturas, 0) #Recarga el treeView para que muestre todas las facturas registradas
         self.inicializarCalendario()
         self.mesa = ""
         self.servicio = ""
@@ -443,9 +463,33 @@ class Main:
         self.lblFFecha.set_text(self.fecha)
 
     def imprimeFactura(self, widget):
+        database.ocuparMesa("Disponible", self.idMesa)
+        self.cargaMesas()
         database.imprimirFactura(self.idFactura)
 
-    # Gestion de mesas:
+    def terminarJornada(self, widget):
+        user = self.lblFCamarero.get_text()
+        password = self.jornadaPwd.get_text()
+        if len(password):
+            fila = database.login(user, password)
+            if str(fila[0]) != 'None' and str(fila[1]) != 'None':
+                i = 1
+                for mesa in self.mesas:
+                    database.ocuparMesa("Disponible", str(i))
+                    i = i + 1
+                self.cargaMesas()
+                self.lblAviso.set_markup("<span color='gray'><b>Jornada finalizada</b></span>")
+                print('Mesas liberadas con éxito')
+                self.cerrarJornada(widget)
+            else:
+                self.lblError.set_text("Contraseña no válida")
+                self.abrirError(widget)
+        else:
+            self.lblError.set_text("Debe introducir su contraseña")
+            self.abrirError(widget)
+
+
+    # Metodos gestion de mesas:
     def cargaMesas(self):
         i = 0
         listado = database.cargaMesas()
@@ -604,6 +648,12 @@ class Main:
     def cerrarConfirma(self, widget):
         self.venconfirma.hide()
 
+    def abrirJornada(self, widget):
+        self.venjornada.show()
+
+    def cerrarJornada(self, widget):
+        self.venjornada.hide()
+
     def abrirCliente(self, widget):
         self.vencliente.show()
 
@@ -655,6 +705,9 @@ class Main:
         print("Cerrando sesión")
         self.venprincipal.hide()
         self.venlogin.show()
+
+    def maximizarVentana(self, widget):
+        self.venprincipal.maximize()
 
     def salir(self, widget, data=None):
         print("Finalizando el programa")

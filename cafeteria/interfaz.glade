@@ -102,7 +102,7 @@
     </columns>
   </object>
   <object class="GtkWindow" id="venprincipal">
-    <property name="width_request">990</property>
+    <property name="width_request">975</property>
     <property name="height_request">444</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Posada Roca de Guía</property>
@@ -117,6 +117,8 @@
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkMenuBar">
@@ -126,36 +128,19 @@
               <object class="GtkMenuItem">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Ficheiro</property>
+                <property name="label" translatable="yes">Opciones</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-new</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-open</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkMenuItem">
+                      <object class="GtkMenuItem" id="btnFinJornada">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Terminar jornada</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_btnFinJornada_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -191,46 +176,27 @@
               <object class="GtkMenuItem">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Editar</property>
+                <property name="label" translatable="yes">Ventana</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-cut</property>
+                      <object class="GtkMenuItem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Modo noche</property>
                         <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-copy</property>
+                      <object class="GtkMenuItem" id="btnMaximize">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Pantalla completa</property>
                         <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-paste</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-delete</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_btnMaximize_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -241,15 +207,7 @@
               <object class="GtkMenuItem">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Ver</property>
-                <property name="use_underline">True</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkMenuItem">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Axuda</property>
+                <property name="label" translatable="yes">_Ayuda</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
@@ -1057,7 +1015,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="halign">start</property>
-                            <property name="margin_right">10</property>
                             <property name="margin_bottom">10</property>
                             <property name="label" translatable="yes">Seleccionar mesa</property>
                           </object>
@@ -1134,7 +1091,7 @@
                     </child>
                     <child>
                       <object class="GtkScrolledWindow">
-                        <property name="width_request">438</property>
+                        <property name="width_request">445</property>
                         <property name="height_request">332</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -1605,8 +1562,7 @@
     <property name="license" translatable="yes">Este programa non fornece ningunha garantía, 
 para máis información visite &lt;a href="https://www.gnu.org/licenses/gpl-3.0.html"&gt;Licenza Pública Xeral de GNU, versión 3 ou posterior&lt;/a&gt;.</property>
     <property name="authors">Nuria Muñoz Carrera</property>
-    <property name="artists">Julian Schnaars - Avatar
-Freepik - Iconos de mesas</property>
+    <property name="artists">Freepik - Iconos de mesas</property>
     <property name="logo">imgs/avatar3.png</property>
     <property name="wrap_license">True</property>
     <property name="license_type">gpl-3-0</property>
@@ -2346,8 +2302,161 @@ Freepik - Iconos de mesas</property>
       </object>
     </child>
   </object>
+  <object class="GtkWindow" id="venjornada">
+    <property name="width_request">400</property>
+    <property name="height_request">175</property>
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Aviso</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="icon_name">dialog-warning</property>
+    <property name="gravity">center</property>
+    <property name="transient_for">venprincipal</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_top">20</property>
+            <property name="margin_bottom">5</property>
+            <property name="label" translatable="yes">Al terminar la jornada se perderán los datos</property>
+            <attributes>
+              <attribute name="weight" value="semibold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_bottom">5</property>
+            <property name="label" translatable="yes">referentes al estado de las mesas</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_top">5</property>
+            <property name="margin_bottom">10</property>
+            <property name="label" translatable="yes">¿Está seguro de que desea finalizar la jornada?</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">center</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="margin_bottom">10</property>
+                <property name="label" translatable="yes">Password:</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="jornadaPwd">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="margin_bottom">10</property>
+                <property name="visibility">False</property>
+                <property name="invisible_char">•</property>
+                <property name="input_purpose">password</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButtonBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="margin_right">10</property>
+            <property name="layout_style">start</property>
+            <child>
+              <object class="GtkButton" id="cancelJornada">
+                <property name="label" translatable="yes">Cancelar</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_cancelJornada_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="aceptJornada">
+                <property name="label" translatable="yes">Aceptar</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_aceptJornada_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkWindow" id="venlogin">
-    <property name="width_request">333</property>
+    <property name="width_request">335</property>
     <property name="height_request">151</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Bienvenido</property>
@@ -2396,7 +2505,7 @@ Freepik - Iconos de mesas</property>
                 <property name="can_focus">False</property>
                 <property name="halign">end</property>
                 <property name="margin_bottom">10</property>
-                <property name="label" translatable="yes">Nombre:</property>
+                <property name="label" translatable="yes">Usuario:</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
