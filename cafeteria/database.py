@@ -3,6 +3,7 @@ import os
 
 import gi
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
 from reportlab.pdfgen import canvas
 
 gi.require_version('Gtk','3.0')
@@ -239,6 +240,81 @@ def bajaFactura(facturas):
     except sqlite3.Error as e:
         print(e)
 
+def imprimir(idFactura, fechaFactura):
+    try:
+        cser = canvas.Canvas(str(idFactura) + '.pdf', pagesize=A4)
+        cur.execute("select IDVENTA, S.SERVICIO, CANTIDAD, S.PRECIO "
+                    "from lineaFacturas L, servicios S "
+                    "where L.idFactura = " + str(idFactura) + " and S.idServicio = L.idServicio")
+        listado = cur.fetchall()
+        conexion.commit()
+
+        #Cabecera:
+        cser.setLineWidth(2) #Tamaño de linea
+        cser.line(0, 800, 610, 800)
+        cser.line(0, 700, 610, 700)
+
+        #Establecer fecha:
+        cser.setLineWidth(0.20)
+        cser.drawString(500, 680, str(fechaFactura))
+        cser.line(480, 677, 580, 677)
+
+        #Escribir productos:
+        textlistado = 'Factura'
+        cser.drawString(255, 605, textlistado)
+        #cser.line(50, 300, 525, 300) ¿Esta línea vale de algo en el diseño?
+        cser.line(50, 598, 525, 598)
+        x = 50
+        y = 578
+        total = 0
+
+        for registro in listado:
+            for i in range(4):
+                if i <= 1:
+                    cser.drawString(x, y, str(registro[i]))
+                    x = x + 40
+                else:
+                    x = x + 115
+                    cser.drawString(x, y, str(registro[i]))
+                var1 = int(registro[2])
+                var2 = registro[3].split()[0]
+                var2 = locale.atof(var2)
+                var2 = round(float(var2), 2)
+                subtotal = var1 * var2
+            total = total + subtotal
+            subtotal = locale.currency(subtotal)
+            x = x + 120
+            cser.drawString(x, y, str(subtotal))
+            y = y - 20
+            x = 50
+
+        y = y - 20
+        cser.line(50, y, 525, y)
+        y = y - 20
+        x = 400
+
+        #Escribir el total:
+        cser.drawString(x, y, 'Total:')
+        x = 485
+        total = round(float(total), 2)
+        total = locale.currency(total)
+        cser.drawString(x, y, str(total))
+
+        #Pie:
+        cser.setLineWidth(2)
+        cser.line(0, 40, 610, 40)
+
+        #Impresión del pdf:
+        cser.showPage()
+        cser.save()
+        dir = os.getcwd()
+        print(os.getcwd())
+        os.system('/usr/bin/xdg-open ' + dir + '/' + str(idFactura) + '.pdf')
+        print('Factura preparada para impresión')
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
+
 def imprimirFactura(idFactura):
     try:
         cser = canvas.Canvas(str(idFactura) + '.pdf', pagesize=A4)
@@ -247,12 +323,15 @@ def imprimirFactura(idFactura):
                     "where L.idFactura = "+str(idFactura)+" and S.idServicio = L.idServicio")
         listado = cur.fetchall()
         conexion.commit()
+
         textlistado = 'Factura'
+        cser.line(50, 380, 525, 300)
         cser.drawString(255, 705, textlistado)
         cser.line(50, 700, 525, 700)
         x = 50
         y = 680
         total = 0
+
         for registro in listado:
             for i in range(4):
                 if i <= 1:
@@ -272,6 +351,7 @@ def imprimirFactura(idFactura):
             cser.drawString(x, y, str(subtotal))
             y = y - 20
             x = 50
+
         y = y - 20
         cser.line(50, y, 525, y)
         y = y - 20
@@ -281,9 +361,11 @@ def imprimirFactura(idFactura):
         total = round(float(total),2)
         total = locale.currency(total)
         cser.drawString(x, y, str(total))
+
         cser.showPage()
         cser.save()
         dir = os.getcwd()
+        print(os.getcwd())
         os.system('/usr/bin/xdg-open '+dir+'/'+str(idFactura)+'.pdf')
         print('Factura preparada para impresión')
     except sqlite3.Error as e:
@@ -336,6 +418,7 @@ def cargaComunidad():
     for row in all_rows:
         i = i + 1
         list.append([row[0]])
+    conexion.commit()
     return list
 
 def cargaProvincias(comunidad):
@@ -374,7 +457,7 @@ def cargaMesas():
 
 def ocuparMesa(estado, mesa):
     try:
-        cur.execute("update mesas set estado = '"+estado+"' where idmesa = '"+mesa+"'")
+        cur.execute("update mesas set estado = '"+estado+"' where idmesa = '"+str(mesa)+"'")
         conexion.commit()
     except sqlite3.Error as e:
         print(e)

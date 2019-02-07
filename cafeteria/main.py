@@ -100,6 +100,7 @@ class Main:
         self.servicio = ''
         self.idFactura = ''
         self.idMesa = ''
+        self.fechaFactura = ''
 
     # Mesas:
         self.lblmesa1 = b.get_object("lblmesa1")
@@ -197,12 +198,6 @@ class Main:
         self.vencalendario.connect('delete-event', lambda w, e: w.hide() or True)
         self.venjornada.connect('delete-event', lambda w, e: w.hide() or True)
 
-
-    def draw_pixbuf(self, widget):
-        path = 'imgs/prueba.jpeg'
-        pixbuf = gtk.gdk.pixbuf_new_from_file(path)
-        self.venprincipal.draw_pixbuf(widget.style.bg_gc[gtk.STATE_NORMAL], pixbuf, 0, 0, 0, 0)
-
     # MÉTODOS DE SELECCIÓN PARA LOS TREEVIEW
     def seleccionaCamarero(self, widget):
         model, iter = self.treeCamareros.get_selection().get_selected()
@@ -237,6 +232,7 @@ class Main:
         if iter != None:
             self.idFactura = model.get_value(iter, 0)
             self.idMesa = model.get_value(iter, 3)
+            self.fechaFactura = model.get_value(iter, 4)
 
     # MÉTODOS RELACIONADOS CON EL ALTA DE CAMAREROS
     def altaCamarero(self, widget):
@@ -465,7 +461,7 @@ class Main:
     def imprimeFactura(self, widget):
         database.ocuparMesa("Disponible", self.idMesa)
         self.cargaMesas()
-        database.imprimirFactura(self.idFactura)
+        database.imprimir(self.idFactura, self.fechaFactura)
 
     def terminarJornada(self, widget):
         user = self.lblFCamarero.get_text()
