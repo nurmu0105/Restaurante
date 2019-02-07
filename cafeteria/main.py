@@ -331,6 +331,8 @@ class Main:
             self.abrirError(widget)
 
     def gestionComandas(self, widget):
+        '''Añadir tuplas a la tabla lineasFactura
+            El método se ejecuta cuando se pulsa el botón añadir en la ventana vencomandas'''
         database.altaLinea(self.comandas, self.servicio)
 
     def eliminarComandas(self, widget):
@@ -341,10 +343,14 @@ class Main:
         self.vencomanda.hide()
 
     def aceptarComanda(self, widget):
+        database.limpiarComandas(self.comandas)
         database.ocuparMesa("No disponible", self.lblFMesa.get_text())
         database.cargarFactura(self.facturas, self.lblFMesa.get_text())
         self.cargaMesas()
         self.vencomanda.hide()
+        self.lblFCliente.set_text("Seleccionar cliente")
+        self.lblFMesa.set_text("Seleccionar mesa")
+        self.inicializarCalendario()
         self.lblAviso.set_markup("<span color='gray'>Alta de factura completada con éxito</span>")
 
 
@@ -658,7 +664,7 @@ class Main:
             camarero = self.lblFCamarero.get_text()
             cliente = self.lblFCliente.get_text()
             mesa = self.lblFMesa.get_text()
-            fecha = self.lblFMesa.get_text()
+            fecha = self.lblFFecha.get_text()
             fila = (cliente, camarero, mesa, fecha)
             database.altaFactura(fila)
             self.vencomanda.show()

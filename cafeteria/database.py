@@ -89,6 +89,13 @@ def cargarComanda(comandas):
         print(e)
         conexion.rollback()
 
+def limpiarComandas(comandas):
+    try:
+        comandas.clear()
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
+
 
 
 # Gestion de camareros:
@@ -236,7 +243,7 @@ def bajaFactura(facturas):
             factura = factura.replace(char, '')
         cur.execute("delete from facturas where idFactura = " + factura + "")
         cur.execute("delete from lineafacturas where idFactura= " + factura + "")
-        cargarFactura(facturas)
+        cargarFactura(facturas, 0)
     except sqlite3.Error as e:
         print(e)
 
@@ -262,10 +269,9 @@ def imprimir(idFactura, fechaFactura):
         #Escribir productos:
         textlistado = 'Factura'
         cser.drawString(255, 605, textlistado)
-        #cser.line(50, 300, 525, 300) ¿Esta línea vale de algo en el diseño?
         cser.line(50, 598, 525, 598)
         x = 50
-        y = 578
+        y = 568
         total = 0
 
         for registro in listado:
@@ -295,7 +301,7 @@ def imprimir(idFactura, fechaFactura):
 
         #Escribir el total:
         cser.drawString(x, y, 'Total:')
-        x = 485
+        x = 480
         total = round(float(total), 2)
         total = locale.currency(total)
         cser.drawString(x, y, str(total))
