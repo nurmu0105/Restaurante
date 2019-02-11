@@ -1,6 +1,8 @@
 import datetime
 
 import gi
+from gi.overrides import Gdk
+
 gi.require_version('Gtk','3.0')
 import database
 import gtk
@@ -44,7 +46,13 @@ class Main:
         self.treeComandas = b.get_object("treeComandas")
         self.comandas = b.get_object("comandas")
         self.facturas = b.get_object("facturas")
+        self.Panel = b.get_object("Panel")
         self.Pestanas = b.get_object("Pestanas")
+        self.Camareros = b.get_object("Camareros")
+        self.Productos = b.get_object("Productos")
+        self.Facturas = b.get_object("Facturas")
+        self.Home = b.get_object("Home")
+        self.Mesas = b.get_object("Mesas")
         self.lblError = b.get_object("lblError")
         self.btnError = b.get_object("btnError")
         self.lblAviso = b.get_object("lblAviso")
@@ -186,6 +194,8 @@ class Main:
         self.cargarComunidades()
         self.cargaMesas()
         self.inicializarCalendario()
+        self.color()
+
 
     # Cerrar ventanas:
         self.venprincipal.connect('delete-event', lambda w, e: w.hide() or True)
@@ -200,6 +210,7 @@ class Main:
 
     # MÉTODOS DE SELECCIÓN PARA LOS TREEVIEW
     def seleccionaCamarero(self, widget):
+        '''Rellena los campos en la pestaña de Camareros cuando se selecciona el TreeView correspondiente'''
         model, iter = self.treeCamareros.get_selection().get_selected()
         if iter != None:
             self.lblCamarero.set_text(str(model.get_value(iter, 0)))
@@ -208,6 +219,7 @@ class Main:
             self.inputPassword.set_text("**********")
 
     def seleccionaProducto(self, widget):
+        '''Rellena los campos de la pestaña Productos cuando se selecciona el elemento en el TreeView'''
         model, iter = self.treeProductos.get_selection().get_selected()
         if iter != None:
             self.lblProducto.set_text(str(model.get_value(iter, 0)))
@@ -218,24 +230,33 @@ class Main:
             self.lblPrecio.set_text(precio)
 
     def seleccionaProducto2(self, widget):
+        '''Recoge el dato seleccionado en el TreeView de la ventana comandas'''
         model, iter = self.treeProductos2.get_selection().get_selected()
         if iter != None:
             self.servicio = str(model.get_value(iter, 0))
 
     def seleccionaComanda(self, widget):
+        '''Recoge el dato del elemento seleccionado en el TreeView de la ventana comandas'''
         model, iter = self.treeComandas.get_selection().get_selected()
         if iter != None:
             self.servicio = str(model.get_value(iter, 0))
 
     def seleccionaFactura(self, widget):
+        '''Recoge los datos del elemento seleccionado en el TreeView de la pestaña Facturas'''
         model, iter = self.treeFacturas.get_selection().get_selected()
         if iter != None:
             self.idFactura = model.get_value(iter, 0)
             self.idMesa = model.get_value(iter, 3)
             self.fechaFactura = model.get_value(iter, 4)
 
-    # MÉTODOS RELACIONADOS CON EL ALTA DE CAMAREROS
+    # MÉTODOS RELACIONADOS CON LA GESTIÓN DE CAMAREROS
     def altaCamarero(self, widget):
+        '''Alta de camareros
+            Primero pone en mayúsculas las iniciales y recoge los valores en unas variables,
+            se comprueba la longitud de las mismas para ver si están vacías o no y se mandan
+            los datos al método de registro en la base de datos.
+            Por último se resetean los datos.
+        '''
         self.inputNombre.set_text(self.inputNombre.get_text().title())
         nombre = self.inputNombre.get_text()
         password = self.inputPassword.get_text()
@@ -249,6 +270,13 @@ class Main:
             self.abrirError(widget)
 
     def modificaCamarero(self, widget):
+        '''Modificaciones de camareros
+            Se pone en mayúsculas la inicial y se recogen los datos en unas variables.
+            Se comprueba si se ha seleccionado un camarero y en caso informativo comprueba la longitud
+            de las variables para ver si han sido introducidas y se envían al método de gestión
+            de la base de datos.
+            Por último se resetean los datos.
+        '''
         self.inputNombre.set_text(self.inputNombre.get_text().title())
         nombre = self.inputNombre.get_text()
         password = self.inputPassword.get_text()
@@ -267,13 +295,24 @@ class Main:
                 self.abrirError(widget)
 
     def bajaCamarero(self, widget):
+        '''Baja de camareros
+            Se coge el id del camarero del label y se envía al método correspondiente de gestión
+            de la base de datos
+            Por último se resetean los datos.
+         '''
         id = self.lblCamarero.get_text()
         database.bajaCamarero(id,self.camareros)
         self.limpiarCam(widget)
         self.lblAviso.set_markup("<span color='gray'>Baja de camarero completada con éxito</span>")
 
-    # Productos
+    # MÉTODOS RELACIONADOS CON LA GESTIÓN DE PRODUCTOS
     def altaProducto(self, widget):
+        '''Alta de productos
+            Primero pone en mayúsculas las iniciales y recoge los valores en unas variables,
+            se comprueba la longitud de las mismas para ver si están vacías o no y se mandan
+            los datos al método de registro en la base de datos.
+            Por último se resetean los datos.
+        '''
         self.lblNombre.set_text(self.lblNombre.get_text().title())
         nombre = self.lblNombre.get_text()
         precio = self.lblPrecio.get_text()+" €"
@@ -287,6 +326,13 @@ class Main:
             self.abrirError(widget)
 
     def modificaProducto(self, widget):
+        '''Modificación de productos
+            Se pone en mayúsculas las iniciales y se recogen los datos en una variable.
+            Se comprueba si se ha seleccionado un producto, en caso afirmativo comprueba
+            la longitud de los datos introducidos y los envía al método correspondiente
+            de gestión de la base de datos.
+            Se resetean los datos.
+        '''
         self.lblNombre.set_text(self.lblNombre.get_text().title())
         nombre = self.lblNombre.get_text()
         precio = self.lblPrecio.get_text()+" €"
@@ -303,12 +349,22 @@ class Main:
                 self.abrirError(widget)
 
     def bajaProducto(self, widget):
+        '''Baja de productos
+            Se recoge el id del producto en una variables que se manda al método correspondiente de la BBDD
+        '''
         id = self.lblProducto.get_text()
         database.bajaProducto(id, self.productos)
         self.limpiarProd(widget)
         self.lblAviso.set_markup("<span color='gray'>Baja de producto completada con éxito</span>")
 
+    # MÉTODOS RELACIONADOS CON LA GESTIÓN DE FACTURAS + LINEASFACTURAS
     def altaCliente(self, widget):
+        '''Alta de clientes
+            Se ponen en mayúsculas las iniciales y se recogen los datos en variables.
+            Se comprueba que los datos han sido introducidos en los campos correspondientes, en caso
+            afirmativo, se llama al método de validar el DNI y si no surge un error, se envían
+            los datos al método de gestión de la BBDD
+        '''
         self.clienteNombre.set_text(self.clienteNombre.get_text().title())
         self.clienteApellido.set_text(self.clienteApellido.get_text().title())
         self.clienteDNI.set_text(self.clienteDNI.get_text().upper())
@@ -330,19 +386,44 @@ class Main:
             self.lblError.set_text("Debe cubrir todos los campos")
             self.abrirError(widget)
 
+    def abrirComandas(self, widget):
+        '''Abrir comandas
+            Se comprueba si se ha dado de alta el cliente y se ha seleccionado mesa
+            Se envían los datos al método de gestión de la base de datos y se abre la ventana vencomandas'''
+        if self.lblFCliente.get_text() != "Seleccionar cliente" and self.lblFMesa.get_text() != "Seleccionar mesa":
+            camarero = self.lblFCamarero.get_text()
+            cliente = self.lblFCliente.get_text()
+            mesa = self.lblFMesa.get_text()
+            fecha = self.lblFFecha.get_text()
+            fila = (cliente, camarero, mesa, fecha)
+            database.altaFactura(fila)
+            self.vencomanda.show()
+        else:
+            self.lblAviso.set_markup("<span color='gray'>Debe seleccionar un cliente y una mesa</span>")
+
     def gestionComandas(self, widget):
         '''Añadir tuplas a la tabla lineasFactura
             El método se ejecuta cuando se pulsa el botón añadir en la ventana vencomandas'''
         database.altaLinea(self.comandas, self.servicio)
 
     def eliminarComandas(self, widget):
+        '''Eliminar comandas
+            EL método se ejecuta cuando se pulsa el botón eliminar en la ventana vencomandas'''
         database.bajaLinea(self.comandas, self.servicio)
 
     def cancelarComanda(self, widget):
+        '''Cancelar comanda
+            Llama al método encargado de realizar la baja de la factura creada al abrir la ventana vencomandas'''
         database.bajaFactura(self.facturas)
         self.vencomanda.hide()
 
     def aceptarComanda(self, widget):
+        '''Aceptar comanda
+            Llama al método encargado de resetear la TreeView de vencomandas
+            Llama al método de actualizar el estado de la mesa para que aparezca como no disponible
+            Llama al método de cargar el TreeView de facturas de la ventana principal
+            Llama al método de cargar los labels del panel de gestión de las mesas
+            Cierra la ventana vencomandas y resetea los datos'''
         database.limpiarComandas(self.comandas)
         database.ocuparMesa("No disponible", self.lblFMesa.get_text())
         database.cargarFactura(self.facturas, self.lblFMesa.get_text())
@@ -353,9 +434,7 @@ class Main:
         self.inicializarCalendario()
         self.lblAviso.set_markup("<span color='gray'>Alta de factura completada con éxito</span>")
 
-
-
-    # Validaciones:
+    # MÉTODOS AUXILIARES:
     def validaDNI(self, widget):
         dni = self.clienteDNI.get_text()
         try:
@@ -385,7 +464,6 @@ class Main:
             self.lblError.set_text("El DNI introducido debe ser un DNI válido")
             self.abrirError(widget)
 
-    # Metodos recurso:
     def mayus(self, widget, date = None):
         ''' Pone las iniciales y la letra del DNI en mayúsculas '''
         self.inputNombre.set_text(self.inputNombre.get_text().title())
@@ -491,7 +569,7 @@ class Main:
             self.abrirError(widget)
 
 
-    # Metodos gestion de mesas:
+    # MÉTODOS RELACIONADOS CON LA GESTIÓN DEL PANEL MESAS:
     def cargaMesas(self):
         i = 0
         listado = database.cargaMesas()
@@ -604,8 +682,7 @@ class Main:
             self.lblFMesa.set_text(str(self.mesa))
             self.lblAviso.set_text("")
 
-
-    # Métodos gestión de ventanas:
+    # MÉTODOS RELACIONADOS CON LA GESTIÓN DE LAS VENTANAS:
     def abrirAbout(self, widget):
         self.venacerca.show()
 
@@ -659,18 +736,6 @@ class Main:
     def abrirCliente(self, widget):
         self.vencliente.show()
 
-    def abrirComandas(self, widget):
-        if self.lblFCliente.get_text() != "Seleccionar cliente" and self.lblFMesa.get_text() != "Seleccionar mesa":
-            camarero = self.lblFCamarero.get_text()
-            cliente = self.lblFCliente.get_text()
-            mesa = self.lblFMesa.get_text()
-            fecha = self.lblFFecha.get_text()
-            fila = (cliente, camarero, mesa, fecha)
-            database.altaFactura(fila)
-            self.vencomanda.show()
-        else:
-            self.lblAviso.set_markup("<span color='gray'>Debe seleccionar un cliente y una mesa</span>")
-
     def cerrarCliente(self, widget):
         self.limpiarCli(widget)
         self.vencliente.hide()
@@ -709,7 +774,31 @@ class Main:
         self.venlogin.show()
 
     def maximizarVentana(self, widget):
+        color2 = Gdk.RGBA()
+        color2.parse('#4E4C45')
+        color2.to_string()
+        self.venprincipal.override_background_color(Gtk.StateFlags.NORMAL, color2)
         self.venprincipal.maximize()
+
+    def color(self):
+        colorVerde = Gdk.RGBA()
+        colorVerde.parse('#4D7A4D')
+        colorVerde.to_string()
+        colorResize = Gdk.RGBA()
+        colorResize.parse('#3E3D39')
+        colorResize.to_string()
+        colorMesas = Gdk.RGBA()
+        colorMesas.parse('#F2F1F0')
+        colorMesas.to_string()
+        self.venprincipal.override_background_color(Gtk.StateFlags.NORMAL, colorResize)
+        self.Pestanas.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
+        self.Panel.override_background_color(Gtk.StateFlags.NORMAL, colorMesas)
+        self.Home.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
+        self.Camareros.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
+        self.Productos.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
+        self.Facturas.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
+        self.Mesas.override_background_color(Gtk.StateFlags.NORMAL, colorMesas)
+        self.lblAviso.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 0))
 
     def salir(self, widget, data=None):
         print("Finalizando el programa")

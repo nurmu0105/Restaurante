@@ -102,7 +102,7 @@
     </columns>
   </object>
   <object class="GtkWindow" id="venprincipal">
-    <property name="width_request">975</property>
+    <property name="width_request">931</property>
     <property name="height_request">444</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Posada Roca de Guía</property>
@@ -235,15 +235,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel">
+          <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_top">10</property>
-            <property name="margin_bottom">10</property>
-            <property name="label" translatable="yes">Roca de Guía</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-            </attributes>
+            <property name="pixbuf">imgs/headerPrueba.jpg</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -263,7 +258,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkPaned">
+          <object class="GtkPaned" id="Panel">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child>
@@ -273,7 +268,7 @@
                 <property name="can_focus">True</property>
                 <property name="tab_pos">left</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="Home">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">HOME:
@@ -282,11 +277,13 @@
                   </object>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel">
-                    <property name="width_request">120</property>
+                  <object class="GtkImage">
+                    <property name="width_request">80</property>
+                    <property name="height_request">80</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Inicio</property>
+                    <property name="tooltip_text" translatable="yes">Home</property>
+                    <property name="pixbuf">imgs/house-outline.png</property>
                   </object>
                   <packing>
                     <property name="tab_fill">False</property>
@@ -550,11 +547,12 @@
                   </packing>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel">
-                    <property name="width_request">120</property>
+                  <object class="GtkImage">
+                    <property name="height_request">80</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Camareros</property>
+                    <property name="tooltip_text" translatable="yes">Gestión de camareros</property>
+                    <property name="pixbuf">imgs/waitress.png</property>
                   </object>
                   <packing>
                     <property name="position">1</property>
@@ -830,11 +828,12 @@
                   </packing>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel">
-                    <property name="width_request">120</property>
+                  <object class="GtkImage">
+                    <property name="height_request">80</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Productos</property>
+                    <property name="tooltip_text" translatable="yes">Gestión de productos en carta</property>
+                    <property name="pixbuf">imgs/menu(1).png</property>
                   </object>
                   <packing>
                     <property name="position">2</property>
@@ -1207,11 +1206,12 @@
                   </packing>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel">
-                    <property name="width_request">120</property>
+                  <object class="GtkImage">
+                    <property name="height_request">80</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Facturas</property>
+                    <property name="tooltip_text" translatable="yes">Gestión de pedidos</property>
+                    <property name="pixbuf">imgs/bill(1).png</property>
                   </object>
                   <packing>
                     <property name="position">3</property>
@@ -1235,6 +1235,7 @@
                   <object class="GtkGrid">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">center</property>
                     <property name="margin_left">10</property>
                     <child>
                       <object class="GtkLabel" id="lblmesa1">
@@ -1502,7 +1503,7 @@
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">True</property>
+                    <property name="fill">False</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -1531,11 +1532,27 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="lblAviso">
+          <object class="GtkFixed">
+            <property name="height_request">30</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_top">10</property>
-            <property name="margin_bottom">10</property>
+            <child>
+              <object class="GtkImage">
+                <property name="width_request">931</property>
+                <property name="height_request">30</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="pixbuf">imgs/piePrueba.jpg</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblAviso">
+                <property name="width_request">941</property>
+                <property name="height_request">30</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1562,7 +1579,13 @@
     <property name="license" translatable="yes">Este programa non fornece ningunha garantía, 
 para máis información visite &lt;a href="https://www.gnu.org/licenses/gpl-3.0.html"&gt;Licenza Pública Xeral de GNU, versión 3 ou posterior&lt;/a&gt;.</property>
     <property name="authors">Nuria Muñoz Carrera</property>
-    <property name="artists">Freepik - Iconos de mesas</property>
+    <property name="artists">&lt;a href="https://www.freepik.com/free-vector/top-view-empty-restaurant-tables-with-realistic-design_2933976.htm" title="FreePik"&gt;FreePik&lt;/a&gt; - Iconos de mesas
+Iconos barra lateral:
+&lt;a href="https://www.flaticon.com/packs/icon-works" title="IconWorks"&gt;Icon Works&lt;/a&gt; - Icono Home
+&lt;a href="https://www.flaticon.com/packs/profession-avatars-4" title="Freepik"&gt;Freepik&lt;/a&gt; - Icono Camareros
+&lt;a href="https://www.flaticon.com/packs/fast-food-45" title="Freepik"&gt;Freepik&lt;/a&gt; - Icono Productos
+&lt;a href="https://www.flaticon.com/packs/e-commerce-71" title="Freepik"&gt;Freepik&lt;/a&gt;  - Icono Pedidos
+</property>
     <property name="logo">imgs/avatar3.png</property>
     <property name="wrap_license">True</property>
     <property name="license_type">gpl-3-0</property>

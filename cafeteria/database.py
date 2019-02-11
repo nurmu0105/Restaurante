@@ -18,7 +18,7 @@ try:
 except sqlite3.OperationalError as e:
     print(e)
 
- # Cargar tablas:
+# MÉTODOS PARA CARGAR/ACTUALIZAR LOS TREEVIEW:
 def cargarCamarero(camareros):
     try:
         cur.execute("SELECT * FROM CAMAREROS ORDER BY(idCamarero)")
@@ -96,9 +96,7 @@ def limpiarComandas(comandas):
         print(e)
         conexion.rollback()
 
-
-
-# Gestion de camareros:
+# MÉTODOS RELACIONADOS CON LA GESTIÓN DE CAMAREROS:
 def altaCamarero(fila, camareros):
     try:
         cur.execute('insert into camareros (nombre, password) values(?,?)', fila)
@@ -127,7 +125,7 @@ def bajaCamarero(id, camareros):
     except sqlite3.Error as e:
         print(e)
 
-# Gestion de productos:
+# MÉTODOS RELACIONADOS CON LA GESTIÓN DE PRODUCTOS:
 def altaProducto(fila, productos):
     try:
         cur.execute('insert into servicios (servicio, precio) values(?,?)', fila)
@@ -155,16 +153,7 @@ def bajaProducto(id, productos):
     except sqlite3.Error as e:
         print(e)
 
-def altaFactura(fila, facturas, idmesa):
-    try:
-        cur.execute('insert into facturas (idcliente, idcamarero, idmesa, fecha) values(?,?,?,?)', fila)
-        conexion.commit()
-        print("Alta de factura realizada con éxito")
-        cargarFactura(facturas,idmesa)
-    except sqlite3.Error as e:
-        print(e)
-
- # Gestion líneas de venta:
+ # MÉTODOS RELACIONADOS CON LA GESTIÓN DE FACTURAS + LINEAS FACTURAS
 def altaLinea(comandas, servicio):
     try:
         #Obtenemos el id de la última factura registrada
@@ -224,6 +213,14 @@ def bajaLinea(comandas, servicio):
         print("Baja de línea de venta realizada con éxito")
         conexion.commit()
         cargarComanda(comandas)
+    except sqlite3.Error as e:
+        print(e)
+
+def altaCliente(fila):
+    try:
+        cur.execute("insert into clientes (dni, apellidos, nombre, comunidad, provincia, ciudad) values (?, ?, ?, ?, ?, ?)", fila)
+        conexion.commit()
+        print("Alta de cliente realizada con éxito")
     except sqlite3.Error as e:
         print(e)
 
@@ -378,43 +375,16 @@ def imprimirFactura(idFactura):
         print(e)
         conexion.rollback()
 
- # Gestion de clientes:
-def altaCliente(fila):
-    try:
-        cur.execute("insert into clientes (dni, apellidos, nombre, comunidad, provincia, ciudad) values (?, ?, ?, ?, ?, ?)", fila)
-        conexion.commit()
-        print("Alta de cliente realizada con éxito")
-    except sqlite3.Error as e:
-        print(e)
+#def altaFactura(fila, facturas, idmesa):
+#    try:
+#        cur.execute('insert into facturas (idcliente, idcamarero, idmesa, fecha) values(?,?,?,?)', fila)
+#        conexion.commit()
+#        print("Alta de factura realizada con éxito")
+#        cargarFactura(facturas,idmesa)
+#    except sqlite3.Error as e:
+#        print(e)
 
-# Recursos:
-def buscaPWD(id):
-    try:
-        cur.execute("select password from camareros where idcamarero = " + id + "")
-        password = str(cur.fetchone())
-        for char in "(),'":
-            password = password.replace(char, '')
-        conexion.commit()
-    except sqlite3.Error as e:
-        print(e)
-    return password
-
-def login(user, pwd):
-    try:
-        cur.execute("select idCamarero from camareros where idCamarero = '"+user+"'")
-        user = str(cur.fetchone())
-        for char in "(),'":
-            user = user.replace(char, '')
-        cur.execute("select password from camareros where password = '"+pwd+"'")
-        password = str(cur.fetchone())
-        for char in "(),'":
-            password = password.replace(char, '')
-        fila = (user, password)
-        conexion.commit()
-    except sqlite3.Error as e:
-        print(e)
-    return fila
-
+ # MÉTODOS AUXILIARES:
 def cargaComunidad():
     i = 0
     cur.execute("select comunidad from comunidades")
@@ -468,5 +438,33 @@ def ocuparMesa(estado, mesa):
     except sqlite3.Error as e:
         print(e)
         conexion.rollback()
+
+def buscaPWD(id):
+    try:
+        cur.execute("select password from camareros where idcamarero = " + id + "")
+        password = str(cur.fetchone())
+        for char in "(),'":
+            password = password.replace(char, '')
+        conexion.commit()
+    except sqlite3.Error as e:
+        print(e)
+    return password
+
+def login(user, pwd):
+    try:
+        cur.execute("select idCamarero from camareros where idCamarero = '"+user+"'")
+        user = str(cur.fetchone())
+        for char in "(),'":
+            user = user.replace(char, '')
+        cur.execute("select password from camareros where password = '"+pwd+"'")
+        password = str(cur.fetchone())
+        for char in "(),'":
+            password = password.replace(char, '')
+        fila = (user, password)
+        conexion.commit()
+    except sqlite3.Error as e:
+        print(e)
+    return fila
+
 
 
