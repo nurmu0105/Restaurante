@@ -53,6 +53,14 @@ class Main:
         self.Facturas = b.get_object("Facturas")
         self.Home = b.get_object("Home")
         self.Mesas = b.get_object("Mesas")
+        self.LoginPie = b.get_object("LoginPie")
+        self.LoginTexto1 = b.get_object("LoginTexto1")
+        self.LoginTexto2 = b.get_object("LoginTexto2")
+        self.LoginTexto3 = b.get_object("LoginTexto3")
+        self.LoginSeparator = b.get_object("LoginSeparator")
+        self.HomeHeader = b.get_object("HomeHeader")
+        self.lblHCamarero = b.get_object("lblHCamarero")
+        self.lblHFecha = b.get_object("lblHFecha")
         self.lblError = b.get_object("lblError")
         self.btnError = b.get_object("btnError")
         self.lblAviso = b.get_object("lblAviso")
@@ -60,6 +68,7 @@ class Main:
         self.jornadaPwd = b.get_object("jornadaPwd")
         self.password = ""
         self.eDni = True
+
 
     # Login:
         self.loginEnter = b.get_object("loginEnter")
@@ -81,10 +90,14 @@ class Main:
         self.lblProducto = b.get_object("lblProducto")
         self.lblNombre = b.get_object("lblNombre")
         self.lblPrecio = b.get_object("lblPrecio")
+        self.categoria1 = b.get_object("categoria1")
+        self.categoria2 = b.get_object("categoria2")
+        self.categoria3 = b.get_object("categoria3")
         self.addProduct = b.get_object("addProduct")
         self.updateProduct = b.get_object("updateProduct")
         self.deleteProduct = b.get_object("deleteProduct")
         self.cleanProduct = b.get_object("cleanProduct")
+        self.categoria = ''
 
     # Gestion:
         self.addFactura = b.get_object("addFactura")
@@ -122,7 +135,6 @@ class Main:
         self.lblmesa9 = b.get_object("lblmesa9")
         self.mesas = (self.lblmesa1, self.lblmesa2, self.lblmesa3, self.lblmesa4, self.lblmesa5, self.lblmesa6, self.lblmesa7, self.lblmesa8, self.lblmesa9)
 
-
         dic = {'on_btnSalir_activate':self.salir,
                'on_loginExit_clicked':self.salir,
                'on_loginEnter_clicked':self.login,
@@ -144,6 +156,9 @@ class Main:
                'on_addCam_clicked':self.altaCamarero,
                'on_updateCam_clicked':self.modificaCamarero,
                'on_deleteCam_clicked':self.abrirConfirma,
+               'on_categoria1_toggled':self.seleccionarCategoria,
+               'on_categoria2_toggled':self.seleccionarCategoria,
+               'on_categoria3_toggled':self.seleccionarCategoria,
                'on_cleanProduct_clicked':self.limpiarProd,
                'on_adProduct_clicked':self.altaProducto,
                'on_updateProduct_clicked':self.modificaProducto,
@@ -186,14 +201,18 @@ class Main:
         b.connect_signals(dic)
         self.loginUser.set_text("01")
         self.loginPwd.set_text("root")
+        # Abre la ventana de log in
         self.venlogin.show()
         print("Iniciando el programa")
+        # Carga las tablas, el panel de mesas y el calendario
         database.cargarCamarero(self.camareros)
         database.cargarProducto(self.productos)
         database.cargarFactura(self.facturas, 0)
+        #database.generarMenuDia()
         self.cargarComunidades()
         self.cargaMesas()
         self.inicializarCalendario()
+        # Colorea la aplicación
         self.color()
 
 
@@ -228,6 +247,13 @@ class Main:
             for char in '€':
                 precio = precio.replace(char, '')
             self.lblPrecio.set_text(precio)
+            categoria = str(model.get_value(iter,3))
+            if categoria == 'Plato':
+                self.categoria2.set_active(True)
+            elif categoria == 'Entrante':
+                self.categoria1.set_active(True)
+            else:
+                self.categoria3.set_active(True)
 
     def seleccionaProducto2(self, widget):
         '''Recoge el dato seleccionado en el TreeView de la ventana comandas'''
@@ -316,8 +342,8 @@ class Main:
         self.lblNombre.set_text(self.lblNombre.get_text().title())
         nombre = self.lblNombre.get_text()
         precio = self.lblPrecio.get_text()+" €"
-        if len(nombre) > 0 and len(precio) > 0:
-            fila = (nombre, precio)
+        if len(nombre) > 0 and len(precio) > 0 and self.categoria != '':
+            fila = (nombre, precio, self.categoria)
             database.altaProducto(fila, self.productos)
             self.limpiarProd(widget)
             self.lblAviso.set_markup("<span color='gray'>Alta de producto completada con éxito</span>")
@@ -339,8 +365,8 @@ class Main:
         if self.lblCamarero.get_text() == "Seleccionar producto":
             self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún producto</span>")
         else:
-            if len(nombre) > 0 and len(precio) > 0:
-                fila = (nombre, precio)
+            if len(nombre) > 0 and len(precio) > 0 and self.categoria != '':
+                fila = (nombre, precio, self.categoria)
                 database.modificaProducto(fila, self.lblProducto.get_text(), self.productos)
                 self.limpiarProd(widget)
                 self.lblAviso.set_markup("<span color='gray'>Modificación de producto completada con éxito</span>")
@@ -486,6 +512,10 @@ class Main:
         self.lblNombre.set_text("")
         self.lblPrecio.set_text("")
         self.lblAviso.set_text("")
+        self.categoria1.set_active(True)
+        self.categoria2.set_active(False)
+        self.categoria3.set_active(False)
+        self.categoria = ''
 
     def limpiarCli(self, widget):
         ''' Resetea todos los atributos de la ventana Clientes '''
@@ -534,6 +564,14 @@ class Main:
         for name in lista:
             self.clienteCiu.append_text(name[0])
 
+    def seleccionarCategoria(self, widget):
+        if self.categoria1.get_active():
+            self.categoria = 'Entrante'
+        if self.categoria2.get_active():
+            self.categoria = 'Plato'
+        if self.categoria3.get_active():
+            self.categoria = 'Postre'
+
     def inicializarCalendario(self):
         dia = datetime.datetime.now().strftime("%d")
         mes = datetime.datetime.now().strftime("%m")
@@ -541,6 +579,7 @@ class Main:
         mes = int(mes) - 1
         self.fecha = "%s/" % dia + "%s/" % (mes + 1) + "%s" % ano
         self.lblFFecha.set_text(self.fecha)
+        self.lblHFecha.set_text(self.fecha)
 
     def imprimeFactura(self, widget):
         database.ocuparMesa("Disponible", self.idMesa)
@@ -758,6 +797,7 @@ class Main:
                 self.venprincipal.show()
                 print("Iniciando sesión")
                 self.lblFCamarero.set_text(user)
+                self.lblHCamarero.set_text(user)
             else:
                 self.lblError.set_text("Usuario o contraseña no encontrado")
                 self.abrirError(widget)
@@ -782,7 +822,7 @@ class Main:
 
     def color(self):
         colorVerde = Gdk.RGBA()
-        colorVerde.parse('#4D7A4D')
+        colorVerde.parse('#1f451a')
         colorVerde.to_string()
         colorResize = Gdk.RGBA()
         colorResize.parse('#3E3D39')
@@ -799,6 +839,14 @@ class Main:
         self.Facturas.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
         self.Mesas.override_background_color(Gtk.StateFlags.NORMAL, colorMesas)
         self.lblAviso.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 0))
+        self.LoginTexto3.override_color(Gtk.StateFlags.NORMAL, colorVerde)
+        self.LoginTexto1.override_color(Gtk.StateFlags.NORMAL, colorVerde)
+        self.LoginTexto2.override_color(Gtk.StateFlags.NORMAL, colorVerde)
+        self.HomeHeader.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
+        #self.HomeHeader.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
+        #self.treeProductos.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
+        #self.scrollProductos.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
+
 
     def salir(self, widget, data=None):
         print("Finalizando el programa")

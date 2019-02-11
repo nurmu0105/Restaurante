@@ -1,5 +1,6 @@
 import locale
 import os
+import random
 
 import gi
 from reportlab.lib.pagesizes import A4
@@ -128,7 +129,7 @@ def bajaCamarero(id, camareros):
 # MÉTODOS RELACIONADOS CON LA GESTIÓN DE PRODUCTOS:
 def altaProducto(fila, productos):
     try:
-        cur.execute('insert into servicios (servicio, precio) values(?,?)', fila)
+        cur.execute('insert into servicios (servicio, precio, categoria) values(?,?,?)', fila)
         conexion.commit()
         print("Alta de producto realizada con éxito")
         cargarProducto(productos)
@@ -137,7 +138,7 @@ def altaProducto(fila, productos):
 
 def modificaProducto(fila, id, productos):
     try:
-        cur.execute("update servicios set servicio = '" + str(fila[0]) + "', precio = '"+ str(fila[1])+"' where idservicio = '"+id+"'")
+        cur.execute("update servicios set servicio = '" + str(fila[0]) + "', precio = '"+ str(fila[1])+"', categoria = '"+str(fila[2])+"' where idservicio = '"+id+"'")
         conexion.commit()
         print("Modificación de producto realizada con éxito")
         cargarProducto(productos)
@@ -435,6 +436,36 @@ def ocuparMesa(estado, mesa):
     try:
         cur.execute("update mesas set estado = '"+estado+"' where idmesa = '"+str(mesa)+"'")
         conexion.commit()
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
+
+def generarMenuDia():
+    try:
+        cur.execute("SELECT * FROM SERVICIOS WHERE CATEGORIA = 'ENTRANTE'")
+        entrantes = cur.fetchall()
+        cur.execute("SELECT * FROM SERVICIOS WHERE CATEGORIA = 'Plato'")
+        platos = cur.fetchall()
+        cur.execute("SELECT * FROM SERVICIOS WHERE CATEGORIA = 'POSTRE'")
+        postres = cur.fetchall()
+        index = 0
+        p = 0
+        lista = []
+        for n in platos:
+            p = p + 1
+        while index < 3:
+            num1 = random.randint(1, p)
+            num2 = 0
+            for n in platos:
+                if num2 == num1:
+                    if platos[num2] not in lista:
+                        print(platos[num2])
+                        lista.append(n)
+                        print(lista)
+                        index = index + 1
+                else:
+                    num2 = num2 + 1
+
     except sqlite3.Error as e:
         print(e)
         conexion.rollback()
