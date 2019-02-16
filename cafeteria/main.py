@@ -21,7 +21,6 @@ class Main:
         self.venacerca = b.get_object("venacerca")
         self.venerror = b.get_object("venerror")
         self.venconfirma = b.get_object("venconfirma")
-        self.vencliente = b.get_object("vencliente")
         self.vencomanda = b.get_object("vencomanda")
         self.vencalendario = b.get_object("vencalendario")
         self.venjornada = b.get_object("venjornada")
@@ -37,6 +36,8 @@ class Main:
         self.aceptCliente = b.get_object("aceptCliente")
 
     # Recursos:
+        self.treeClientes = b.get_object("treeClientes")
+        self.clientes = b.get_object("clientes")
         self.treeProductos = b.get_object("treeProductos")
         self.productos = b.get_object("productos")
         self.treeCamareros = b.get_object("treeCamareros")
@@ -52,6 +53,8 @@ class Main:
         self.Productos = b.get_object("Productos")
         self.Facturas = b.get_object("Facturas")
         self.Home = b.get_object("Home")
+        self.Comandas = b.get_object("Comandas")
+        self.Clientes = b.get_object("Clientes")
         self.Mesas = b.get_object("Mesas")
         self.LoginPie = b.get_object("LoginPie")
         self.LoginTexto1 = b.get_object("LoginTexto1")
@@ -122,6 +125,12 @@ class Main:
         self.idFactura = ''
         self.idMesa = ''
         self.fechaFactura = ''
+        self.idcliente = ''
+        self.mesa = 0
+
+    # Comandas:
+        self.lblCFactura = b.get_object("lblCFactura")
+        self.lblCMesa = b.get_object("lblCMesa")
 
     # Mesas:
         self.lblmesa1 = b.get_object("lblmesa1")
@@ -172,10 +181,13 @@ class Main:
                'on_treeProductos_cursor_changed':self.seleccionaProducto,
                'on_treeProductos2_cursor_changed':self.seleccionaProducto2,
                'on_treeComandas_cursor_changed':self.seleccionaComanda,
+               'on_treeClientes_cursor_changed':self.seleccionaCliente,
                'on_clienteComu_changed':self.actualizarProvincias,
                'on_clienteProv_changed':self.actualizarMunicipios,
                'on_btnFCliente_clicked':self.abrirCliente,
                'on_cancelCliente_clicked':self.cerrarCliente,
+               'on_btnLimpiarClientes_clicked':self.limpiarCli,
+               'on_bajaCliente_clicked':self.abrirConfirma,
                'on_aceptCliente_clicked':self.altaCliente,
                'on_addFactura_clicked':self.abrirComandas,
                'on_addLinea_clicked':self.gestionComandas,
@@ -187,6 +199,7 @@ class Main:
                'on_calendar_day_selected_double_click':self.cerrarCalendario,
                'on_treeFacturas_cursor_changed':self.seleccionaFactura,
                'on_printFactura_clicked':self.imprimeFactura,
+               'on_clienteOcupar_clicked':self.ocuparMesa,
                'on_mesa1_clicked':self.mesa1,
                'on_mesa2_clicked': self.mesa2,
                'on_mesa3_clicked': self.mesa3,
@@ -208,6 +221,7 @@ class Main:
         database.cargarCamarero(self.camareros)
         database.cargarProducto(self.productos)
         database.cargarFactura(self.facturas, 0)
+        database.cargarCliente(self.clientes)
         #database.generarMenuDia()
         self.cargarComunidades()
         self.cargaMesas()
@@ -221,7 +235,6 @@ class Main:
         self.venacerca.connect('delete-event', lambda w, e: w.hide() or True)
         self.venerror.connect('delete-event', lambda w, e: w.hide() or True)
         self.venconfirma.connect('delete-event', lambda w, e: w.hide() or True)
-        self.vencliente.connect('delete-event', lambda w, e: w.hide() or True)
         self.venlogin.connect('delete-event', lambda w, e: w.hide() or True)
         self.vencomanda.connect('delete-event', lambda w, e: w.hide() or True)
         self.vencalendario.connect('delete-event', lambda w, e: w.hide() or True)
@@ -274,6 +287,11 @@ class Main:
             self.idFactura = model.get_value(iter, 0)
             self.idMesa = model.get_value(iter, 3)
             self.fechaFactura = model.get_value(iter, 4)
+
+    def seleccionaCliente(self, widget):
+        model, iter = self.treeClientes.get_selection().get_selected()
+        if iter != None:
+            self.idcliente = str(model.get_value(iter,0))
 
     # MÉTODOS RELACIONADOS CON LA GESTIÓN DE CAMAREROS
     def altaCamarero(self, widget):
@@ -404,12 +422,30 @@ class Main:
             self.validaDNI(widget)
             if self.eDni == False:
                 fila = (dni, apellido, nombre, comunidad, provincia, ciudad)
-                database.altaCliente(fila)
+                database.altaCliente(fila, self.clientes)
                 self.limpiarCli(widget)
                 self.lblFCliente.set_text(dni)
-                self.cerrarCliente(widget)
         else:
             self.lblError.set_text("Debe cubrir todos los campos")
+            self.abrirError(widget)
+
+    def bajaCliente(self, widget):
+        dni = self.idcliente
+        database.bajaCliente(dni, self.clientes)
+        self.limpiarCli(widget)
+        self.lblAviso.set_markup("<span color='gray'>Baja de cliente completada con éxito</span>")
+
+    def ocuparMesa(self, widget):
+        if self.idcliente != '' and self.mesa != 0:
+            database.ocuparMesa("No disponible", self.lblFMesa.get_text())
+            self.cargaMesas()
+            fila = (self.idcliente,self.lblHCamarero.get_text(),self.mesa,self.lblHFecha.get_text())
+            database.altaFactura(fila)
+            self.lblCMesa.set_text(str(self.mesa))
+            self.idcliente = ""
+            self.mesa = 0
+        else:
+            self.lblError.set_text("Debe seleccionar un cliente y una mesa disponible del panel lateral")
             self.abrirError(widget)
 
     def abrirComandas(self, widget):
@@ -430,18 +466,35 @@ class Main:
     def gestionComandas(self, widget):
         '''Añadir tuplas a la tabla lineasFactura
             El método se ejecuta cuando se pulsa el botón añadir en la ventana vencomandas'''
-        database.altaLinea(self.comandas, self.servicio)
+        if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
+            if self.servicio != "":
+                database.altaLinea(self.lblCFactura.get_text(), self.comandas, self.servicio)
+                self.servicio = ""
+            else:
+                self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún producto</span>")
+        else:
+            self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ninguna mesa ocupada</span>")
 
     def eliminarComandas(self, widget):
         '''Eliminar comandas
             EL método se ejecuta cuando se pulsa el botón eliminar en la ventana vencomandas'''
-        database.bajaLinea(self.comandas, self.servicio)
+        if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
+            database.bajaLinea(self.lblCFactura.get_text(), self.comandas, self.servicio)
+        else:
+            self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ninguna mesa ocupada</span>")
 
     def cancelarComanda(self, widget):
         '''Cancelar comanda
-            Llama al método encargado de realizar la baja de la factura creada al abrir la ventana vencomandas'''
-        database.bajaFactura(self.facturas)
-        self.vencomanda.hide()
+            Llama al método encargado de realizar la baja de la factura creada'''
+        if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
+            vacio = database.bajaFactura(self.lblCFactura.get_text(), self.facturas)
+            if(vacio == True):
+                database.ocuparMesa("Disponible", self.lblCMesa.get_text())
+                self.cargaMesas()
+                self.lblCFactura.set_text("Seleccione una mesa ocupada")
+                self.lblAviso.set_markup("<span color='black'>Factura cancelada con éxito</span>")
+        else:
+            self.lblAviso.set_markup("<span color='red'>No se ha seleccionado ninguna mesa ocupada</span>")
 
     def aceptarComanda(self, widget):
         '''Aceptar comanda
@@ -454,7 +507,6 @@ class Main:
         database.ocuparMesa("No disponible", self.lblFMesa.get_text())
         database.cargarFactura(self.facturas, self.lblFMesa.get_text())
         self.cargaMesas()
-        self.vencomanda.hide()
         self.lblFCliente.set_text("Seleccionar cliente")
         self.lblFMesa.set_text("Seleccionar mesa")
         self.inicializarCalendario()
@@ -525,6 +577,7 @@ class Main:
         self.clienteComu.set_active(-1)
         self.clienteProv.set_active(-1)
         self.clienteCiu.set_active(-1)
+        self.idcliente = ""
 
     def limpiarFact(self, widget):
         ''' Resetea todos los atributos y variables recurso de la pestaña Facturas '''
@@ -584,7 +637,7 @@ class Main:
     def imprimeFactura(self, widget):
         database.ocuparMesa("Disponible", self.idMesa)
         self.cargaMesas()
-        database.imprimir(self.idFactura, self.fechaFactura)
+        database.imprimirFactura2(self.idFactura, self.fechaFactura)
 
     def terminarJornada(self, widget):
         user = self.lblFCamarero.get_text()
@@ -623,103 +676,167 @@ class Main:
             i = i + 1
 
     def mesa1(self, widget):
-        self.mesa = 1
         self.estado = self.lblmesa1.get_text()
         database.cargarFactura(self.facturas, 1)
+        self.lblCMesa.set_text(str(1))
         if self.estado == "No disponible":
+            self.mesa = 0
             self.lblFMesa.set_text("Seleccionar mesa")
             self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+            factura = database.buscaFactura(str(self.lblCMesa.get_text()))
+            self.lblCFactura.set_text(str(factura))
+            database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
         else:
+            self.mesa = 1
             self.lblFMesa.set_text(str(self.mesa))
             self.lblAviso.set_text("")
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.comandas.clear()
 
     def mesa2(self, widget):
-        self.mesa = 2
         self.estado = self.lblmesa2.get_text()
         database.cargarFactura(self.facturas, 2)
+        self.lblCMesa.set_text(str(2))
         if self.estado == "No disponible":
+            self.mesa = 0
             self.lblFMesa.set_text("Seleccionar mesa")
             self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+            factura = database.buscaFactura(self.lblCMesa.get_text())
+            self.lblCFactura.set_text(str(factura))
+            database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
         else:
+            self.mesa = 2
             self.lblFMesa.set_text(str(self.mesa))
             self.lblAviso.set_text("")
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.comandas.clear()
 
     def mesa3(self, widget):
-        self.mesa = 3
         self.estado = self.lblmesa3.get_text()
         database.cargarFactura(self.facturas, 3)
+        self.lblCMesa.set_text(str(3))
         if self.estado == "No disponible":
+            self.mesa = 0
             self.lblFMesa.set_text("Seleccionar mesa")
             self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+            factura = database.buscaFactura(self.lblCMesa.get_text())
+            self.lblCFactura.set_text(str(factura))
+            database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
         else:
+            self.mesa = 3
             self.lblFMesa.set_text(str(self.mesa))
             self.lblAviso.set_text("")
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.comandas.clear()
 
     def mesa4(self, widget):
-        self.mesa = 4
         self.estado = self.lblmesa4.get_text()
         database.cargarFactura(self.facturas, 4)
+        self.lblCMesa.set_text(str(4))
         if self.estado == "No disponible":
+            self.mesa = 0
             self.lblFMesa.set_text("Seleccionar mesa")
             self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+            factura = database.buscaFactura(self.lblCMesa.get_text())
+            self.lblCFactura.set_text(str(factura))
+            database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
         else:
+            self.mesa = 4
             self.lblFMesa.set_text(str(self.mesa))
             self.lblAviso.set_text("")
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.comandas.clear()
 
     def mesa5(self, widget):
-        self.mesa = 5
         self.estado = self.lblmesa5.get_text()
         database.cargarFactura(self.facturas, 5)
+        self.lblCMesa.set_text(str(5))
         if self.estado == "No disponible":
+            self.mesa = 0
             self.lblFMesa.set_text("Seleccionar mesa")
             self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+            factura = database.buscaFactura(self.lblCMesa.get_text())
+            self.lblCFactura.set_text(str(factura))
+            database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
         else:
+            self.mesa = 5
             self.lblFMesa.set_text(str(self.mesa))
             self.lblAviso.set_text("")
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.comandas.clear()
 
     def mesa6(self, widget):
-        self.mesa = 6
         self.estado = self.lblmesa6.get_text()
         database.cargarFactura(self.facturas, 6)
+        self.lblCMesa.set_text(str(6))
         if self.estado == "No disponible":
+            self.mesa = 0
             self.lblFMesa.set_text("Seleccionar mesa")
             self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+            factura = database.buscaFactura(self.lblCMesa.get_text())
+            self.lblCFactura.set_text(str(factura))
+            database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
         else:
+            self.mesa = 6
             self.lblFMesa.set_text(str(self.mesa))
             self.lblAviso.set_text("")
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.comandas.clear()
 
     def mesa7(self, widget):
-        self.mesa = 7
         self.estado = self.lblmesa7.get_text()
         database.cargarFactura(self.facturas, 7)
+        self.lblCMesa.set_text(str(7))
         if self.estado == "No disponible":
+            self.mesa = 0
             self.lblFMesa.set_text("Seleccionar mesa")
             self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+            factura = database.buscaFactura(self.lblCMesa.get_text())
+            self.lblCFactura.set_text(str(factura))
+            database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
         else:
+            self.mesa = 7
             self.lblFMesa.set_text(str(self.mesa))
             self.lblAviso.set_text("")
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.comandas.clear()
 
     def mesa8(self, widget):
-        self.mesa = 8
         self.estado = self.lblmesa8.get_text()
         database.cargarFactura(self.facturas, 8)
+        self.lblCMesa.set_text(str(8))
         if self.estado == "No disponible":
+            self.mesa = 0
             self.lblFMesa.set_text("Seleccionar mesa")
             self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+            factura = database.buscaFactura(self.lblCMesa.get_text())
+            self.lblCFactura.set_text(str(factura))
+            database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
         else:
+            self.mesa = 8
             self.lblFMesa.set_text(str(self.mesa))
             self.lblAviso.set_text("")
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.comandas.clear()
 
     def mesa9(self, widget):
         self.mesa = 9
         self.estado = self.lblmesa9.get_text()
         database.cargarFactura(self.facturas, 9)
+        self.lblCMesa.set_text(str(9))
         if self.estado == "No disponible":
+            self.mesa = 0
             self.lblFMesa.set_text("Seleccionar mesa")
             self.lblAviso.set_markup("<span color='gray'>Mesa no disponible</span>")
+            factura = database.buscaFactura(self.lblCMesa.get_text())
+            self.lblCFactura.set_text(str(factura))
+            database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
         else:
+            self.mesa = 9
             self.lblFMesa.set_text(str(self.mesa))
             self.lblAviso.set_text("")
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.comandas.clear()
 
     # MÉTODOS RELACIONADOS CON LA GESTIÓN DE LAS VENTANAS:
     def abrirAbout(self, widget):
@@ -762,6 +879,11 @@ class Main:
                 self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún producto</span>")
             else:
                 self.venconfirma.show()
+        if panel == 4:
+            if self.idcliente == "":
+                self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún cliente</span>")
+            else:
+                self.venconfirma.show()
 
     def cerrarConfirma(self, widget):
         self.venconfirma.hide()
@@ -785,6 +907,8 @@ class Main:
             self.bajaCamarero(widget)
         if panel == 2:
             self.bajaProducto(widget)
+        if panel == 4:
+            self.bajaCliente(widget)
         self.venconfirma.hide()
 
     def login(self, widget, data = None):
@@ -843,6 +967,8 @@ class Main:
         self.LoginTexto1.override_color(Gtk.StateFlags.NORMAL, colorVerde)
         self.LoginTexto2.override_color(Gtk.StateFlags.NORMAL, colorVerde)
         self.HomeHeader.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
+        self.Clientes.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
+        self.Comandas.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
         #self.HomeHeader.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
         #self.treeProductos.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
         #self.scrollProductos.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
