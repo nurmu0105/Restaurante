@@ -3,7 +3,7 @@ import os
 import random
 
 import gi
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import A4, A6
 from reportlab.lib.units import cm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
@@ -272,87 +272,15 @@ def buscaFactura(idmesa):
         print(e)
         conexion.rollback()
 
-def imprimir(idFactura, fechaFactura):
+def imprimirFactura(idFactura,fechaFactura, clienteFactura):
     try:
-        cser = canvas.Canvas(str(idFactura) + '.pdf', pagesize=A4)
+        cser = canvas.Canvas('FACTURA_'+str(idFactura) + '.pdf', pagesize=A4)
         cur.execute("select IDVENTA, S.SERVICIO, CANTIDAD, S.PRECIO "
                     "from lineaFacturas L, servicios S "
                     "where L.idFactura = " + str(idFactura) + " and S.idServicio = L.idServicio")
         listado = cur.fetchall()
-        conexion.commit()
-
-        #Cabecera:
-        cser.setLineWidth(2) #Tamaño de linea
-        cser.line(0, 800, 610, 800)
-        cser.line(0, 700, 610, 700)
-
-        #Establecer fecha:
-        cser.setLineWidth(0.20)
-        cser.drawString(500, 680, str(fechaFactura))
-        cser.line(480, 677, 580, 677)
-
-        #Escribir productos:
-        textlistado = 'Factura'
-        cser.drawString(255, 605, textlistado)
-        cser.line(50, 598, 525, 598)
-        x = 50
-        y = 568
-        total = 0
-
-        for registro in listado:
-            for i in range(4):
-                if i <= 1:
-                    cser.drawString(x, y, str(registro[i]))
-                    x = x + 40
-                else:
-                    x = x + 115
-                    cser.drawString(x, y, str(registro[i]))
-                var1 = int(registro[2])
-                var2 = registro[3].split()[0]
-                var2 = locale.atof(var2)
-                var2 = round(float(var2), 2)
-                subtotal = var1 * var2
-            total = total + subtotal
-            subtotal = locale.currency(subtotal)
-            x = x + 120
-            cser.drawString(x, y, str(subtotal))
-            y = y - 20
-            x = 50
-
-        y = y - 20
-        cser.line(50, y, 525, y)
-        y = y - 20
-        x = 400
-
-        #Escribir el total:
-        cser.drawString(x, y, 'Total:')
-        x = 480
-        total = round(float(total), 2)
-        total = locale.currency(total)
-        cser.drawString(x, y, str(total))
-
-        #Pie:
-        cser.setLineWidth(2)
-        cser.line(0, 40, 610, 40)
-
-        #Impresión del pdf:
-        cser.showPage()
-        cser.save()
-        dir = os.getcwd()
-        print(os.getcwd())
-        os.system('/usr/bin/xdg-open ' + dir + '/' + str(idFactura) + '.pdf')
-        print('Factura preparada para impresión')
-    except sqlite3.Error as e:
-        print(e)
-        conexion.rollback()
-
-def imprimirFactura2(idFactura,fechaFactura):
-    try:
-        cser = canvas.Canvas(str(idFactura) + '.pdf', pagesize=A4)
-        cur.execute("select IDVENTA, S.SERVICIO, CANTIDAD, S.PRECIO "
-                    "from lineaFacturas L, servicios S "
-                    "where L.idFactura = " + str(idFactura) + " and S.idServicio = L.idServicio")
-        listado = cur.fetchall()
+        cur.execute("select dni, nombre, apellidos, comunidad, provincia, ciudad from clientes where dni = '"+str(clienteFactura)+"'")
+        cliente = cur.fetchall()
         conexion.commit()
 
         #Cabecera:
@@ -361,27 +289,50 @@ def imprimirFactura2(idFactura,fechaFactura):
         cser.rect(0,790,800,100,stroke=0,fill=1)
         cser.rect(538,0,60,800,stroke=0, fill=1)
         cser.setFillColor(black)
+        cser.setFontSize(10)
+        cser.drawString(243, 816, 'THE')
         cser.setFont('Sawasdee',60)
         cser.drawString(240, 769, 'Green Side')
         cser.drawString(239,770, 'Green Side')
         cser.setFontSize(10)
-        cser.rotate(220)
-        cser.setFont('Sawasdee', 60)
-        cser.drawString(-500,-500,"Prueba")
-        cser.rotate(-220)
+        cser.drawString(485, 758, 'RESTAURANT')
+        cser.rotate(270)
+        cser.setFont('Sawasdee', 10)
+        cser.drawString(-600,560,"Av. Francisco Regalado 44, Combarro, Pontevedra 36993 | +34 986 000 000 | info@greenside.com")
+        cser.rotate(-270)
         cser.setFontSize(10)
 
-        #Establecer fecha:
-        cser.setLineWidth(0.20)
-        cser.drawString(500, 680, str(fechaFactura))
-        cser.line(480, 677, 580, 677)
+        #Datos de la factura:
+        cser.setFillColorCMYK(0.0000, 0.1933, 0.5546, 0.0667, alpha=None)
+        cser.setFontSize(15)
+        cser.drawString(350, 680, "Factura "+str(idFactura))
+        cser.setFillColor(black)
+        cser.setFontSize(10)
+        cser.drawString(350, 665, "Fecha factura: "+str(fechaFactura))
+
+        #Datos del cliente:
+        cser.setFillColorCMYK(0.0000, 0.1933, 0.5546, 0.0667, alpha=None)
+        cser.setFontSize(15)
+        for row in cliente:
+            cser.drawString(70, 680, str(row[1])+" "+str(row[2]))
+            cser.setFillColor(black)
+            cser.setFontSize(10)
+            cser.drawString(70, 665, str(row[0]))
+            cser.drawString(70, 650, str(row[5])+", "+str(row[4])+", "+str(row[3]))
+        cser.setFillColor(black)
 
         #Escribir productos:
-        textlistado = 'Factura'
-        cser.drawString(255, 605, textlistado)
-        cser.line(50, 598, 525, 598)
-        x = 50
-        y = 568
+        cser.setFont("Helvetica-Bold", 10)
+        cser.setFillColorCMYK(0.0000, 0.1933, 0.5546, 0.0667, alpha=None)
+        cser.drawString(70, 530, "ID")
+        cser.drawString(107, 530, "SERVICIO")
+        cser.drawString(244, 530, "CANTIDAD")
+        cser.drawString(315, 530, "PRECIO")
+        cser.drawString(420, 530, "TOTAL")
+        cser.setFont("Sawasdee",10)
+        cser.setFillColor(black)
+        x = 70
+        y = 500
         total = 0
 
         for registro in listado:
@@ -390,100 +341,122 @@ def imprimirFactura2(idFactura,fechaFactura):
                     cser.drawString(x, y, str(registro[i]))
                     x = x + 40
                 else:
-                    x = x + 115
-                    cser.drawString(x, y, str(registro[i]))
+                    x = x + 100
+                    cser.drawRightString(x, y, str(registro[i]))
                 var1 = int(registro[2])
                 var2 = registro[3].split()[0]
-                var2 = locale.atof(var2)
+                #var2 = locale.atof(var2)
                 var2 = round(float(var2), 2)
                 subtotal = var1 * var2
+                print()
+            x = x - 10
             total = total + subtotal
             subtotal = locale.currency(subtotal)
-            x = x + 120
+            x = x + 80
             cser.drawString(x, y, str(subtotal))
             y = y - 20
             x = 50
 
         y = y - 20
-        cser.line(50, y, 525, y)
         y = y - 20
-        x = 400
 
         #Escribir el total:
-        cser.drawString(x, y, 'Total:')
-        x = 480
+        cser.setFont("Helvetica-Bold", 10)
+        cser.setFillColorCMYK(0.0000, 0.1933, 0.5546, 0.0667, alpha=None)
+        cser.drawString(315, y, 'TOTAL A PAGAR:')
+        cser.setFillColor(black)
+        cser.setFontSize(11)
+        x = 457
         total = round(float(total), 2)
         total = locale.currency(total)
-        cser.drawString(x, y, str(total))
-
-        #Pie:
-        cser.setLineWidth(2)
-        cser.line(0, 40, 610, 40)
+        cser.drawRightString(x, y, str(total))
 
         #Impresión del pdf:
         cser.showPage()
         cser.save()
         dir = os.getcwd()
         print(os.getcwd())
-        os.system('/usr/bin/xdg-open ' + dir + '/' + str(idFactura) + '.pdf')
+        os.system('/usr/bin/xdg-open ' + dir + '/FACTURA_' + str(idFactura) + '.pdf')
         print('Factura preparada para impresión')
     except sqlite3.Error as e:
         print(e)
         conexion.rollback()
 
-
-def imprimirFactura(idFactura):
+def imprimirRecibo(idFactura):
     try:
-        cser = canvas.Canvas(str(idFactura) + '.pdf', pagesize=A4)
+        cser = canvas.Canvas('RECIBO_'+str(idFactura) + '.pdf', pagesize=A6)
         cur.execute("select IDVENTA, S.SERVICIO, CANTIDAD, S.PRECIO "
                     "from lineaFacturas L, servicios S "
                     "where L.idFactura = "+str(idFactura)+" and S.idServicio = L.idServicio")
         listado = cur.fetchall()
         conexion.commit()
 
-        textlistado = 'Factura'
-        cser.line(50, 380, 525, 300)
-        cser.drawString(255, 705, textlistado)
-        cser.line(50, 700, 525, 700)
-        x = 50
-        y = 680
+        #Cabecera:
+        pdfmetrics.registerFont(TTFont('Sawasdee', 'Sawasdee.ttf'))
+        cser.setFont("Sawasdee",8)
+        cser.drawString(28,385, "THE")
+        cser.setFontSize(30)
+        cser.drawString(25, 360, "Green Side")
+        cser.setFontSize(8)
+        cser.drawString(129, 350, "RESTAURANT")
+        cser.drawString(225, 350, "FACTURA Nº:")
+        cser.drawString(225,340,str(idFactura))
+        cser.setLineWidth(3)
+        cser.line(0, 320, 525, 320)
+
+        cser.drawString(25, 280, "ID")
+        cser.drawString(45, 280, "SERVICIO")
+        cser.drawString(130, 280, "CANTIDAD")
+        cser.drawString(177, 280, "PRECIO")
+        cser.drawString(235, 280, "TOTAL")
+        x = 25
+        y = 265
         total = 0
 
         for registro in listado:
             for i in range(4):
                 if i <= 1:
                     cser.drawString(x, y, str(registro[i]))
-                    x = x + 40
+                    x = x + 20
                 else:
-                    x = x + 120
-                    cser.drawString(x, y, str(registro[i]))
+                    x = x + 70
+                    cser.drawRightString(x, y, str(registro[i]))
                 var1 = int(registro[2])
                 var2 = registro[3].split()[0]
-                var2 = locale.atof(var2)
+                #var2 = locale.atof(var2)
                 var2 = round(float(var2),2)
                 subtotal = var1*var2
             total = total + subtotal
             subtotal = locale.currency(subtotal)
-            x= x + 120
-            cser.drawString(x, y, str(subtotal))
-            y = y - 20
+            x= x + 58
+            cser.drawRightString(x, y, str(subtotal))
+            y = y - 10
             x = 50
 
+        y = y - 5
+        cser.setLineWidth(1)
+        cser.line(23, y, 270, y)
         y = y - 20
-        cser.line(50, y, 525, y)
-        y = y - 20
-        x = 400
-        cser.drawString(x, y, 'Total:')
-        x = 485
+        cser.setFont("Helvetica-Bold",8)
+        cser.drawString(155, y, 'TOTAL A PAGAR:')
         total = round(float(total),2)
         total = locale.currency(total)
-        cser.drawString(x, y, str(total))
+        cser.drawString(235, y, str(total))
 
+        #Pie_
+        cser.setFont("Sawasdee",12)
+        cser.drawCentredString(150,50,"GRACIAS POR SU VISITA")
+        cser.setLineWidth(3)
+        cser.line(0, 30, 525, 30)
+        cser.setFont('Helvetica', 5)
+        cser.drawCentredString(150,15,"Av. Francisco Regalado 44, Combarro | +34 986 000 000 | info@greenside.com")
+
+        #Guardar y abrir pdf:
         cser.showPage()
         cser.save()
         dir = os.getcwd()
         print(os.getcwd())
-        os.system('/usr/bin/xdg-open '+dir+'/'+str(idFactura)+'.pdf')
+        os.system('/usr/bin/xdg-open '+dir+'/'+'RECIBO_'+str(idFactura)+'.pdf')
         print('Factura preparada para impresión')
     except sqlite3.Error as e:
         print(e)

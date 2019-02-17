@@ -1176,6 +1176,7 @@
                             <property name="tooltip_text" translatable="yes">Genera un pdf sin datos del cliente</property>
                             <property name="label" translatable="yes">Imprimir recibo</property>
                             <property name="use_underline">True</property>
+                            <signal name="clicked" handler="on_printTicket_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -2345,6 +2346,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="on_aceptComanda_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -2819,22 +2821,6 @@ Iconos barra lateral:
         <property name="day">4</property>
         <signal name="day-selected-double-click" handler="on_calendar_day_selected_double_click" swapped="no"/>
       </object>
-    </child>
-  </object>
-  <object class="GtkWindow" id="vencomanda">
-    <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Selección de productos</property>
-    <property name="resizable">False</property>
-    <property name="modal">True</property>
-    <property name="window_position">center</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="gravity">center</property>
-    <property name="transient_for">venprincipal</property>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
   <object class="GtkDialog" id="venconfirma">

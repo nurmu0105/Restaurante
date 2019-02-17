@@ -21,7 +21,6 @@ class Main:
         self.venacerca = b.get_object("venacerca")
         self.venerror = b.get_object("venerror")
         self.venconfirma = b.get_object("venconfirma")
-        self.vencomanda = b.get_object("vencomanda")
         self.vencalendario = b.get_object("vencalendario")
         self.venjornada = b.get_object("venjornada")
 
@@ -125,6 +124,7 @@ class Main:
         self.idFactura = ''
         self.idMesa = ''
         self.fechaFactura = ''
+        self.clienteFactura = ''
         self.idcliente = ''
         self.mesa = 0
 
@@ -199,6 +199,8 @@ class Main:
                'on_calendar_day_selected_double_click':self.cerrarCalendario,
                'on_treeFacturas_cursor_changed':self.seleccionaFactura,
                'on_printFactura_clicked':self.imprimeFactura,
+               'on_printTicket_clicked':self.imprimeRecibo,
+               'on_aceptComanda_clicked':self.imprimeRecibo,
                'on_clienteOcupar_clicked':self.ocuparMesa,
                'on_mesa1_clicked':self.mesa1,
                'on_mesa2_clicked': self.mesa2,
@@ -236,7 +238,6 @@ class Main:
         self.venerror.connect('delete-event', lambda w, e: w.hide() or True)
         self.venconfirma.connect('delete-event', lambda w, e: w.hide() or True)
         self.venlogin.connect('delete-event', lambda w, e: w.hide() or True)
-        self.vencomanda.connect('delete-event', lambda w, e: w.hide() or True)
         self.vencalendario.connect('delete-event', lambda w, e: w.hide() or True)
         self.venjornada.connect('delete-event', lambda w, e: w.hide() or True)
 
@@ -287,6 +288,7 @@ class Main:
             self.idFactura = model.get_value(iter, 0)
             self.idMesa = model.get_value(iter, 3)
             self.fechaFactura = model.get_value(iter, 4)
+            self.clienteFactura = model.get_value(iter,1)
 
     def seleccionaCliente(self, widget):
         model, iter = self.treeClientes.get_selection().get_selected()
@@ -578,6 +580,8 @@ class Main:
         self.clienteProv.set_active(-1)
         self.clienteCiu.set_active(-1)
         self.idcliente = ""
+        self.lblAviso.set_text("")
+
 
     def limpiarFact(self, widget):
         ''' Resetea todos los atributos y variables recurso de la pestaña Facturas '''
@@ -635,9 +639,26 @@ class Main:
         self.lblHFecha.set_text(self.fecha)
 
     def imprimeFactura(self, widget):
-        database.ocuparMesa("Disponible", self.idMesa)
-        self.cargaMesas()
-        database.imprimirFactura2(self.idFactura, self.fechaFactura)
+        if self.idFactura != "":
+            database.ocuparMesa("Disponible", self.idMesa)
+            self.cargaMesas()
+            database.imprimirFactura(self.idFactura, self.fechaFactura, self.clienteFactura)
+            self.idFactura = ""
+            self.lblAviso.set_text("")
+        else:
+            self.lblAviso.set_markup("<span color='black'>No se ha seleccionado ninguna factura</span>")
+
+    def imprimeRecibo(self, widget):
+        if self.idFactura != "" or self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
+            database.ocuparMesa("Disponible", self.idMesa)
+            self.cargaMesas()
+            database.imprimirRecibo(self.idFactura)
+            self.idFactura = ""
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.lblAviso.set_text("")
+            database.limpiarComandas(self.comandas)
+        else:
+            self.lblAviso.set_markup("<span color='black'>Seleccione una mesa ocupada</span>")
 
     def terminarJornada(self, widget):
         user = self.lblFCamarero.get_text()
