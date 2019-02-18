@@ -65,7 +65,7 @@ def cargarProducto(productos):
 def cargarFactura(facturas, mesa):
     try:
         if mesa == 0:
-            cur.execute("SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura) "
+            cur.execute("SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura), Facturas.PAGADO "
                         "FROM Facturas left join LineaFacturas "
                         "on LineaFacturas.IdFactura = Facturas.IdFactura "
                         "GROUP BY Facturas.IdFactura;")
@@ -75,7 +75,7 @@ def cargarFactura(facturas, mesa):
                 facturas.append(n)
         else:
             cur.execute(
-                "SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura) "
+                "SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura), Facturas.PAGADO "
                 "FROM Facturas left join LineaFacturas "
                 "on LineaFacturas.IdFactura = Facturas.IdFactura "
                 "WHERE Facturas.IDMESA = '"+str(mesa)+"'"
@@ -104,7 +104,7 @@ def cargarFactura2(facturas, dni):
 
         if encontrado == True:
             cur.execute(
-                "SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura) "
+                "SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura), Facturas.PAGADO "
                 "FROM Facturas left join LineaFacturas "
                 "on LineaFacturas.IdFactura = Facturas.IdFactura "
                 "WHERE Facturas.DNICLIENTE = '" + cliente + "'"
@@ -289,6 +289,17 @@ def bajaFactura(idFactura, facturas):
         return vacio
     except sqlite3.Error as e:
         print(e)
+        conexion.rollback()
+
+def cobraFactura(idFactura, facturas):
+    try:
+        cur.execute("update facturas set pagado = 'SI' where idfactura = '"+str(idFactura)+"'")
+        cargarFactura(facturas, 0)
+        conexion.commit()
+        print("La factura "+str(idFactura)+" ha sido pagada con éxito")
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
 
 def buscaFactura(idmesa):
     try:
