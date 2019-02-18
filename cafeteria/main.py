@@ -95,6 +95,7 @@ class Main:
         self.categoria1 = b.get_object("categoria1")
         self.categoria2 = b.get_object("categoria2")
         self.categoria3 = b.get_object("categoria3")
+        self.categoria4 = b.get_object("categoria4")
         self.addProduct = b.get_object("addProduct")
         self.updateProduct = b.get_object("updateProduct")
         self.deleteProduct = b.get_object("deleteProduct")
@@ -104,12 +105,8 @@ class Main:
     # Gestion:
         self.addFactura = b.get_object("addFactura")
         self.printFactura = b.get_object("printFactura")
-        self.lblFCamarero = b.get_object("lblFCamarero")
-        self.lblFCliente = b.get_object("lblFCliente")
-        self.btnFCliente = b.get_object("btnFCliente")
         self.lblFMesa = b.get_object("lblFMesa")
-        self.lblFFecha = b.get_object("lblFFecha")
-        self.btnFFecha = b.get_object("btnFFecha")
+        self.inputFCliente = b.get_object("inputFCliente")
         self.clienteDNI = b.get_object("clienteDNI")
         self.clienteNombre = b.get_object("clienteNombre")
         self.clienteApellido = b.get_object("clienteApellido")
@@ -168,6 +165,7 @@ class Main:
                'on_categoria1_toggled':self.seleccionarCategoria,
                'on_categoria2_toggled':self.seleccionarCategoria,
                'on_categoria3_toggled':self.seleccionarCategoria,
+               'on_categoria4_toggled':self.seleccionarCategoria,
                'on_cleanProduct_clicked':self.limpiarProd,
                'on_adProduct_clicked':self.altaProducto,
                'on_updateProduct_clicked':self.modificaProducto,
@@ -184,8 +182,6 @@ class Main:
                'on_treeClientes_cursor_changed':self.seleccionaCliente,
                'on_clienteComu_changed':self.actualizarProvincias,
                'on_clienteProv_changed':self.actualizarMunicipios,
-               'on_btnFCliente_clicked':self.abrirCliente,
-               'on_cancelCliente_clicked':self.cerrarCliente,
                'on_btnLimpiarClientes_clicked':self.limpiarCli,
                'on_bajaCliente_clicked':self.abrirConfirma,
                'on_aceptCliente_clicked':self.altaCliente,
@@ -202,6 +198,7 @@ class Main:
                'on_printTicket_clicked':self.imprimeRecibo,
                'on_aceptComanda_clicked':self.imprimeRecibo,
                'on_clienteOcupar_clicked':self.ocuparMesa,
+               'on_btnBuscaFactura_clicked':self.buscaFactura,
                'on_mesa1_clicked':self.mesa1,
                'on_mesa2_clicked': self.mesa2,
                'on_mesa3_clicked': self.mesa3,
@@ -257,17 +254,17 @@ class Main:
         if iter != None:
             self.lblProducto.set_text(str(model.get_value(iter, 0)))
             self.lblNombre.set_text(model.get_value(iter, 1))
-            precio = str(model.get_value(iter, 2))
-            for char in '€':
-                precio = precio.replace(char, '')
+            precio = str(model.get_value(iter, 2)).split()[0]
             self.lblPrecio.set_text(precio)
             categoria = str(model.get_value(iter,3))
             if categoria == 'Plato':
                 self.categoria2.set_active(True)
             elif categoria == 'Entrante':
                 self.categoria1.set_active(True)
-            else:
+            elif categoria == 'Postre':
                 self.categoria3.set_active(True)
+            else:
+                self.categoria4.set_active(True)
 
     def seleccionaProducto2(self, widget):
         '''Recoge el dato seleccionado en el TreeView de la ventana comandas'''
@@ -310,7 +307,7 @@ class Main:
             fila = (nombre, password)
             database.altaCamarero(fila, self.camareros)
             self.limpiarCam(widget)
-            self.lblAviso.set_markup("<span color='gray'>Alta de camarero completada con éxito</span>")
+            self.lblAviso.set_markup("<span color='white'>Alta de camarero completada con éxito</span>")
         else:
             self.lblError.set_text("Debe cubrir todos los campos")
             self.abrirError(widget)
@@ -327,7 +324,7 @@ class Main:
         nombre = self.inputNombre.get_text()
         password = self.inputPassword.get_text()
         if self.lblCamarero.get_text() == "Seleccionar camarero":
-            self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún camarero</span>")
+            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún camarero</span>")
         else:
             if len(nombre) > 0 and len(password) > 0:
                 if password == "**********":
@@ -335,7 +332,7 @@ class Main:
                 fila = (nombre, password)
                 database.modificaCamarero(fila, self.lblCamarero.get_text(), self.camareros)
                 self.limpiarCam(widget)
-                self.lblAviso.set_markup("<span color='gray'>Modificación de camarero completada con éxito</span>")
+                self.lblAviso.set_markup("<span color='white'>Modificación de camarero completada con éxito</span>")
             else:
                 self.lblError.set_text("Debe cubrir todos los campos")
                 self.abrirError(widget)
@@ -349,7 +346,7 @@ class Main:
         id = self.lblCamarero.get_text()
         database.bajaCamarero(id,self.camareros)
         self.limpiarCam(widget)
-        self.lblAviso.set_markup("<span color='gray'>Baja de camarero completada con éxito</span>")
+        self.lblAviso.set_markup("<span color='white'>Baja de camarero completada con éxito</span>")
 
     # MÉTODOS RELACIONADOS CON LA GESTIÓN DE PRODUCTOS
     def altaProducto(self, widget):
@@ -366,7 +363,7 @@ class Main:
             fila = (nombre, precio, self.categoria)
             database.altaProducto(fila, self.productos)
             self.limpiarProd(widget)
-            self.lblAviso.set_markup("<span color='gray'>Alta de producto completada con éxito</span>")
+            self.lblAviso.set_markup("<span color='white'>Alta de producto completada con éxito</span>")
         else:
             self.lblError.set_text("Debe cubrir todos los campos")
             self.abrirError(widget)
@@ -382,14 +379,15 @@ class Main:
         self.lblNombre.set_text(self.lblNombre.get_text().title())
         nombre = self.lblNombre.get_text()
         precio = self.lblPrecio.get_text()+" €"
-        if self.lblCamarero.get_text() == "Seleccionar producto":
-            self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún producto</span>")
+        print(nombre, precio, self.categoria)
+        if self.lblProducto.get_text() == "Seleccionar producto":
+            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún producto</span>")
         else:
-            if len(nombre) > 0 and len(precio) > 0 and self.categoria != '':
+            if len(nombre) > 0 and len(precio) > 2 and self.categoria != '':
                 fila = (nombre, precio, self.categoria)
                 database.modificaProducto(fila, self.lblProducto.get_text(), self.productos)
                 self.limpiarProd(widget)
-                self.lblAviso.set_markup("<span color='gray'>Modificación de producto completada con éxito</span>")
+                self.lblAviso.set_markup("<span color='white'>Modificación de producto completada con éxito</span>")
             else:
                 self.lblError.set_text("Debe cubrir todos los campos")
                 self.abrirError(widget)
@@ -401,7 +399,7 @@ class Main:
         id = self.lblProducto.get_text()
         database.bajaProducto(id, self.productos)
         self.limpiarProd(widget)
-        self.lblAviso.set_markup("<span color='gray'>Baja de producto completada con éxito</span>")
+        self.lblAviso.set_markup("<span color='white'>Baja de producto completada con éxito</span>")
 
     # MÉTODOS RELACIONADOS CON LA GESTIÓN DE FACTURAS + LINEASFACTURAS
     def altaCliente(self, widget):
@@ -426,7 +424,7 @@ class Main:
                 fila = (dni, apellido, nombre, comunidad, provincia, ciudad)
                 database.altaCliente(fila, self.clientes)
                 self.limpiarCli(widget)
-                self.lblFCliente.set_text(dni)
+                self.lblAviso.set_markup("<span color='white'>Alta de cliente completada con éxito</span>")
         else:
             self.lblError.set_text("Debe cubrir todos los campos")
             self.abrirError(widget)
@@ -435,7 +433,7 @@ class Main:
         dni = self.idcliente
         database.bajaCliente(dni, self.clientes)
         self.limpiarCli(widget)
-        self.lblAviso.set_markup("<span color='gray'>Baja de cliente completada con éxito</span>")
+        self.lblAviso.set_markup("<span color='white'>Baja de cliente completada con éxito</span>")
 
     def ocuparMesa(self, widget):
         if self.idcliente != '' and self.mesa != 0:
@@ -446,6 +444,8 @@ class Main:
             self.lblCMesa.set_text(str(self.mesa))
             self.idcliente = ""
             self.mesa = 0
+            factura = database.buscaFactura(str(self.lblCMesa.get_text()))
+            self.lblCFactura.set_text(str(factura))
         else:
             self.lblError.set_text("Debe seleccionar un cliente y una mesa disponible del panel lateral")
             self.abrirError(widget)
@@ -463,7 +463,7 @@ class Main:
             database.altaFactura(fila)
             self.vencomanda.show()
         else:
-            self.lblAviso.set_markup("<span color='gray'>Debe seleccionar un cliente y una mesa</span>")
+            self.lblAviso.set_markup("<span color='white'>Debe seleccionar un cliente y una mesa</span>")
 
     def gestionComandas(self, widget):
         '''Añadir tuplas a la tabla lineasFactura
@@ -473,9 +473,9 @@ class Main:
                 database.altaLinea(self.lblCFactura.get_text(), self.comandas, self.servicio)
                 self.servicio = ""
             else:
-                self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún producto</span>")
+                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún producto</span>")
         else:
-            self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ninguna mesa ocupada</span>")
+            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
 
     def eliminarComandas(self, widget):
         '''Eliminar comandas
@@ -483,7 +483,7 @@ class Main:
         if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
             database.bajaLinea(self.lblCFactura.get_text(), self.comandas, self.servicio)
         else:
-            self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ninguna mesa ocupada</span>")
+            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
 
     def cancelarComanda(self, widget):
         '''Cancelar comanda
@@ -494,9 +494,13 @@ class Main:
                 database.ocuparMesa("Disponible", self.lblCMesa.get_text())
                 self.cargaMesas()
                 self.lblCFactura.set_text("Seleccione una mesa ocupada")
-                self.lblAviso.set_markup("<span color='black'>Factura cancelada con éxito</span>")
+                self.lblAviso.set_markup("<span color='white'>Factura cancelada con éxito</span>")
+            else:
+                self.lblError.set_text("No se puede borrar una factura con productos asociados")
+                self.abrirError(widget)
+                self.lblAviso.set_text("")
         else:
-            self.lblAviso.set_markup("<span color='red'>No se ha seleccionado ninguna mesa ocupada</span>")
+            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
 
     def aceptarComanda(self, widget):
         '''Aceptar comanda
@@ -512,7 +516,7 @@ class Main:
         self.lblFCliente.set_text("Seleccionar cliente")
         self.lblFMesa.set_text("Seleccionar mesa")
         self.inicializarCalendario()
-        self.lblAviso.set_markup("<span color='gray'>Alta de factura completada con éxito</span>")
+        self.lblAviso.set_markup("<span color='white'>Alta de factura completada con éxito</span>")
 
     # MÉTODOS AUXILIARES:
     def validaDNI(self, widget):
@@ -569,7 +573,7 @@ class Main:
         self.categoria1.set_active(True)
         self.categoria2.set_active(False)
         self.categoria3.set_active(False)
-        self.categoria = ''
+        self.categoria = 'Entrante'
 
     def limpiarCli(self, widget):
         ''' Resetea todos los atributos de la ventana Clientes '''
@@ -582,18 +586,24 @@ class Main:
         self.idcliente = ""
         self.lblAviso.set_text("")
 
-
     def limpiarFact(self, widget):
         ''' Resetea todos los atributos y variables recurso de la pestaña Facturas '''
         self. lblFMesa.set_text("Seleccionar mesa")
-        self.lblFCliente.set_text("Seleccionar cliente")
         database.cargarFactura(self.facturas, 0) #Recarga el treeView para que muestre todas las facturas registradas
-        self.inicializarCalendario()
         self.mesa = ""
         self.servicio = ""
         self.comunidad = ""
         self.provincia = ""
         self.ciudad = ""
+        self.inputFCliente.set_text("")
+
+    def inicializarCalendario(self):
+        dia = datetime.datetime.now().strftime("%d")
+        mes = datetime.datetime.now().strftime("%m")
+        ano = datetime.datetime.now().strftime("%Y")
+        mes = int(mes) - 1
+        self.fecha = "%s/" % dia + "%s/" % (mes + 1) + "%s" % ano
+        self.lblHFecha.set_text(self.fecha)
 
     def cargarComunidades(self):
         lista = database.cargaComunidad()
@@ -628,37 +638,39 @@ class Main:
             self.categoria = 'Plato'
         if self.categoria3.get_active():
             self.categoria = 'Postre'
-
-    def inicializarCalendario(self):
-        dia = datetime.datetime.now().strftime("%d")
-        mes = datetime.datetime.now().strftime("%m")
-        ano = datetime.datetime.now().strftime("%Y")
-        mes = int(mes) - 1
-        self.fecha = "%s/" % dia + "%s/" % (mes + 1) + "%s" % ano
-        self.lblFFecha.set_text(self.fecha)
-        self.lblHFecha.set_text(self.fecha)
+        if self.categoria4.get_active():
+            self.categoria = 'Otro'
 
     def imprimeFactura(self, widget):
         if self.idFactura != "":
-            database.ocuparMesa("Disponible", self.idMesa)
-            self.cargaMesas()
-            database.imprimirFactura(self.idFactura, self.fechaFactura, self.clienteFactura)
-            self.idFactura = ""
-            self.lblAviso.set_text("")
+            if self.clienteFactura != "00000000T":
+                database.ocuparMesa("Disponible", self.idMesa)
+                self.cargaMesas()
+                database.imprimirFactura(self.idFactura, self.fechaFactura, self.clienteFactura)
+                self.idFactura = ""
+                self.lblAviso.set_text("")
+            else:
+                self.lblError.set_text("No se puede generar una factura para un cliente anónimo")
+                self.abrirError(widget)
+                self.lblAviso.set_text("")
         else:
-            self.lblAviso.set_markup("<span color='black'>No se ha seleccionado ninguna factura</span>")
+            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna factura</span>")
 
     def imprimeRecibo(self, widget):
         if self.idFactura != "" or self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
+            if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
+                self.idFactura = self.lblCFactura.get_text()
+                self.idMesa = self.lblCMesa.get_text()
+            print("MESA: "+str(self.idMesa))
             database.ocuparMesa("Disponible", self.idMesa)
             self.cargaMesas()
             database.imprimirRecibo(self.idFactura)
             self.idFactura = ""
             self.lblCFactura.set_text("Seleccione una mesa ocupada")
             self.lblAviso.set_text("")
-            database.limpiarComandas(self.comandas)
+            self.comandas.clear()
         else:
-            self.lblAviso.set_markup("<span color='black'>Seleccione una mesa ocupada</span>")
+            self.lblAviso.set_markup("<span color='white'>Seleccione una mesa ocupada</span>")
 
     def terminarJornada(self, widget):
         user = self.lblFCamarero.get_text()
@@ -679,6 +691,18 @@ class Main:
                 self.abrirError(widget)
         else:
             self.lblError.set_text("Debe introducir su contraseña")
+            self.abrirError(widget)
+
+    def buscaFactura(self, widget):
+        dni = self.inputFCliente.get_text()
+        if len(dni) == 9:
+            encontrado = database.cargarFactura2(self.facturas, dni)
+            if encontrado == False:
+                self.lblError.set_text("No se ha encontrado ningún cliente con ese DNI")
+                self.abrirError(widget)
+                database.cargarFactura(self.facturas, 0)
+        else:
+            self.lblError.set_text("La longitud del DNI debe ser de 9 caracteres")
             self.abrirError(widget)
 
 
@@ -892,17 +916,17 @@ class Main:
         panel = self.Pestanas.get_current_page()
         if panel == 1:
             if self.lblCamarero.get_text() == "Seleccionar camarero":
-                self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún camarero</span>")
+                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún camarero</span>")
             else:
                 self.venconfirma.show()
         if panel == 2:
             if self.lblProducto.get_text() == "Seleccionar producto":
-                self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún producto</span>")
+                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún producto</span>")
             else:
                 self.venconfirma.show()
-        if panel == 4:
+        if panel == 3:
             if self.idcliente == "":
-                self.lblAviso.set_markup("<span color='gray'>No se ha seleccionado ningún cliente</span>")
+                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún cliente</span>")
             else:
                 self.venconfirma.show()
 
@@ -915,20 +939,13 @@ class Main:
     def cerrarJornada(self, widget):
         self.venjornada.hide()
 
-    def abrirCliente(self, widget):
-        self.vencliente.show()
-
-    def cerrarCliente(self, widget):
-        self.limpiarCli(widget)
-        self.vencliente.hide()
-
     def aceptarConfirma(self, widget):
         panel = self.Pestanas.get_current_page()
         if panel == 1:
             self.bajaCamarero(widget)
         if panel == 2:
             self.bajaProducto(widget)
-        if panel == 4:
+        if panel == 3:
             self.bajaCliente(widget)
         self.venconfirma.hide()
 
@@ -941,7 +958,6 @@ class Main:
                 self.venlogin.hide()
                 self.venprincipal.show()
                 print("Iniciando sesión")
-                self.lblFCamarero.set_text(user)
                 self.lblHCamarero.set_text(user)
             else:
                 self.lblError.set_text("Usuario o contraseña no encontrado")

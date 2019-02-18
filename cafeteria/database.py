@@ -90,6 +90,36 @@ def cargarFactura(facturas, mesa):
         print(e)
         conexion.rollback()
 
+def cargarFactura2(facturas, dni):
+    try:
+        encontrado = False
+        cur.execute("SELECT DNI FROM CLIENTES WHERE DNI = '"+str(dni)+"'")
+        cliente = str(cur.fetchone())
+        for char in "(),'":
+            cliente = cliente.replace(char, '')
+        if cliente != "None":
+            encontrado = True
+        else:
+            encontrado = False
+
+        if encontrado == True:
+            cur.execute(
+                "SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura) "
+                "FROM Facturas left join LineaFacturas "
+                "on LineaFacturas.IdFactura = Facturas.IdFactura "
+                "WHERE Facturas.DNICLIENTE = '" + cliente + "'"
+                                                          "GROUP BY Facturas.IdFactura;")
+            listado = cur.fetchall()
+            facturas.clear()
+            for n in listado:
+                facturas.append(n)
+            print("Carga de facturas realizada con éxito")
+        conexion.commit()
+        return encontrado
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
+
 def cargarComanda(factura, comandas):
     try:
         cur.execute("SELECT IDSERVICIO, CANTIDAD FROM LINEAFACTURAS WHERE IDFACTURA = '"+factura+"'")
@@ -355,7 +385,7 @@ def imprimirFactura(idFactura,fechaFactura, clienteFactura):
             x = x + 80
             cser.drawString(x, y, str(subtotal))
             y = y - 20
-            x = 50
+            x = 70
 
         y = y - 20
         y = y - 20
@@ -375,7 +405,6 @@ def imprimirFactura(idFactura,fechaFactura, clienteFactura):
         cser.showPage()
         cser.save()
         dir = os.getcwd()
-        print(os.getcwd())
         os.system('/usr/bin/xdg-open ' + dir + '/FACTURA_' + str(idFactura) + '.pdf')
         print('Factura preparada para impresión')
     except sqlite3.Error as e:
@@ -431,7 +460,7 @@ def imprimirRecibo(idFactura):
             x= x + 58
             cser.drawRightString(x, y, str(subtotal))
             y = y - 10
-            x = 50
+            x = 25
 
         y = y - 5
         cser.setLineWidth(1)

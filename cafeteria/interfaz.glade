@@ -65,11 +65,6 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">imgs/mesa1-freepik.png</property>
   </object>
-  <object class="GtkImage" id="image10">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">imgs/add-friend.png</property>
-  </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -83,7 +78,7 @@
   <object class="GtkImage" id="image4">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">imgs/calendar-round.png</property>
+    <property name="stock">gtk-find</property>
   </object>
   <object class="GtkImage" id="image5">
     <property name="visible">True</property>
@@ -424,8 +419,8 @@
                 </child>
                 <child type="tab">
                   <object class="GtkImage">
-                    <property name="width_request">80</property>
-                    <property name="height_request">80</property>
+                    <property name="width_request">55</property>
+                    <property name="height_request">55</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Home</property>
@@ -640,6 +635,8 @@
                         <property name="height_request">226</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_right">10</property>
                         <property name="shadow_type">in</property>
                         <child>
                           <object class="GtkTreeView" id="treeCamareros">
@@ -690,7 +687,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="halign">end</property>
-                        <property name="margin_right">5</property>
+                        <property name="margin_right">10</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
                         <signal name="clicked" handler="on_cleanCam_clicked" swapped="no"/>
@@ -708,7 +705,8 @@
                 </child>
                 <child type="tab">
                   <object class="GtkImage">
-                    <property name="height_request">80</property>
+                    <property name="width_request">55</property>
+                    <property name="height_request">55</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Gestión de camareros</property>
@@ -876,7 +874,7 @@
                                 <property name="margin_right">10</property>
                                 <property name="margin_top">5</property>
                                 <property name="margin_bottom">10</property>
-                                <property name="input_purpose">number</property>
+                                <property name="input_purpose">digits</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -958,7 +956,6 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="margin_left">10</property>
-                                    <property name="margin_bottom">10</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                     <property name="group">categoriaProducto</property>
@@ -976,7 +973,6 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="margin_left">10</property>
-                                    <property name="margin_bottom">10</property>
                                     <property name="draw_indicator">True</property>
                                     <property name="group">categoriaProducto</property>
                                     <signal name="toggled" handler="on_categoria3_toggled" swapped="no"/>
@@ -993,7 +989,6 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="margin_left">10</property>
-                                    <property name="margin_bottom">10</property>
                                     <property name="draw_indicator">True</property>
                                     <property name="group">categoriaProducto</property>
                                     <signal name="toggled" handler="on_categoria2_toggled" swapped="no"/>
@@ -1001,6 +996,22 @@
                                   <packing>
                                     <property name="left_attach">0</property>
                                     <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkRadioButton" id="categoria4">
+                                    <property name="label" translatable="yes">Otro</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="margin_left">10</property>
+                                    <property name="draw_indicator">True</property>
+                                    <property name="group">categoriaProducto</property>
+                                    <signal name="toggled" handler="on_categoria4_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">3</property>
                                   </packing>
                                 </child>
                               </object>
@@ -1030,6 +1041,8 @@
                         <property name="height_request">226</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_right">10</property>
                         <property name="shadow_type">in</property>
                         <child>
                           <object class="GtkTreeView" id="treeProductos">
@@ -1103,7 +1116,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="halign">end</property>
-                        <property name="margin_right">5</property>
+                        <property name="margin_right">10</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
                         <signal name="clicked" handler="on_cleanProduct_clicked" swapped="no"/>
@@ -1121,7 +1134,8 @@
                 </child>
                 <child type="tab">
                   <object class="GtkImage">
-                    <property name="height_request">80</property>
+                    <property name="width_request">55</property>
+                    <property name="height_request">55</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Gestión de productos en carta</property>
@@ -1129,450 +1143,6 @@
                   </object>
                   <packing>
                     <property name="position">2</property>
-                    <property name="tab_fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="Facturas">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <object class="GtkToolbar">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkToolButton" id="addFactura">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Introduce productos en una nueva factura</property>
-                            <property name="label" translatable="yes">Nueva comanda</property>
-                            <property name="use_underline">True</property>
-                            <signal name="clicked" handler="on_addFactura_clicked" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="homogeneous">True</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkToolButton" id="printFactura">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Genera un pdf con los datos del cliente</property>
-                            <property name="label" translatable="yes">Imprimir factura</property>
-                            <property name="use_underline">True</property>
-                            <signal name="clicked" handler="on_printFactura_clicked" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="homogeneous">True</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkToolButton" id="printTicket">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Genera un pdf sin datos del cliente</property>
-                            <property name="label" translatable="yes">Imprimir recibo</property>
-                            <property name="use_underline">True</property>
-                            <signal name="clicked" handler="on_printTicket_clicked" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="homogeneous">True</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_top">5</property>
-                        <property name="margin_bottom">10</property>
-                        <property name="label" translatable="yes">Datos de la factura</property>
-                        <attributes>
-                          <attribute name="foreground" value="#bababdbdb6b6"/>
-                        </attributes>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkGrid">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkBox">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="halign">center</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="halign">start</property>
-                                <property name="margin_left">10</property>
-                                <property name="margin_right">10</property>
-                                <property name="margin_bottom">10</property>
-                                <property name="label" translatable="yes">Cliente:</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                  <attribute name="foreground" value="#1f1e45451a1a"/>
-                                </attributes>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="halign">start</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="halign">end</property>
-                                <property name="margin_left">10</property>
-                                <property name="margin_right">10</property>
-                                <property name="label" translatable="yes">Fecha:</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                  <attribute name="foreground" value="#1f1e45451a1a"/>
-                                </attributes>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="btnFCliente">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">Registro de cliente</property>
-                            <property name="halign">start</property>
-                            <property name="margin_left">10</property>
-                            <property name="margin_bottom">10</property>
-                            <property name="image">image10</property>
-                            <property name="relief">none</property>
-                            <signal name="clicked" handler="on_btnFCliente_clicked" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="btnFFecha">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">Abrir calendario</property>
-                            <property name="halign">end</property>
-                            <property name="margin_left">10</property>
-                            <property name="image">image4</property>
-                            <property name="relief">none</property>
-                            <signal name="clicked" handler="on_btnFFecha_clicked" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="lblFCliente">
-                            <property name="width_request">-1</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Pulsa en el botón de la izquierda para realizar el alta</property>
-                            <property name="halign">start</property>
-                            <property name="margin_bottom">10</property>
-                            <property name="label" translatable="yes">Seleccionar cliente</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="lblFFecha">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Pulsa en el botón de la izquierda para cambiar la fecha</property>
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">01/01/2000</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="halign">end</property>
-                            <property name="margin_left">10</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">Nº mesa:</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                              <attribute name="foreground" value="#1f1e45451a1a"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="left_attach">3</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="margin_left">10</property>
-                            <property name="margin_right">10</property>
-                            <property name="margin_bottom">10</property>
-                            <property name="label" translatable="yes">Camarero:</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                              <attribute name="foreground" value="#1f1e45451a1a"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="left_attach">3</property>
-                            <property name="top_attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="lblFMesa">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Pulsa la mesa en el panel derecho</property>
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">Seleccionar mesa</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">4</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="lblFCamarero">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="margin_bottom">10</property>
-                            <property name="label" translatable="yes">Seleccionar</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">4</property>
-                            <property name="top_attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="width_request">125</property>
-                            <property name="height_request">1</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkScrolledWindow">
-                        <property name="width_request">470</property>
-                        <property name="height_request">235</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="shadow_type">in</property>
-                        <child>
-                          <object class="GtkTreeView" id="treeFacturas">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="model">facturas</property>
-                            <property name="ubuntu_almost_fixed_height_mode">True</property>
-                            <signal name="cursor-changed" handler="on_treeFacturas_cursor_changed" swapped="no"/>
-                            <child internal-child="selection">
-                              <object class="GtkTreeSelection"/>
-                            </child>
-                            <child>
-                              <object class="GtkTreeViewColumn">
-                                <property name="title" translatable="yes">ID</property>
-                                <child>
-                                  <object class="GtkCellRendererText" id="idFactura"/>
-                                  <attributes>
-                                    <attribute name="text">0</attribute>
-                                  </attributes>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkTreeViewColumn">
-                                <property name="title" translatable="yes">Cliente</property>
-                                <child>
-                                  <object class="GtkCellRendererText" id="dniCliente"/>
-                                  <attributes>
-                                    <attribute name="text">1</attribute>
-                                  </attributes>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkTreeViewColumn">
-                                <property name="title" translatable="yes">Camarero</property>
-                                <child>
-                                  <object class="GtkCellRendererText" id="idCamarero1"/>
-                                  <attributes>
-                                    <attribute name="text">2</attribute>
-                                  </attributes>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkTreeViewColumn">
-                                <property name="title" translatable="yes">Mesa</property>
-                                <child>
-                                  <object class="GtkCellRendererText" id="idMesa"/>
-                                  <attributes>
-                                    <attribute name="text">3</attribute>
-                                  </attributes>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkTreeViewColumn">
-                                <property name="title" translatable="yes">Fecha</property>
-                                <child>
-                                  <object class="GtkCellRendererText" id="fechaFactura"/>
-                                  <attributes>
-                                    <attribute name="text">4</attribute>
-                                  </attributes>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkTreeViewColumn">
-                                <property name="title" translatable="yes">Servicios</property>
-                                <child>
-                                  <object class="GtkCellRendererText" id="numComandas"/>
-                                  <attributes>
-                                    <attribute name="text">5</attribute>
-                                  </attributes>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">4</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="cleanFactura">
-                        <property name="label" translatable="yes">LImpiar</property>
-                        <property name="width_request">90</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="halign">end</property>
-                        <property name="margin_right">5</property>
-                        <property name="margin_top">10</property>
-                        <property name="margin_bottom">10</property>
-                        <signal name="clicked" handler="on_cleanFactura_clicked" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">5</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child type="tab">
-                  <object class="GtkImage">
-                    <property name="height_request">80</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Gestión de pedidos</property>
-                    <property name="pixbuf">imgs/bill(1).png</property>
-                  </object>
-                  <packing>
-                    <property name="position">3</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -1589,6 +1159,7 @@
                           <object class="GtkToolButton" id="aceptCliente">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Alta de clientes</property>
                             <property name="label" translatable="yes">Nuevo cliente</property>
                             <property name="use_underline">True</property>
                             <signal name="clicked" handler="on_aceptCliente_clicked" swapped="no"/>
@@ -1602,6 +1173,7 @@
                           <object class="GtkToolButton" id="bajaCliente">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Eliminar clientes</property>
                             <property name="label" translatable="yes">Eliminar cliente</property>
                             <property name="use_underline">True</property>
                             <signal name="clicked" handler="on_bajaCliente_clicked" swapped="no"/>
@@ -1736,6 +1308,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="halign">end</property>
+                                <property name="margin_left">10</property>
                                 <property name="margin_bottom">10</property>
                                 <property name="label" translatable="yes">Comunidad:</property>
                               </object>
@@ -1824,14 +1397,18 @@
                     </child>
                     <child>
                       <object class="GtkScrolledWindow">
-                        <property name="height_request">163</property>
+                        <property name="height_request">207</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_right">10</property>
                         <property name="shadow_type">in</property>
                         <child>
                           <object class="GtkTreeView" id="treeClientes">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="margin_left">10</property>
+                            <property name="margin_right">10</property>
                             <property name="model">clientes</property>
                             <property name="ubuntu_almost_fixed_height_mode">True</property>
                             <signal name="cursor-changed" handler="on_treeClientes_cursor_changed" swapped="no"/>
@@ -1918,7 +1495,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">end</property>
-                        <property name="margin_right">5</property>
+                        <property name="margin_right">10</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
                         <property name="layout_style">start</property>
@@ -1928,6 +1505,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">Limpiar campos</property>
                             <property name="margin_right">5</property>
                             <signal name="clicked" handler="on_btnLimpiarClientes_clicked" swapped="no"/>
                           </object>
@@ -1943,7 +1521,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">El cliente ocupa la mesa seleccionada</property>
+                            <property name="tooltip_text" translatable="yes">Sentar al cliente en la mesa seleccionada</property>
                             <property name="margin_left">5</property>
                             <signal name="clicked" handler="on_clienteOcupar_clicked" swapped="no"/>
                           </object>
@@ -1962,17 +1540,20 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="position">4</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child type="tab">
                   <object class="GtkImage">
+                    <property name="width_request">55</property>
+                    <property name="height_request">55</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="stock">gtk-missing-image</property>
+                    <property name="tooltip_text" translatable="yes">Selección de clientes</property>
+                    <property name="pixbuf">imgs/add-group.png</property>
                   </object>
                   <packing>
-                    <property name="position">4</property>
+                    <property name="position">3</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -2158,7 +1739,7 @@
                             <property name="margin_bottom">10</property>
                             <child>
                               <object class="GtkScrolledWindow">
-                                <property name="width_request">230</property>
+                                <property name="width_request">235</property>
                                 <property name="height_request">200</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
@@ -2226,6 +1807,7 @@
                                     <property name="width_request">99</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Añadir producto al pedido</property>
                                     <property name="label" translatable="yes">Añadir</property>
                                     <property name="use_underline">True</property>
                                     <signal name="clicked" handler="on_addLinea_clicked" swapped="no"/>
@@ -2239,6 +1821,7 @@
                                   <object class="GtkToolButton" id="deleteLinea">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Eliminar producto del pedido</property>
                                     <property name="label" translatable="yes">Eliminar</property>
                                     <property name="use_underline">True</property>
                                     <signal name="clicked" handler="on_deleteLinea_clicked" swapped="no"/>
@@ -2257,7 +1840,8 @@
                             </child>
                             <child>
                               <object class="GtkScrolledWindow">
-                                <property name="width_request">230</property>
+                                <property name="width_request">235</property>
+                                <property name="height_request">309</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="shadow_type">in</property>
@@ -2322,6 +1906,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">end</property>
+                        <property name="margin_right">10</property>
                         <property name="margin_bottom">10</property>
                         <property name="layout_style">start</property>
                         <child>
@@ -2331,6 +1916,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">Cancelar pedido y liberar mesa</property>
                             <signal name="clicked" handler="on_cancelComanda_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -2346,6 +1932,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">Finalizar y pagar pedido</property>
                             <signal name="clicked" handler="on_aceptComanda_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -2363,14 +1950,331 @@
                     </child>
                   </object>
                   <packing>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkImage">
+                    <property name="width_request">55</property>
+                    <property name="height_request">55</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Gestión de pedidos</property>
+                    <property name="pixbuf">imgs/tray.png</property>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="Facturas">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkToolbar">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkToolButton" id="printFactura">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Genera un pdf con los datos del cliente</property>
+                            <property name="label" translatable="yes">Imprimir factura</property>
+                            <property name="use_underline">True</property>
+                            <signal name="clicked" handler="on_printFactura_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkToolButton" id="printTicket">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Genera un pdf sin datos del cliente</property>
+                            <property name="label" translatable="yes">Imprimir recibo</property>
+                            <property name="use_underline">True</property>
+                            <signal name="clicked" handler="on_printTicket_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSeparator">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_top">5</property>
+                        <property name="margin_bottom">10</property>
+                        <property name="label" translatable="yes">Datos de la factura</property>
+                        <attributes>
+                          <attribute name="foreground" value="#bababdbdb6b6"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkGrid">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_right">10</property>
+                        <property name="margin_top">10</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">end</property>
+                            <property name="label" translatable="yes">Buscar por mesa:</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                              <attribute name="foreground" value="#1f1e45451a1a"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="lblFMesa">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Pulsa la mesa en el panel derecho</property>
+                            <property name="halign">start</property>
+                            <property name="margin_left">10</property>
+                            <property name="label" translatable="yes">Seleccionar mesa</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">end</property>
+                            <property name="margin_left">10</property>
+                            <property name="margin_right">10</property>
+                            <property name="label" translatable="yes">Buscar por DNI:</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                              <attribute name="foreground" value="#1f1e45451a1a"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="left_attach">2</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="inputFCliente">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">3</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="btnBuscaFactura">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="image">image4</property>
+                            <property name="relief">none</property>
+                            <signal name="clicked" handler="on_btnBuscaFactura_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="width_request">127</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="width_request">470</property>
+                        <property name="height_request">277</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_right">10</property>
+                        <property name="shadow_type">in</property>
+                        <child>
+                          <object class="GtkTreeView" id="treeFacturas">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="model">facturas</property>
+                            <property name="ubuntu_almost_fixed_height_mode">True</property>
+                            <signal name="cursor-changed" handler="on_treeFacturas_cursor_changed" swapped="no"/>
+                            <child internal-child="selection">
+                              <object class="GtkTreeSelection"/>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn">
+                                <property name="title" translatable="yes">ID</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="idFactura"/>
+                                  <attributes>
+                                    <attribute name="text">0</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn">
+                                <property name="title" translatable="yes">Cliente</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="dniCliente"/>
+                                  <attributes>
+                                    <attribute name="text">1</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn">
+                                <property name="title" translatable="yes">Camarero</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="idCamarero1"/>
+                                  <attributes>
+                                    <attribute name="text">2</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn">
+                                <property name="title" translatable="yes">Mesa</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="idMesa"/>
+                                  <attributes>
+                                    <attribute name="text">3</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn">
+                                <property name="title" translatable="yes">Fecha</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="fechaFactura"/>
+                                  <attributes>
+                                    <attribute name="text">4</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn">
+                                <property name="title" translatable="yes">Servicios</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="numComandas"/>
+                                  <attributes>
+                                    <attribute name="text">5</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="cleanFactura">
+                        <property name="label" translatable="yes">LImpiar</property>
+                        <property name="width_request">90</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="halign">end</property>
+                        <property name="margin_right">10</property>
+                        <property name="margin_top">10</property>
+                        <property name="margin_bottom">10</property>
+                        <signal name="clicked" handler="on_cleanFactura_clicked" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">5</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
                     <property name="position">5</property>
                   </packing>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel">
+                  <object class="GtkImage">
+                    <property name="width_request">55</property>
+                    <property name="height_request">55</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Comandas</property>
+                    <property name="tooltip_text" translatable="yes">Gestión de facturas</property>
+                    <property name="pixbuf">imgs/bill(1).png</property>
                   </object>
                   <packing>
                     <property name="position">5</property>
@@ -2716,6 +2620,9 @@
                 <property name="height_request">30</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                </attributes>
               </object>
             </child>
           </object>
