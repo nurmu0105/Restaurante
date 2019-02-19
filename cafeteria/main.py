@@ -3,6 +3,8 @@ import datetime
 import gi
 from gi.overrides import Gdk
 
+from cafeteria import impresionPDF, colorInterfaz, validaciones
+
 gi.require_version('Gtk','3.0')
 import database
 import gtk
@@ -214,20 +216,23 @@ class Main:
         b.connect_signals(dic)
         self.loginUser.set_text("01")
         self.loginPwd.set_text("root")
+
         # Abre la ventana de log in
         self.venlogin.show()
         print("Iniciando el programa")
+
         # Carga las tablas, el panel de mesas y el calendario
         database.cargarCamarero(self.camareros)
         database.cargarProducto(self.productos)
         database.cargarFactura(self.facturas, 0)
         database.cargarCliente(self.clientes)
-        #database.generarMenuDia()
+        database.generarMenuDia()
         self.cargarComunidades()
         self.cargaMesas()
         self.inicializarCalendario()
+
         # Colorea la aplicación
-        self.color()
+        colorInterfaz.color(self)
 
 
     # Cerrar ventanas:
@@ -420,7 +425,7 @@ class Main:
         provincia = str(self.clienteProv.get_active_text())
         ciudad = str(self.clienteCiu.get_active_text())
         if len(nombre) > 0 and len(apellido) > 0 and comunidad != "None" and provincia != "None" and ciudad != "None":
-            self.validaDNI(widget)
+            validaciones.validaDNI(self, widget)
             if self.eDni == False:
                 fila = (dni, apellido, nombre, comunidad, provincia, ciudad)
                 database.altaCliente(fila, self.clientes)
@@ -440,13 +445,15 @@ class Main:
         if self.idcliente != '' and self.mesa != 0:
             database.ocuparMesa("No disponible", self.lblFMesa.get_text())
             self.cargaMesas()
-            fila = (self.idcliente,self.lblHCamarero.get_text(),self.mesa,self.lblHFecha.get_text())
+            fila = (self.idcliente,self.lblHCamarero.get_text(),self.mesa,self.lblHFecha.get_text(), "NO")
             database.altaFactura(fila)
             self.lblCMesa.set_text(str(self.mesa))
             self.idcliente = ""
             self.mesa = 0
             factura = database.buscaFactura(str(self.lblCMesa.get_text()))
+            database.cargarFactura(self.facturas, 0)
             self.lblCFactura.set_text(str(factura))
+            self.Pestanas.set_current_page(4)
         else:
             self.lblError.set_text("Debe seleccionar un cliente y una mesa disponible del panel lateral")
             self.abrirError(widget)
@@ -505,35 +512,6 @@ class Main:
         self.lblAviso.set_markup("<span color='white'>Alta de factura completada con éxito</span>")
 
     # MÉTODOS AUXILIARES:
-    def validaDNI(self, widget):
-        dni = self.clienteDNI.get_text()
-        try:
-            tabla = "TRWAGMYFPDXBNJZSQVHLCKE"
-            dig_ext = "XYZ"
-            reemp_dig_ext = {'X': '0', 'Y': '1', 'Z': '2'}
-            numeros = "1234567890"
-            dni = dni.upper()
-            if len(dni) == 9:
-                dig_control = dni[8]
-                dni = dni[:8]
-                if dni[0] in dig_ext:
-                    dni = dni.replace(dni[0], reemp_dig_ext[dni[0]])
-                if len(dni) == len([n for n in dni if n in numeros]) and tabla[int(dni) % 23] == dig_control:
-                    self.eDni = False
-                    self.lblAviso.set_text('')
-                else:
-                    self.eDni = True
-                    self.lblError.set_text("El DNI introducido debe ser un DNI válido")
-                    self.abrirError(widget)
-            else:
-                self.eDni = True
-                self.lblError.set_text("La longitud del DNI debe ser de 9 caracteres")
-                self.abrirError(widget)
-        except:
-            self.eDni = True
-            self.lblError.set_text("El DNI introducido debe ser un DNI válido")
-            self.abrirError(widget)
-
     def mayus(self, widget, date = None):
         ''' Pone las iniciales y la letra del DNI en mayúsculas '''
         self.inputNombre.set_text(self.inputNombre.get_text().title())
@@ -631,10 +609,11 @@ class Main:
     def imprimeFactura(self, widget):
         if self.idFactura != "":
             if self.clienteFactura != "00000000T":
+                print("EXTERIOR"+str(self.idFactura))
                 database.ocuparMesa("Disponible", self.idMesa)
                 self.cargaMesas()
+                impresionPDF.imprimirFactura(self.idFactura, self.fechaFactura, self.clienteFactura)
                 database.cobraFactura(self.idFactura, self.facturas)
-                database.imprimirFactura(self.idFactura, self.fechaFactura, self.clienteFactura)
                 self.idFactura = ""
                 self.lblAviso.set_text("")
             else:
@@ -649,11 +628,12 @@ class Main:
             if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
                 self.idFactura = self.lblCFactura.get_text()
                 self.idMesa = self.lblCMesa.get_text()
+            print(self.idFactura)
             print("MESA: "+str(self.idMesa))
             database.ocuparMesa("Disponible", self.idMesa)
             self.cargaMesas()
+            impresionPDF.imprimirRecibo(self.idFactura)
             database.cobraFactura(self.idFactura, self.facturas)
-            database.imprimirRecibo(self.idFactura)
             self.idFactura = ""
             self.lblCFactura.set_text("Seleccione una mesa ocupada")
             self.lblAviso.set_text("")
@@ -662,7 +642,7 @@ class Main:
             self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
 
     def terminarJornada(self, widget):
-        user = self.lblFCamarero.get_text()
+        user = self.lblHCamarero.get_text()
         password = self.jornadaPwd.get_text()
         if len(password):
             fila = database.login(user, password)
@@ -985,38 +965,6 @@ class Main:
         color2.to_string()
         self.venprincipal.override_background_color(Gtk.StateFlags.NORMAL, color2)
         self.venprincipal.maximize()
-
-    def color(self):
-        colorVerde = Gdk.RGBA()
-        colorVerde.parse('#1f451a')
-        colorVerde.to_string()
-        colorResize = Gdk.RGBA()
-        colorResize.parse('#3E3D39')
-        colorResize.to_string()
-        colorMesas = Gdk.RGBA()
-        colorMesas.parse('#F2F1F0')
-        colorMesas.to_string()
-        self.venprincipal.override_background_color(Gtk.StateFlags.NORMAL, colorResize)
-        self.Pestanas.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
-        self.Panel.override_background_color(Gtk.StateFlags.NORMAL, colorMesas)
-        self.Home.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
-        self.Camareros.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
-        self.Productos.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
-        self.Facturas.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
-        self.Mesas.override_background_color(Gtk.StateFlags.NORMAL, colorMesas)
-        self.lblAviso.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 0))
-        self.LoginTexto3.override_color(Gtk.StateFlags.NORMAL, colorVerde)
-        self.LoginTexto1.override_color(Gtk.StateFlags.NORMAL, colorVerde)
-        self.LoginTexto2.override_color(Gtk.StateFlags.NORMAL, colorVerde)
-        self.HomeHeader.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
-        self.Clientes.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
-        self.Comandas.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
-        self.ComandasHeader.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
-        #self.HomeHeader.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255, 255, 255, 1))
-        #self.treeProductos.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
-        #self.scrollProductos.override_background_color(Gtk.StateFlags.NORMAL, colorVerde)
-
-
 
     def salir(self, widget, data=None):
         print("Finalizando el programa")
