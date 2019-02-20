@@ -297,6 +297,9 @@ class Main:
         model, iter = self.treeClientes.get_selection().get_selected()
         if iter != None:
             self.idcliente = str(model.get_value(iter,0))
+            self.clienteDNI.set_text(str(model.get_value(iter,0)))
+            self.clienteNombre.set_text(str(model.get_value(iter,1)))
+            self.clienteApellido.set_text(str(model.get_value(iter,2)))
 
     # MÉTODOS RELACIONADOS CON LA GESTIÓN DE CAMAREROS
     def altaCamarero(self, widget):
@@ -488,6 +491,7 @@ class Main:
                 self.cargaMesas()
                 self.lblCFactura.set_text("Seleccione una mesa ocupada")
                 self.lblAviso.set_markup("<span color='white'>Factura cancelada con éxito</span>")
+                self.Pestanas.set_current_page(0)
             else:
                 self.lblError.set_text("No se puede borrar una factura con productos asociados")
                 self.abrirError(widget)
@@ -697,7 +701,6 @@ class Main:
         self.seleccionarPanel()
         if self.estado == "No disponible":
             self.mesa = 0
-            self.lblFMesa.set_text("Seleccionar mesa")
             factura = database.buscaFactura(str(self.lblCMesa.get_text()))
             self.lblCFactura.set_text(str(factura))
             database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
@@ -715,7 +718,6 @@ class Main:
         self.seleccionarPanel()
         if self.estado == "No disponible":
             self.mesa = 0
-            self.lblFMesa.set_text("Seleccionar mesa")
             factura = database.buscaFactura(self.lblCMesa.get_text())
             self.lblCFactura.set_text(str(factura))
             database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
@@ -734,7 +736,6 @@ class Main:
         self.seleccionarPanel()
         if self.estado == "No disponible":
             self.mesa = 0
-            self.lblFMesa.set_text("Seleccionar mesa")
             factura = database.buscaFactura(self.lblCMesa.get_text())
             self.lblCFactura.set_text(str(factura))
             database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
@@ -753,7 +754,6 @@ class Main:
         self.seleccionarPanel()
         if self.estado == "No disponible":
             self.mesa = 0
-            self.lblFMesa.set_text("Seleccionar mesa")
             factura = database.buscaFactura(self.lblCMesa.get_text())
             self.lblCFactura.set_text(str(factura))
             database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
@@ -772,7 +772,6 @@ class Main:
         self.seleccionarPanel()
         if self.estado == "No disponible":
             self.mesa = 0
-            self.lblFMesa.set_text("Seleccionar mesa")
             factura = database.buscaFactura(self.lblCMesa.get_text())
             self.lblCFactura.set_text(str(factura))
             database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
@@ -791,7 +790,6 @@ class Main:
         self.seleccionarPanel()
         if self.estado == "No disponible":
             self.mesa = 0
-            self.lblFMesa.set_text("Seleccionar mesa")
             factura = database.buscaFactura(self.lblCMesa.get_text())
             self.lblCFactura.set_text(str(factura))
             database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
@@ -810,7 +808,6 @@ class Main:
         self.seleccionarPanel()
         if self.estado == "No disponible":
             self.mesa = 0
-            self.lblFMesa.set_text("Seleccionar mesa")
             factura = database.buscaFactura(self.lblCMesa.get_text())
             self.lblCFactura.set_text(str(factura))
             database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
@@ -829,7 +826,6 @@ class Main:
         self.seleccionarPanel()
         if self.estado == "No disponible":
             self.mesa = 0
-            self.lblFMesa.set_text("Seleccionar mesa")
             factura = database.buscaFactura(self.lblCMesa.get_text())
             self.lblCFactura.set_text(str(factura))
             database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
@@ -849,7 +845,6 @@ class Main:
         self.seleccionarPanel()
         if self.estado == "No disponible":
             self.mesa = 0
-            self.lblFMesa.set_text("Seleccionar mesa")
             factura = database.buscaFactura(self.lblCMesa.get_text())
             self.lblCFactura.set_text(str(factura))
             database.cargarComanda(self.lblCFactura.get_text(), self.comandas)
@@ -861,6 +856,7 @@ class Main:
             self.comandas.clear()
 
     def seleccionarPanel(self):
+
         panel = self.Pestanas.get_current_page()
         if panel != 5:
             if self.estado == "No disponible":
@@ -941,6 +937,7 @@ class Main:
             fila = database.login(user, password)
             if str(fila[0]) != 'None' and str(fila[1]) != 'None':
                 self.venlogin.hide()
+                self.venprincipal.maximize()
                 self.venprincipal.show()
                 print("Iniciando sesión")
                 self.lblHCamarero.set_text(user)
