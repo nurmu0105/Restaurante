@@ -17,8 +17,10 @@ except sqlite3.OperationalError as e:
     print(e)
 
 def imprimirFactura(idFactura,fechaFactura, clienteFactura):
+    '''Impresión de facturas
+        Realiza la consulta a la base de datos para obtener los datos necesarios y genera la factura
+        en pdf. '''
     try:
-        print("INTERIOR: "+str(idFactura))
         cser = canvas.Canvas('FACTURA_'+str(idFactura) + '.pdf', pagesize=A4)
         cur.execute("select IDVENTA, S.SERVICIO, CANTIDAD, S.PRECIO "
                     "from lineaFacturas L, servicios S "
@@ -128,6 +130,9 @@ def imprimirFactura(idFactura,fechaFactura, clienteFactura):
 
 
 def imprimirRecibo(idFactura):
+    '''Imprimir recibo
+        Se realiza una consulta a la base de datos para obtener la información necesaria
+        y se genera un recibo sin los datos personales del cliente en pdf'''
     try:
         cser = canvas.Canvas('RECIBO_'+str(idFactura) + '.pdf', pagesize=A6)
         cur.execute("select IDVENTA, S.SERVICIO, CANTIDAD, S.PRECIO "

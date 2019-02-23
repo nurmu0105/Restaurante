@@ -3,7 +3,7 @@ import datetime
 import gi
 from gi.overrides import Gdk
 
-from cafeteria import impresionPDF, colorInterfaz, validaciones
+from cafeteria import impresionPDF, colorInterfaz, validaciones, gestionCamareros, gestionProductos, gestionFacturas
 
 gi.require_version('Gtk','3.0')
 import database
@@ -191,7 +191,6 @@ class Main:
                'on_aceptCliente_clicked':self.altaCliente,
                'on_addLinea_clicked':self.gestionComandas,
                'on_deleteLinea_clicked':self.eliminarComandas,
-               'on_aceptComanda_clicked':self.aceptarComanda,
                'on_cancelComanda_clicked':self.cancelarComanda,
                'on_cleanFactura_clicked': self.limpiarFact,
                'on_btnFFecha_clicked':self.abrirCalendario,
@@ -226,7 +225,7 @@ class Main:
         database.cargarProducto(self.productos)
         database.cargarFactura(self.facturas, 0)
         database.cargarCliente(self.clientes)
-        database.generarMenuDia()
+#        database.generarMenuDia()
         self.cargarComunidades()
         self.cargaMesas()
         self.inicializarCalendario()
@@ -303,217 +302,87 @@ class Main:
 
     # MÉTODOS RELACIONADOS CON LA GESTIÓN DE CAMAREROS
     def altaCamarero(self, widget):
-        '''Alta de camareros
-            Primero pone en mayúsculas las iniciales y recoge los valores en unas variables,
-            se comprueba la longitud de las mismas para ver si están vacías o no y se mandan
-            los datos al método de registro en la base de datos.
-            Por último se resetean los datos.
-        '''
-        self.inputNombre.set_text(self.inputNombre.get_text().title())
-        nombre = self.inputNombre.get_text()
-        password = self.inputPassword.get_text()
-        if len(nombre) > 0 and len(password) > 0:
-            fila = (nombre, password)
-            database.altaCamarero(fila, self.camareros)
-            self.limpiarCam(widget)
-            self.lblAviso.set_markup("<span color='white'>Alta de camarero completada con éxito</span>")
-        else:
-            self.lblError.set_text("Debe cubrir todos los campos")
-            self.abrirError(widget)
+        gestionCamareros.altaCamareros(self, widget)
 
     def modificaCamarero(self, widget):
-        '''Modificaciones de camareros
-            Se pone en mayúsculas la inicial y se recogen los datos en unas variables.
-            Se comprueba si se ha seleccionado un camarero y en caso informativo comprueba la longitud
-            de las variables para ver si han sido introducidas y se envían al método de gestión
-            de la base de datos.
-            Por último se resetean los datos.
-        '''
-        self.inputNombre.set_text(self.inputNombre.get_text().title())
-        nombre = self.inputNombre.get_text()
-        password = self.inputPassword.get_text()
-        if self.lblCamarero.get_text() == "Seleccionar camarero":
-            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún camarero</span>")
-        else:
-            if len(nombre) > 0 and len(password) > 0:
-                if password == "**********":
-                    password = self.password
-                fila = (nombre, password)
-                database.modificaCamarero(fila, self.lblCamarero.get_text(), self.camareros)
-                self.limpiarCam(widget)
-                self.lblAviso.set_markup("<span color='white'>Modificación de camarero completada con éxito</span>")
-            else:
-                self.lblError.set_text("Debe cubrir todos los campos")
-                self.abrirError(widget)
+        gestionCamareros.modificaCamarero(self,widget)
 
     def bajaCamarero(self, widget):
-        '''Baja de camareros
-            Se coge el id del camarero del label y se envía al método correspondiente de gestión
-            de la base de datos
-            Por último se resetean los datos.
-         '''
-        id = self.lblCamarero.get_text()
-        database.bajaCamarero(id,self.camareros)
-        self.limpiarCam(widget)
-        self.lblAviso.set_markup("<span color='white'>Baja de camarero completada con éxito</span>")
+        gestionCamareros.bajaCamarero(self, widget)
+
 
     # MÉTODOS RELACIONADOS CON LA GESTIÓN DE PRODUCTOS
     def altaProducto(self, widget):
-        '''Alta de productos
-            Primero pone en mayúsculas las iniciales y recoge los valores en unas variables,
-            se comprueba la longitud de las mismas para ver si están vacías o no y se mandan
-            los datos al método de registro en la base de datos.
-            Por último se resetean los datos.
-        '''
-        self.lblNombre.set_text(self.lblNombre.get_text().title())
-        nombre = self.lblNombre.get_text()
-        precio = self.lblPrecio.get_text()+" €"
-        if len(nombre) > 0 and len(precio) > 0 and self.categoria != '':
-            fila = (nombre, precio, self.categoria)
-            database.altaProducto(fila, self.productos)
-            self.limpiarProd(widget)
-            self.lblAviso.set_markup("<span color='white'>Alta de producto completada con éxito</span>")
-        else:
-            self.lblError.set_text("Debe cubrir todos los campos")
-            self.abrirError(widget)
+        gestionProductos.altaProducto(self, widget)
 
     def modificaProducto(self, widget):
-        '''Modificación de productos
-            Se pone en mayúsculas las iniciales y se recogen los datos en una variable.
-            Se comprueba si se ha seleccionado un producto, en caso afirmativo comprueba
-            la longitud de los datos introducidos y los envía al método correspondiente
-            de gestión de la base de datos.
-            Se resetean los datos.
-        '''
-        self.lblNombre.set_text(self.lblNombre.get_text().title())
-        nombre = self.lblNombre.get_text()
-        precio = self.lblPrecio.get_text()+" €"
-        print(nombre, precio, self.categoria)
-        if self.lblProducto.get_text() == "Seleccionar producto":
-            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún producto</span>")
-        else:
-            if len(nombre) > 0 and len(precio) > 2 and self.categoria != '':
-                fila = (nombre, precio, self.categoria)
-                database.modificaProducto(fila, self.lblProducto.get_text(), self.productos)
-                self.limpiarProd(widget)
-                self.lblAviso.set_markup("<span color='white'>Modificación de producto completada con éxito</span>")
-            else:
-                self.lblError.set_text("Debe cubrir todos los campos")
-                self.abrirError(widget)
+        gestionProductos.modificaProducto(self,widget)
 
     def bajaProducto(self, widget):
-        '''Baja de productos
-            Se recoge el id del producto en una variables que se manda al método correspondiente de la BBDD
-        '''
-        id = self.lblProducto.get_text()
-        database.bajaProducto(id, self.productos)
-        self.limpiarProd(widget)
-        self.lblAviso.set_markup("<span color='white'>Baja de producto completada con éxito</span>")
+        gestionProductos.bajaProducto(self, widget)
 
     # MÉTODOS RELACIONADOS CON LA GESTIÓN DE FACTURAS + LINEASFACTURAS
     def altaCliente(self, widget):
-        '''Alta de clientes
-            Se ponen en mayúsculas las iniciales y se recogen los datos en variables.
-            Se comprueba que los datos han sido introducidos en los campos correspondientes, en caso
-            afirmativo, se llama al método de validar el DNI y si no surge un error, se envían
-            los datos al método de gestión de la BBDD
-        '''
-        self.clienteNombre.set_text(self.clienteNombre.get_text().title())
-        self.clienteApellido.set_text(self.clienteApellido.get_text().title())
-        self.clienteDNI.set_text(self.clienteDNI.get_text().upper())
-        dni = self.clienteDNI.get_text()
-        nombre = self.clienteNombre.get_text()
-        apellido = self.clienteApellido.get_text()
-        comunidad = str(self.clienteComu.get_active_text())
-        provincia = str(self.clienteProv.get_active_text())
-        ciudad = str(self.clienteCiu.get_active_text())
-        if len(nombre) > 0 and len(apellido) > 0 and comunidad != "None" and provincia != "None" and ciudad != "None":
-            validaciones.validaDNI(self, widget)
-            if self.eDni == False:
-                fila = (dni, apellido, nombre, comunidad, provincia, ciudad)
-                database.altaCliente(fila, self.clientes)
-                self.limpiarCli(widget)
-                self.lblAviso.set_markup("<span color='white'>Alta de cliente completada con éxito</span>")
-        else:
-            self.lblError.set_text("Debe cubrir todos los campos")
-            self.abrirError(widget)
+        gestionFacturas.altaCliente(self, widget)
 
     def bajaCliente(self, widget):
-        dni = self.idcliente
-        database.bajaCliente(dni, self.clientes)
-        self.limpiarCli(widget)
-        self.lblAviso.set_markup("<span color='white'>Baja de cliente completada con éxito</span>")
+        gestionFacturas.bajaCliente(self, widget)
 
     def ocuparMesa(self, widget):
-        if self.idcliente != '' and self.mesa != 0:
-            database.ocuparMesa("No disponible", self.lblFMesa.get_text())
-            self.cargaMesas()
-            fila = (self.idcliente,self.lblHCamarero.get_text(),self.mesa,self.lblHFecha.get_text(), "NO")
-            database.altaFactura(fila)
-            self.lblCMesa.set_text(str(self.mesa))
-            self.idcliente = ""
-            self.mesa = 0
-            factura = database.buscaFactura(str(self.lblCMesa.get_text()))
-            database.cargarFactura(self.facturas, 0)
-            self.lblCFactura.set_text(str(factura))
-            self.Pestanas.set_current_page(4)
-        else:
-            self.lblError.set_text("Debe seleccionar un cliente y una mesa disponible del panel lateral")
-            self.abrirError(widget)
+        gestionFacturas.ocuparMesa(self, widget)
 
     def gestionComandas(self, widget):
-        '''Añadir tuplas a la tabla lineasFactura
-            El método se ejecuta cuando se pulsa el botón añadir en la ventana vencomandas'''
-        if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
-            if self.servicio != "":
-                database.altaLinea(self.lblCFactura.get_text(), self.comandas, self.servicio)
-                self.servicio = ""
-            else:
-                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún producto</span>")
-        else:
-            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
+        gestionFacturas.gestionComandas(self, widget)
 
     def eliminarComandas(self, widget):
-        '''Eliminar comandas
-            EL método se ejecuta cuando se pulsa el botón eliminar en la ventana vencomandas'''
-        if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
-            database.bajaLinea(self.lblCFactura.get_text(), self.comandas, self.servicio)
-        else:
-            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
+        gestionFacturas.eliminarComandas(self, widget)
 
     def cancelarComanda(self, widget):
-        '''Cancelar comanda
-            Llama al método encargado de realizar la baja de la factura creada'''
-        if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
-            vacio = database.bajaFactura(self.lblCFactura.get_text(), self.facturas)
-            if(vacio == True):
-                database.ocuparMesa("Disponible", self.lblCMesa.get_text())
+        gestionFacturas.cancelarComanda(self,widget)
+
+    def imprimeFactura(self, widget):
+        '''Imprimir factura
+            Comprueba que hay una factura seleccionada y que no pertenece al cliente anónimo,
+            llama al método para cambiar el estado de la mesa a Disponible,
+            llama al método encargado de generar el pdf con la factura,
+            llama al método encargado de cambiar el estado de la factura a pagado'''
+        if self.idFactura != "":
+            if self.clienteFactura != "00000000T":
+                database.ocuparMesa("Disponible", self.idMesa)
                 self.cargaMesas()
-                self.lblCFactura.set_text("Seleccione una mesa ocupada")
-                self.lblAviso.set_markup("<span color='white'>Factura cancelada con éxito</span>")
-                self.Pestanas.set_current_page(0)
+                impresionPDF.imprimirFactura(self.idFactura, self.fechaFactura, self.clienteFactura)
+                database.cobraFactura(self.idFactura, self.facturas)
+                #Limpiar campos:
+                self.idFactura = ""
+                self.lblAviso.set_text("")
             else:
-                self.lblError.set_text("No se puede borrar una factura con productos asociados")
+                self.lblError.set_text("No se puede generar una factura para un cliente anónimo")
                 self.abrirError(widget)
                 self.lblAviso.set_text("")
         else:
-            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
+            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna factura</span>")
 
-    def aceptarComanda(self, widget):
-        '''Aceptar comanda
-            Llama al método encargado de resetear la TreeView de vencomandas
-            Llama al método de actualizar el estado de la mesa para que aparezca como no disponible
-            Llama al método de cargar el TreeView de facturas de la ventana principal
-            Llama al método de cargar los labels del panel de gestión de las mesas
-            Cierra la ventana vencomandas y resetea los datos'''
-        database.limpiarComandas(self.comandas)
-        database.ocuparMesa("No disponible", self.lblFMesa.get_text())
-        database.cargarFactura(self.facturas, self.lblFMesa.get_text())
-        self.cargaMesas()
-        self.lblFCliente.set_text("Seleccionar cliente")
-        self.lblFMesa.set_text("Seleccionar mesa")
-        self.inicializarCalendario()
-        self.lblAviso.set_markup("<span color='white'>Alta de factura completada con éxito</span>")
+    def imprimeRecibo(self, widget):
+        '''Imprimir recibo
+                Comprueba que hay una factura o mesa ocupada seleccionada,
+                llama al método para cambiar el estado de la mesa a Disponible,
+                llama al método encargado de generar el pdf con el recibo,
+                llama al método encargado de cambiar el estado de la factura a pagado'''
+        if self.idFactura != "" or self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
+            if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
+                self.idFactura = self.lblCFactura.get_text()
+                self.idMesa = self.lblCMesa.get_text()
+            database.ocuparMesa("Disponible", self.idMesa)
+            self.cargaMesas()
+            impresionPDF.imprimirRecibo(self.idFactura)
+            database.cobraFactura(self.idFactura, self.facturas)
+            #Limpiar campos:
+            self.idFactura = ""
+            self.lblCFactura.set_text("Seleccione una mesa ocupada")
+            self.lblAviso.set_text("")
+            self.comandas.clear()
+        else:
+            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
 
     # MÉTODOS AUXILIARES:
     def mayus(self, widget, date = None):
@@ -567,6 +436,9 @@ class Main:
         self.lblAviso.set_text("")
 
     def inicializarCalendario(self):
+        '''Inicializar el calendario
+            Pone la fecha actual en la pestaña de Home para que el resto de la aplicación
+            pueda utilizarla en las gestiones necesarias'''
         dia = datetime.datetime.now().strftime("%d")
         mes = datetime.datetime.now().strftime("%m")
         ano = datetime.datetime.now().strftime("%Y")
@@ -575,32 +447,41 @@ class Main:
         self.lblHFecha.set_text(self.fecha)
 
     def cargarComunidades(self):
+        '''Carga la lista de comunidades'''
         lista = database.cargaComunidad()
         for name in lista:
             self.clienteComu.append_text(name[0])
 
     def actualizarProvincias(self, widget):
+        '''Actualiza la lista de provincias
+            Recoge el evento de selección en la lista de comunidades y llama al método de cargar la combo'''
         self.comunidad = str(self.clienteComu.get_active_text())
-        print(self.comunidad)
         self.cargarProvincias(widget)
 
     def cargarProvincias(self, widget):
+        '''Carga la lista de provincias'''
         self.clienteProv.remove_all()
         lista = database.cargaProvincias(self.comunidad)
         for name in lista:
             self.clienteProv.append_text(name[0])
 
     def actualizarMunicipios(self, widget):
+        '''Actualiza la lista de municipios
+            Recoge el evento de selección en la lista de provincias y llama al método de cargar la combo'''
         self.provincia = str(self.clienteProv.get_active_text())
         self.cargarMunicipios(widget)
 
     def cargarMunicipios(self, widget):
+        '''Carga la lista de municipios o ciudades'''
         self.clienteCiu.remove_all()
         lista = database.cargaMunicipios(self.provincia)
         for name in lista:
             self.clienteCiu.append_text(name[0])
 
     def seleccionarCategoria(self, widget):
+        '''Seleccionar categoria de productos
+            Recoge el evento de los radiobutton relacionados con las categorias de los productos en la
+            pestaña Gestión de Productos y guarda en una variable la opción seleccionada por el usuario'''
         if self.categoria1.get_active():
             self.categoria = 'Entrante'
         if self.categoria2.get_active():
@@ -610,42 +491,11 @@ class Main:
         if self.categoria4.get_active():
             self.categoria = 'Otro'
 
-    def imprimeFactura(self, widget):
-        if self.idFactura != "":
-            if self.clienteFactura != "00000000T":
-                print("EXTERIOR"+str(self.idFactura))
-                database.ocuparMesa("Disponible", self.idMesa)
-                self.cargaMesas()
-                impresionPDF.imprimirFactura(self.idFactura, self.fechaFactura, self.clienteFactura)
-                database.cobraFactura(self.idFactura, self.facturas)
-                self.idFactura = ""
-                self.lblAviso.set_text("")
-            else:
-                self.lblError.set_text("No se puede generar una factura para un cliente anónimo")
-                self.abrirError(widget)
-                self.lblAviso.set_text("")
-        else:
-            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna factura</span>")
-
-    def imprimeRecibo(self, widget):
-        if self.idFactura != "" or self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
-            if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
-                self.idFactura = self.lblCFactura.get_text()
-                self.idMesa = self.lblCMesa.get_text()
-            print(self.idFactura)
-            print("MESA: "+str(self.idMesa))
-            database.ocuparMesa("Disponible", self.idMesa)
-            self.cargaMesas()
-            impresionPDF.imprimirRecibo(self.idFactura)
-            database.cobraFactura(self.idFactura, self.facturas)
-            self.idFactura = ""
-            self.lblCFactura.set_text("Seleccione una mesa ocupada")
-            self.lblAviso.set_text("")
-            self.comandas.clear()
-        else:
-            self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
-
     def terminarJornada(self, widget):
+        '''Finalizar la jornada
+            Comprueba si la contraseña introducida corresponde al camarero que ha iniciado sesión,
+            recorre la lista de mesas que hay cambiando el estado de cada una de ellas a Disponible,
+            por último recarga el panel lateral de las mesas y cierra la ventana generada'''
         user = self.lblHCamarero.get_text()
         password = self.jornadaPwd.get_text()
         if len(password):
@@ -667,6 +517,9 @@ class Main:
             self.abrirError(widget)
 
     def buscaFactura(self, widget):
+        '''Buscar factura
+            Comprueba la longitud del dni introducido por el usuario,
+            lo busca en la base de datos y si lo encuentra carga las facturas asociadas a ese dni'''
         dni = self.inputFCliente.get_text()
         if len(dni) == 9:
             encontrado = database.cargarFactura2(self.facturas, dni)
@@ -681,6 +534,9 @@ class Main:
 
     # MÉTODOS RELACIONADOS CON LA GESTIÓN DEL PANEL MESAS:
     def cargaMesas(self):
+        '''Cargar el panel lateral de las mesas
+            Obtiene un listado con los datos de las mesas de la base de datos,
+            cambia el estado a Disponible/No disponible de las etiquetas de cada mesa'''
         i = 0
         listado = database.cargaMesas()
         for n in listado:
@@ -694,6 +550,11 @@ class Main:
             i = i + 1
 
     def mesa1(self, widget):
+        '''Selección de la mesa
+            Recoge el estado de la mesa y llama al método encargado de cambiar de pestaña,
+            carga las facturas asociadas con esa mesa,
+            si la mesa está disponible limpia el treeview de comandas y avisa de que la mesa no está ocupada,
+            si la mesa está ocupada carga las lineas de ventas en el treeview de comandas'''
         self.estado = self.lblmesa1.get_text()
         database.cargarFactura(self.facturas, 1)
         self.lblCMesa.set_text(str(1))
@@ -856,7 +717,10 @@ class Main:
             self.comandas.clear()
 
     def seleccionarPanel(self):
-
+        '''Cambiar de pestaña al clickar una mesa
+            Comprueba que la pestaña actual no sea la pestaña Gestión de Facturas,
+            si la mesa está disponible cambia a la pestaña para sentar al cliente,
+            si la mesa está ocupada cambia a la pestaña Gestión de comandas'''
         panel = self.Pestanas.get_current_page()
         if panel != 5:
             if self.estado == "No disponible":

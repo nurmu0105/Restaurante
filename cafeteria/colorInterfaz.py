@@ -4,6 +4,8 @@ gi.require_version('Gtk','3.0')
 from gi.repository import Gtk
 
 def color(self):
+    '''Colorear interfaz
+        Define los colores y sobreescribe la propiedad del color del fondo de los widgets'''
     # Declaración de los colores:
     colorVerde = Gdk.RGBA()
     colorVerde.parse('#1f451a')
