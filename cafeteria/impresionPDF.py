@@ -1,11 +1,13 @@
+import datetime
 import locale
 import os
 import random
 import sqlite3
 
 # Establece la conexión:
-from reportlab.lib.colors import black
+from reportlab.lib.colors import black, white, forestgreen
 from reportlab.lib.pagesizes import A4, A6
+from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -213,11 +215,75 @@ def imprimirRecibo(idFactura):
         conexion.rollback()
 
 
-def imprimirMenu(fecha):
+def imprimirMenu():
+    '''Imprimir menu
+        Recorre el listado de platos obtenido del métofo generaMenuDia situándolos en el pdf,
+        una vez realizado imprime el mismo y los muestra por pantalla'''
+    dia = datetime.datetime.now().strftime("%d")
+    mes = datetime.datetime.now().strftime("%m")
+    ano = datetime.datetime.now().strftime("%Y")
+    mes = int(mes) - 1
+    fecha = "%s_" % dia + "%s_" % (mes + 1) + "%s" % ano
     cser = canvas.Canvas('MENU_' + str(fecha) + '.pdf', pagesize=A4)
     listado = generarMenuDia()
 
     #Decorado
+    cser.setFillColor(white)
+    cser.drawInlineImage("./imgs/fondo.jpg",0,0)
+    cser.rect(65, 65, 465, 900, stroke=0, fill=1)
+    pdfmetrics.registerFont(TTFont('Sawasdee', 'Sawasdee.ttf'))
+    cser.setFillColor(forestgreen)
+    cser.setFontSize(13)
+    cser.drawString(116, 763, 'THE')
+    cser.setFont('Sawasdee', 75)
+    cser.drawString(110, 704, 'Green Side')
+    cser.drawString(109, 705, 'Green Side')
+    cser.setFontSize(13)
+    cser.drawString(410, 690, 'RESTAURANT')
+    cser.setFillColor(forestgreen)
+    cser.setStrokeColor(forestgreen)
+
+    #Categorías:
+    cser.setFontSize(17)
+    cser.drawString(107,617, "Entrantes")
+    cser.drawString(106.5, 617, "Entrantes")
+    cser.line(107, 608, 490, 608)
+    cser.drawString(107, 470, "Platos")
+    cser.drawString(106.5, 470, "Platos")
+    cser.line(107, 463, 490, 463)
+    cser.drawString(107, 325, "Postres")
+    cser.drawString(106.5, 325, "Postres")
+    cser.line(107, 320, 490, 320)
+    cser.setFontSize(13)
+    cser.setFillColor(black)
+
+    #Imprimir platos:
+    x = 120
+    y = 590
+    index = 0
+    for registro in listado:
+        cser.drawString(x, y, registro[0])
+        #cser.drawRightString(483, y, registro[1])
+        y = y - 25
+        index = index + 1
+        if index == 3 or index == 6:
+            y = y - 70
+
+    #Pie:
+    cser.setFillColor(forestgreen)
+    cser.setFont('Sawasdee', 36)
+    cser.drawCentredString(295, 160, 'PRECIO 10.90€')
+    cser.drawString(309, 159, '10.90€')
+    cser.setFillColor(black)
+    cser.setFont('Sawasdee', 19)
+    cser.drawCentredString(295, 130, '(Pan, bebida y café incluídos)')
+
+    #Impresión del pdf:
+    cser.showPage()
+    cser.save()
+    dir = os.getcwd()
+    os.system('/usr/bin/xdg-open ' + dir + '/MENU_' + str(fecha) + '.pdf')
+    print('Factura preparada para impresión')
 
 
 def generarMenuDia():
@@ -228,11 +294,11 @@ def generarMenuDia():
 
     try:
         #Se guardan en variables los datos consultados a la BD
-        cur.execute("SELECT * FROM SERVICIOS WHERE CATEGORIA = 'Entrante'")
+        cur.execute("SELECT SERVICIO, PRECIO FROM SERVICIOS WHERE CATEGORIA = 'Entrante'")
         entrantes = cur.fetchall()
-        cur.execute("SELECT * FROM SERVICIOS WHERE CATEGORIA = 'Plato'")
+        cur.execute("SELECT SERVICIO, PRECIO FROM SERVICIOS WHERE CATEGORIA = 'Plato'")
         platos = cur.fetchall()
-        cur.execute("SELECT * FROM SERVICIOS WHERE CATEGORIA = 'Postre'")
+        cur.execute("SELECT SERVICIO, PRECIO FROM SERVICIOS WHERE CATEGORIA = 'Postre'")
         postres = cur.fetchall()
         conexion.commit() #Se corta la conexion
 

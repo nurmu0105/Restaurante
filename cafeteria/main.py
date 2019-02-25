@@ -3,7 +3,8 @@ import datetime
 import gi
 from gi.overrides import Gdk
 
-from cafeteria import impresionPDF, colorInterfaz, validaciones, gestionCamareros, gestionProductos, gestionFacturas
+from cafeteria import impresionPDF, colorInterfaz, validaciones, gestionCamareros, gestionProductos, gestionFacturas, \
+    copiaSeguridad
 
 gi.require_version('Gtk','3.0')
 import database
@@ -23,7 +24,6 @@ class Main:
         self.venacerca = b.get_object("venacerca")
         self.venerror = b.get_object("venerror")
         self.venconfirma = b.get_object("venconfirma")
-        self.vencalendario = b.get_object("vencalendario")
         self.venjornada = b.get_object("venjornada")
 
     # Botones:
@@ -152,6 +152,8 @@ class Main:
                'on_btnFinJornada_activate':self.abrirJornada,
                'on_aceptJornada_clicked':self.terminarJornada,
                'on_cancelJornada_clicked':self.cerrarJornada,
+               'on_btnCopiaSeguridad_activate':self.creaCopia,
+               'on_btnMenuDia_activate':self.imprimirMenu,
                'on_btnMaximize_activate':self.maximizarVentana,
                'on_btnAbout_activate':self.abrirAbout,
                'on_btnAcerca_clicked':self.cerrarAbout,
@@ -193,8 +195,6 @@ class Main:
                'on_deleteLinea_clicked':self.eliminarComandas,
                'on_cancelComanda_clicked':self.cancelarComanda,
                'on_cleanFactura_clicked': self.limpiarFact,
-               'on_btnFFecha_clicked':self.abrirCalendario,
-               'on_calendar_day_selected_double_click':self.cerrarCalendario,
                'on_treeFacturas_cursor_changed':self.seleccionaFactura,
                'on_printFactura_clicked':self.imprimeFactura,
                'on_printTicket_clicked':self.imprimeRecibo,
@@ -240,7 +240,6 @@ class Main:
         self.venerror.connect('delete-event', lambda w, e: w.hide() or True)
         self.venconfirma.connect('delete-event', lambda w, e: w.hide() or True)
         self.venlogin.connect('delete-event', lambda w, e: w.hide() or True)
-        self.vencalendario.connect('delete-event', lambda w, e: w.hide() or True)
         self.venjornada.connect('delete-event', lambda w, e: w.hide() or True)
 
     # MÉTODOS DE SELECCIÓN PARA LOS TREEVIEW
@@ -742,21 +741,6 @@ class Main:
         self.venerror.hide()
         self.lblError.set_text("")
 
-    def abrirCalendario(self, widget):
-        dia = datetime.datetime.now().strftime("%d")
-        mes = datetime.datetime.now().strftime("%m")
-        ano = datetime.datetime.now().strftime("%Y")
-        mes = int(mes) - 1
-        self.calendar.select_month(int(mes), int(ano))
-        self.calendar.select_day(int(dia))
-        self.vencalendario.show()
-
-    def cerrarCalendario(self, widget):
-        ano, mes, dia = self.calendar.get_date()
-        self.fecha = "%s/" % dia + "%s/" % (mes + 1) + "%s" % ano
-        self.lblFFecha.set_text(self.fecha)
-        self.vencalendario.hide()
-
     def abrirConfirma(self,widget):
         panel = self.Pestanas.get_current_page()
         if panel == 1:
@@ -820,12 +804,18 @@ class Main:
         self.venprincipal.hide()
         self.venlogin.show()
 
+    def imprimirMenu(self, widget):
+        impresionPDF.imprimirMenu()
+
     def maximizarVentana(self, widget):
         color2 = Gdk.RGBA()
         color2.parse('#4E4C45')
         color2.to_string()
         self.venprincipal.override_background_color(Gtk.StateFlags.NORMAL, color2)
         self.venprincipal.maximize()
+
+    def creaCopia(self, widget):
+        copiaSeguridad.creaCopia(self)
 
     def salir(self, widget, data=None):
         print("Finalizando el programa")
