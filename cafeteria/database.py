@@ -24,6 +24,9 @@ except sqlite3.OperationalError as e:
 
 # MÉTODOS PARA CARGAR/ACTUALIZAR LOS TREEVIEW:
 def cargarCamarero(camareros):
+    '''Carga de camareros
+        Realiza la consulta necesaria contra la base de datos para obtener el listado con todos los datos
+        de los camareros y lo carga en la lista asociada al treeView'''
     try:
         cur.execute("SELECT * FROM CAMAREROS ORDER BY(idCamarero)")
         listado = cur.fetchall()
@@ -37,6 +40,9 @@ def cargarCamarero(camareros):
         conexion.rollback()
 
 def cargarCliente(clientes):
+    '''Carga de clientes
+        Realiza la consulta necesaria contra la base de datos para obtener el listado con todos los datos
+        de los clientes y lo carga en la lista asociada al treeView'''
     try:
         cur.execute("SELECT DNI, NOMBRE, APELLIDOS, COMUNIDAD, PROVINCIA, CIUDAD FROM CLIENTES")
         listado = cur.fetchall()
@@ -50,6 +56,9 @@ def cargarCliente(clientes):
         conexion.rollback()
 
 def cargarProducto(productos):
+    '''Carga de productos
+        Realiza la consulta necesaria contra la base de datos para obtener el listado con todos los datos
+        de los productos y lo carga en la lista asociada al treeView'''
     try:
         cur.execute("SELECT * FROM SERVICIOS ORDER BY(idServicio)")
         listado = cur.fetchall()
@@ -63,8 +72,11 @@ def cargarProducto(productos):
         conexion.rollback()
 
 def cargarFactura(facturas, mesa):
+    '''Carga de factura por mesa
+        Comprueba el número de la mesa seleccionada y realiza la consulta necesaria contra la base de datos
+        para obtener el listado con todos los datos de las facturas y lo carga en la lista asociada al treeView'''
     try:
-        if mesa == 0:
+        if mesa == 0: #Si no hay mesa seleccionada
             cur.execute("SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura), Facturas.PAGADO "
                         "FROM Facturas left join LineaFacturas "
                         "on LineaFacturas.IdFactura = Facturas.IdFactura "
@@ -73,7 +85,7 @@ def cargarFactura(facturas, mesa):
             facturas.clear()
             for n in listado:
                 facturas.append(n)
-        else:
+        else: #Si se le envía el número de una mesa
             cur.execute(
                 "SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura), Facturas.PAGADO "
                 "FROM Facturas left join LineaFacturas "
@@ -91,6 +103,9 @@ def cargarFactura(facturas, mesa):
         conexion.rollback()
 
 def cargarFactura2(facturas, dni):
+    '''Carga de facturas por dni
+        Realiza la consulta necesaria contra la base de datos para obtener el listado con todos los datos
+        de las facturas que lleven el dni introducido y lo carga en la lista asociada al treeView'''
     try:
         encontrado = False
         cur.execute("SELECT DNI FROM CLIENTES WHERE DNI = '"+str(dni)+"'")
@@ -102,7 +117,7 @@ def cargarFactura2(facturas, dni):
         else:
             encontrado = False
 
-        if encontrado == True:
+        if encontrado == True: #Si hay alguna coincidencia pone la booleana a true y realiza la carga
             cur.execute(
                 "SELECT Facturas.IDFACTURA, Facturas.DNICLIENTE, Facturas.IDCAMARERO, Facturas.IDMESA, Facturas.FECHA, count(LineaFacturas.IdFactura), Facturas.PAGADO "
                 "FROM Facturas left join LineaFacturas "
@@ -115,12 +130,15 @@ def cargarFactura2(facturas, dni):
                 facturas.append(n)
             print("Carga de facturas realizada con éxito")
         conexion.commit()
-        return encontrado
+        return encontrado #Devuelve la booleana con el estado
     except sqlite3.Error as e:
         print(e)
         conexion.rollback()
 
 def cargarComanda(factura, comandas):
+    '''Carga de comandas
+        Realiza la consulta necesaria contra la base de datos para obtener el listado con todos los datos
+        de las comandas asociadas a la factura seleccionada y lo carga en la lista asociada al treeView'''
     try:
         cur.execute("SELECT IDSERVICIO, CANTIDAD FROM LINEAFACTURAS WHERE IDFACTURA = '"+factura+"'")
         listado = cur.fetchall()
@@ -133,11 +151,10 @@ def cargarComanda(factura, comandas):
         print(e)
         conexion.rollback()
 
-
-
-
 # MÉTODOS RELACIONADOS CON LA GESTIÓN DE CAMAREROS:
 def altaCamarero(fila, camareros):
+    '''Insercción de camareros
+        Realiza la sentencia necesaria para insertar camareros en la base de datos'''
     try:
         cur.execute('insert into camareros (nombre, password) values(?,?)', fila)
         conexion.commit()
@@ -147,6 +164,8 @@ def altaCamarero(fila, camareros):
         print(e)
 
 def modificaCamarero(fila, id, camareros):
+    '''Modificación de camareros
+        Realiza la sentencia necesaria para modificar camareros en la base de datos'''
     try:
         cur.execute(
             "update camareros set nombre = '" + str(fila[0]) + "', password = '" + str(fila[1]) + "' where idcamarero = " + id + "")
@@ -157,6 +176,8 @@ def modificaCamarero(fila, id, camareros):
         print(e)
 
 def bajaCamarero(id, camareros):
+    '''Baja de camareros
+        Realiza la sentencia necesaria para eliminar camareros en la base de datos'''
     try:
         cur.execute("delete from camareros where idcamarero = "+id+"")
         conexion.commit()
@@ -167,6 +188,8 @@ def bajaCamarero(id, camareros):
 
 # MÉTODOS RELACIONADOS CON LA GESTIÓN DE PRODUCTOS:
 def altaProducto(fila, productos):
+    '''Insercción de productos
+        Realiza la sentencia necesaria para insertar productos en la base de datos'''
     try:
         cur.execute('insert into servicios (servicio, precio, categoria) values(?,?,?)', fila)
         conexion.commit()
@@ -176,6 +199,8 @@ def altaProducto(fila, productos):
         print(e)
 
 def modificaProducto(fila, id, productos):
+    '''MOdificación de productos
+        Realiza la sentencia necesaria para modificar productos en la base de datos'''
     try:
         cur.execute("update servicios set servicio = '" + str(fila[0]) + "', precio = '"+ str(fila[1])+"', categoria = '"+str(fila[2])+"' where idservicio = '"+id+"'")
         conexion.commit()
@@ -185,6 +210,8 @@ def modificaProducto(fila, id, productos):
         print(e)
 
 def bajaProducto(id, productos):
+    '''Baja de productos
+        Realiza la sentencia necesaria para eliminar productos en la base de datos'''
     try:
         cur.execute("delete from servicios where idservicio = "+id+"")
         conexion.commit()
@@ -195,6 +222,10 @@ def bajaProducto(id, productos):
 
  # MÉTODOS RELACIONADOS CON LA GESTIÓN DE FACTURAS + LINEAS FACTURAS
 def altaLinea(factura, comandas, servicio):
+    '''Insercción de lineas de venta
+        Hace una consulta para obtener la cantidad del producto registrado en la factura indicada,
+        si la cantidad es 0, se añade el primer producto,
+        si la cantidad es superior a 0, se modifica el producto para aumentar la cantidad'''
     try:
         #Obtenemos la cantidad del producto registrado con el id que le envíamos desde el main
         cur.execute("SELECT CANTIDAD FROM LINEAFACTURAS WHERE IDSERVICIO = '"+servicio+"' AND IDFACTURA = '"+factura+"'")
@@ -221,6 +252,10 @@ def altaLinea(factura, comandas, servicio):
         print(e)
 
 def bajaLinea(factura, comandas, servicio):
+    '''Insercción de lineas de venta
+        Hace una consulta para obtener la cantidad del producto registrado en la factura indicada,
+        si la cantidad es 0, se elimina el producto,
+        si la cantidad es superior a 0, se modifica el producto para reducir la cantidad'''
     try:
         cur.execute("SELECT IDVENTA FROM LINEAFACTURAS WHERE IDSERVICIO = '" + servicio + "' AND IDFACTURA = '" + factura + "'")
         id = str(cur.fetchone())
@@ -246,6 +281,8 @@ def bajaLinea(factura, comandas, servicio):
         print(e)
 
 def altaCliente(fila, clientes):
+    '''Alta de clientes
+        Realiza la sentencia necesaria para insertar clientes en la base de datos'''
     try:
         cur.execute("insert into clientes (dni, apellidos, nombre, comunidad, provincia, ciudad) values (?, ?, ?, ?, ?, ?)", fila)
         conexion.commit()
@@ -255,6 +292,8 @@ def altaCliente(fila, clientes):
         print(e)
 
 def bajaCliente(dni, clientes):
+    '''Baja de clientes
+        Realiza la sentencia necesaria para eliminar clientes de la base de datos'''
     try:
         cur.execute("delete from clientes where dni = '"+dni+"'")
         print("Baja de cliente realizada con éxito")
@@ -265,6 +304,8 @@ def bajaCliente(dni, clientes):
         conexion.rollback()
 
 def altaFactura(fila):
+    '''Alta de facturas
+        Realiza la sentencia necesaria para insertar facturas en la base de datos'''
     try:
         cur.execute('insert into facturas (dnicliente, idcamarero, idmesa, fecha, pagado) values(?,?,?,?,?)', fila)
         conexion.commit()
@@ -274,6 +315,10 @@ def altaFactura(fila):
         conexion.rollback()
 
 def bajaFactura(idFactura, facturas):
+    '''Baja de facturas
+        Comprueba si la factura seleccionada tiene asociadas lineas de venta,
+        en caso afirmativo envía un mensaje de error,
+        en caso negativo borra la factura de la base de datos'''
     try:
         vacio = False
         cur.execute("SELECT * FROM LINEAFACTURAS WHERE IDFACTURA = '"+str(idFactura)+"'")
@@ -281,7 +326,6 @@ def bajaFactura(idFactura, facturas):
         print("La factura "+idFactura+" tiene "+str(len(listado))+" líneas de venta")
         if len(listado) == 0:
             cur.execute("delete from facturas where idFactura = " + str(idFactura) + "")
-            #cur.execute("delete from lineafacturas where idFactura= " + str(idFactura) + "")
             cargarFactura(facturas, 0)
             vacio = True
         else:
@@ -293,6 +337,8 @@ def bajaFactura(idFactura, facturas):
         conexion.rollback()
 
 def cobraFactura(idFactura, facturas):
+    '''Cobros de facturas
+        Actualiza el estado de la factura a pagado'''
     try:
         cur.execute("update facturas set pagado = 'SI' where idfactura = '"+str(idFactura)+"'")
         cargarFactura(facturas, 0)
@@ -303,6 +349,8 @@ def cobraFactura(idFactura, facturas):
         conexion.rollback()
 
 def buscaFactura(idmesa):
+    '''Buscar factura
+        Coge la última factura registrada en la base de datos mediante la obtención del ID máximo'''
     try:
         cur.execute("SELECT MAX(IDFACTURA) FROM FACTURAS WHERE IDMESA = '"+str(idmesa)+"'")
         factura = str(cur.fetchone())
@@ -314,11 +362,11 @@ def buscaFactura(idmesa):
         print(e)
         conexion.rollback()
 
-
-
-
  # MÉTODOS AUXILIARES:
 def cargaComunidad():
+    '''Cargar comunidades
+        Obtiene todos los datos referentes a las comunidades de la base de datos y
+        los añade a la lista asociada al treeview'''
     i = 0
     cur.execute("select comunidad from comunidades")
     list = Gtk.ListStore(str)
@@ -331,6 +379,9 @@ def cargaComunidad():
     return list
 
 def cargaProvincias(comunidad):
+    '''Cargar provincias
+        Obtiene todos los datos referentes a las provincias de la base de datos y
+        los añade a la lista asociada al treeview'''
     i = 0
     cur.execute(
         "select provincia from provincias where comunidad_id in (Select id from comunidades where comunidad='" + comunidad + "')")
@@ -342,6 +393,9 @@ def cargaProvincias(comunidad):
     return list
 
 def cargaMunicipios(provincia):
+    '''Cargar municipios
+        Obtiene todos los datos referentes a los municipios de la base de datos y
+        los añade a la lista asociada al treeview'''
     i = 0
     cur.execute(
             "select municipio from municipios where provincia_id in (Select id from provincias where provincia='" + provincia + "')")
@@ -354,6 +408,8 @@ def cargaMunicipios(provincia):
     return list
 
 def cargaMesas():
+    '''Cargar mesas
+        Obtiene el estado de todas las mesas registradas en la base de datos y devuelve este listado'''
     try:
         cur.execute("SELECT ESTADO FROM MESAS ORDER BY(idMesa)")
         listado = cur.fetchall()
@@ -365,6 +421,8 @@ def cargaMesas():
     return listado
 
 def ocuparMesa(estado, mesa):
+    '''Ocupar mesa
+        Cambia el estado de la mesa a disponible o no disponible, según el string que haya recibido'''
     try:
         cur.execute("update mesas set estado = '"+estado+"' where idmesa = '"+str(mesa)+"'")
         conexion.commit()
@@ -373,6 +431,8 @@ def ocuparMesa(estado, mesa):
         conexion.rollback()
 
 def buscaPWD(id):
+    '''Buscas password
+        Busca la contraseña asociada a el id recibido'''
     try:
         cur.execute("select password from camareros where idcamarero = " + id + "")
         password = str(cur.fetchone())
@@ -384,20 +444,23 @@ def buscaPWD(id):
     return password
 
 def login(user, pwd):
+    '''Obtencion de datos de inicio de sesion
+        Obtiene el usuario y contraseña del usuario introducido'''
     try:
         cur.execute("select idCamarero from camareros where idCamarero = '"+user+"'")
         user = str(cur.fetchone())
         for char in "(),'":
             user = user.replace(char, '')
-        cur.execute("select password from camareros where password = '"+pwd+"'")
+        cur.execute("select password from camareros where password = '"+pwd+"' and idCamarero = '"+user+"'")
         password = str(cur.fetchone())
         for char in "(),'":
             password = password.replace(char, '')
         fila = (user, password)
         conexion.commit()
+        return fila
     except sqlite3.Error as e:
         print(e)
-    return fila
+        conexion.rollback()
 
 
 

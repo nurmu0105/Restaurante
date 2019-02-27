@@ -275,7 +275,7 @@
                 <property name="height_request">80</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">imgs/headerPrueba.jpg</property>
+                <property name="pixbuf">imgs/headerSimple.jpg</property>
               </object>
             </child>
           </object>
@@ -2755,7 +2755,7 @@
                 <property name="height_request">30</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">imgs/piePrueba.jpg</property>
+                <property name="pixbuf">imgs/pie.jpg</property>
               </object>
             </child>
             <child>

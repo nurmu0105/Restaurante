@@ -40,7 +40,7 @@ def bajaCliente(self, widget):
 
 
 def ocuparMesa(self, widget):
-    '''OCupar mesas
+    '''Ocupar mesas
         En primer lugar se comprueba si se ha seleccionado un cliente y una mesa disponible, se llama al método
         para cambiar el estado de la mesa a No Disponible y se recarga el panel para mostrar el nuevo estado.
         Se da de alta la factura en la base de datos, se limpian los campos utilizados y se setean los datos
@@ -108,18 +108,3 @@ def cancelarComanda(self, widget):
     else:
         self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
 
-
-#def aceptarComanda(self, widget):
- #   '''Aceptar comanda
-  #      Llama al método encargado de resetear la TreeView de vencomandas
-   #     Llama al método de actualizar el estado de la mesa para que aparezca como no disponible
-    #    Llama al método de cargar el TreeView de facturas de la ventana principal
-     #   Llama al método de cargar los labels del panel de gestión de las mesas'''
-#    database.limpiarComandas(self.comandas)
- #   database.ocuparMesa("No disponible", self.lblFMesa.get_text())
-  #  database.cargarFactura(self.facturas, self.lblFMesa.get_text())
-   # self.cargaMesas()
-    #self.lblFCliente.set_text("Seleccionar cliente")
-    #self.lblFMesa.set_text("Seleccionar mesa")
-    #self.inicializarCalendario()
-    #self.lblAviso.set_markup("<span color='white'>Alta de factura completada con éxito</span>")
