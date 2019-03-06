@@ -16,7 +16,7 @@ def validaDNI(self, widget):
                 self.lblAviso.set_text('')
             else:
                 self.eDni = True
-                self.lblError.set_text("El DNI introducido debe ser un DNI válido")
+                self.lblError.set_text("El DNI introducido debe ser un DNI valido")
                 self.abrirError(widget)
         else:
             self.eDni = True
@@ -24,5 +24,15 @@ def validaDNI(self, widget):
             self.abrirError(widget)
     except:
         self.eDni = True
-        self.lblError.set_text("El DNI introducido debe ser un DNI válido")
+        self.lblError.set_text("El DNI introducido debe ser un DNI valido")
+        self.abrirError(widget)
+
+def validaPrecio(self, widget):
+    precio = self.lblPrecio.get_text()
+    try:
+        int(precio)
+        self.ePrecio = False
+    except:
+        self.ePrecio = True
+        self.lblError.set_text("El precio no es valido")
         self.abrirError(widget)

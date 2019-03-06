@@ -1,3 +1,6 @@
+#!/usr/local/bin/python
+# coding: utf-8
+
 import locale
 import os
 import random
@@ -279,6 +282,29 @@ def bajaLinea(factura, comandas, servicio):
         cargarComanda(factura, comandas)
     except sqlite3.Error as e:
         print(e)
+
+def validaCliente(self, widget, fila, clientes, dni):
+    '''Valida clientes
+        Busca si ya hay un cliente registrado en la base de datos con el dni introducido por el usuario '''
+    try:
+        encontrado = False
+        cur.execute("SELECT DNI FROM CLIENTES WHERE DNI = '" + str(dni) + "'")
+        cliente = str(cur.fetchone())
+        for char in "(),'":
+            cliente = cliente.replace(char, '')
+        if cliente != "None":
+            encontrado = True
+        else:
+            encontrado = False
+
+        if encontrado == True:
+            self.lblError.set_text("El DNI introducido ya pertenece a un cliente")
+            self.abrirError(widget)
+        else:
+            altaCliente(fila, clientes)
+    except sqlite3.Error as e:
+        print(e)
+        conexion.rollback()
 
 def altaCliente(fila, clientes):
     '''Alta de clientes

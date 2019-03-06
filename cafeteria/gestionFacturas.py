@@ -1,3 +1,6 @@
+#!/usr/local/bin/python
+# coding: utf-8
+
 from cafeteria import database, validaciones
 
 
@@ -21,7 +24,7 @@ def altaCliente(self, widget):
         validaciones.validaDNI(self, widget)
         if self.eDni == False:
             fila = (dni, apellido, nombre, comunidad, provincia, ciudad)
-            database.altaCliente(fila, self.clientes)
+            database.validaCliente(self, widget, fila, self.clientes, dni)
             self.limpiarCli(widget)
             self.lblAviso.set_markup("<span color='white'>Alta de cliente completada con éxito</span>")
     else:

@@ -1,4 +1,7 @@
-from cafeteria import database
+#!/usr/local/bin/python
+# coding: utf-8
+
+from cafeteria import database, validaciones
 
 
 def altaProducto(self, widget):
@@ -11,14 +14,16 @@ def altaProducto(self, widget):
     self.lblNombre.set_text(self.lblNombre.get_text().title())
     nombre = self.lblNombre.get_text()
     precio = self.lblPrecio.get_text() + " €"
-    if len(nombre) > 0 and len(precio) > 0 and self.categoria != '':
-        fila = (nombre, precio, self.categoria)
-        database.altaProducto(fila, self.productos)
-        self.limpiarProd(widget)
-        self.lblAviso.set_markup("<span color='white'>Alta de producto completada con éxito</span>")
-    else:
-        self.lblError.set_text("Debe cubrir todos los campos")
-        self.abrirError(widget)
+    validaciones.validaPrecio(self, widget)
+    if self.ePrecio == False:
+        if len(nombre) > 0 and len(precio) > 0 and self.categoria != '':
+            fila = (nombre, precio, self.categoria)
+            database.altaProducto(fila, self.productos)
+            self.limpiarProd(widget)
+            self.lblAviso.set_markup("<span color='white'>Alta de producto completada con éxito</span>")
+        else:
+            self.lblError.set_text("Debe cubrir todos los campos")
+            self.abrirError(widget)
 
 
 def modificaProducto(self, widget):
@@ -32,18 +37,19 @@ def modificaProducto(self, widget):
     self.lblNombre.set_text(self.lblNombre.get_text().title())
     nombre = self.lblNombre.get_text()
     precio = self.lblPrecio.get_text() + " €"
-    print(nombre, precio, self.categoria)
     if self.lblProducto.get_text() == "Seleccionar producto":
         self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún producto</span>")
     else:
-        if len(nombre) > 0 and len(precio) > 2 and self.categoria != '':
-            fila = (nombre, precio, self.categoria)
-            database.modificaProducto(fila, self.lblProducto.get_text(), self.productos)
-            self.limpiarProd(widget)
-            self.lblAviso.set_markup("<span color='white'>Modificación de producto completada con éxito</span>")
-        else:
-            self.lblError.set_text("Debe cubrir todos los campos")
-            self.abrirError(widget)
+        validaciones.validaPrecio(self, widget)
+        if self.ePrecio == False:
+            if len(nombre) > 0 and len(precio) > 2 and self.categoria != '':
+                fila = (nombre, precio, self.categoria)
+                database.modificaProducto(fila, self.lblProducto.get_text(), self.productos)
+                self.limpiarProd(widget)
+                self.lblAviso.set_markup("<span color='white'>Modificación de producto completada con éxito</span>")
+            else:
+                self.lblError.set_text("Debe cubrir todos los campos")
+                self.abrirError(widget)
 
 
 def bajaProducto(self, widget):

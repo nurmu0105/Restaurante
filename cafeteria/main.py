@@ -1,3 +1,10 @@
+#!/usr/local/bin/python
+# coding: utf-8
+"""
+
+a16nuriamc
+
+"""
 import datetime
 
 import gi
@@ -74,6 +81,7 @@ class Main:
         self.lblPagina = b.get_object("lblPagina")
         self.password = ""
         self.eDni = True
+        self.ePrecio = True
 
 
     # Login:
@@ -505,7 +513,7 @@ class Main:
                     database.ocuparMesa("Disponible", str(i))
                     i = i + 1
                 self.cargaMesas()
-                self.lblAviso.set_markup("<span color='gray'><b>Jornada finalizada</b></span>")
+                self.lblAviso.set_markup("<span color='white'><b>Jornada finalizada</b></span>")
                 print('Mesas liberadas con exito')
                 self.cerrarJornada(widget)
             else:

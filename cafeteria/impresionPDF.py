@@ -1,10 +1,12 @@
+#!/usr/local/bin/python
+# coding: utf-8
 import datetime
 import locale
 import os
 import random
 import sqlite3
 
-# Establece la conexión:
+
 from reportlab.lib.colors import black, white, forestgreen
 from reportlab.lib.pagesizes import A4, A6
 from reportlab.lib.units import inch
@@ -19,7 +21,7 @@ except sqlite3.OperationalError as e:
     print(e)
 
 def imprimirFactura(idFactura,fechaFactura, clienteFactura):
-    '''Impresión de facturas
+    '''Impresion de facturas
         Realiza la consulta a la base de datos para obtener los datos necesarios y genera la factura
         en pdf. '''
     try:
@@ -120,12 +122,12 @@ def imprimirFactura(idFactura,fechaFactura, clienteFactura):
         total = locale.currency(total)
         cser.drawRightString(x, y, str(total))
 
-        #Impresión del pdf:
+        #Impresion del pdf:
         cser.showPage()
         cser.save()
         dir = os.getcwd()
         os.system('/usr/bin/xdg-open ' + dir + '/FACTURA_' + str(idFactura) + '.pdf')
-        print('Factura preparada para impresión')
+        print('Factura preparada para impresion')
     except sqlite3.Error as e:
         print(e)
         conexion.rollback()
@@ -133,7 +135,7 @@ def imprimirFactura(idFactura,fechaFactura, clienteFactura):
 
 def imprimirRecibo(idFactura):
     '''Imprimir recibo
-        Se realiza una consulta a la base de datos para obtener la información necesaria
+        Se realiza una consulta a la base de datos para obtener la informacion necesaria
         y se genera un recibo sin los datos personales del cliente en pdf'''
     try:
         cser = canvas.Canvas('RECIBO_'+str(idFactura) + '.pdf', pagesize=A6)
@@ -151,7 +153,7 @@ def imprimirRecibo(idFactura):
         cser.drawString(25, 360, "Green Side")
         cser.setFontSize(8)
         cser.drawString(129, 350, "RESTAURANT")
-        cser.drawString(225, 350, "FACTURA Nº:")
+        cser.drawString(225, 350, "FACTURA N:")
         cser.drawString(225,340,str(idFactura))
         cser.setLineWidth(3)
         cser.line(0, 320, 525, 320)
@@ -207,9 +209,8 @@ def imprimirRecibo(idFactura):
         cser.showPage()
         cser.save()
         dir = os.getcwd()
-        print(os.getcwd())
         os.system('/usr/bin/xdg-open '+dir+'/'+'RECIBO_'+str(idFactura)+'.pdf')
-        print('Factura preparada para impresión')
+        print('Factura preparada para impresion')
     except sqlite3.Error as e:
         print(e)
         conexion.rollback()
@@ -217,7 +218,7 @@ def imprimirRecibo(idFactura):
 
 def imprimirMenu():
     '''Imprimir menu
-        Recorre el listado de platos obtenido del métofo generaMenuDia situándolos en el pdf,
+        Recorre el listado de platos obtenido del metodo generaMenuDia situandolos en el pdf,
         una vez realizado imprime el mismo y los muestra por pantalla'''
     dia = datetime.datetime.now().strftime("%d")
     mes = datetime.datetime.now().strftime("%m")
@@ -243,7 +244,7 @@ def imprimirMenu():
     cser.setFillColor(forestgreen)
     cser.setStrokeColor(forestgreen)
 
-    #Categorías:
+    #Categorias:
     cser.setFontSize(17)
     cser.drawString(107,617, "Entrantes")
     cser.drawString(106.5, 617, "Entrantes")
@@ -278,18 +279,18 @@ def imprimirMenu():
     cser.setFont('Sawasdee', 19)
     cser.drawCentredString(295, 130, '(Pan, bebida y café incluídos)')
 
-    #Impresión del pdf:
+    #Impresion del pdf:
     cser.showPage()
     cser.save()
     dir = os.getcwd()
     os.system('/usr/bin/xdg-open ' + dir + '/MENU_' + str(fecha) + '.pdf')
-    print('Factura preparada para impresión')
+    print('Factura preparada para impresion')
 
 
 def generarMenuDia():
     '''GENERADOR DEL MENÚ DEL DÍA
-        Método que se encarga de guardar en listas las tuplas correspondientes a cada categoría
-        y recorrer dichas listas para sacar el plato correspondiente a una posición aleatoria
+        Metodo que se encarga de guardar en listas las tuplas correspondientes a cada categoría
+        y recorrer dichas listas para sacar el plato correspondiente a una posicion aleatoria
         comprobando que no haya repeticiones'''
 
     try:
@@ -309,17 +310,17 @@ def generarMenuDia():
 
         listado = []
 
-        #Se procede a realizar los bucles siempre y cuando de cada categoría haya más de tres platos
+        #Se procede a realizar los bucles siempre y cuando de cada categoria haya mas de tres platos
         if en > 3 and pl > 3 and po > 3:
             index = 0 #Se inicializa el indice
             while index < 3:
                 num1 = random.randint(1, en)
                 num2 = 0
                 for n in entrantes:
-                    #Se recorre la lista y mientras num2 no sea igual que num1, vamos sumándole 1
+                    #Se recorre la lista y mientras num2 no sea igual que num1, vamos sumandole 1
                     if num2 == num1:
                         if entrantes[num2] not in listado:
-                            #Si es igual comprobamos si ya está en la lista para guardar el dato en caso negativo
+                            #Si es igual comprobamos si ya esta en la lista para guardar el dato en caso negativo
                             listado.append(n)
                             index = index + 1
                     else:
