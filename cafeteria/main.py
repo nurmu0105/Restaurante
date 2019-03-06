@@ -230,7 +230,7 @@ class Main:
         self.cargaMesas()
         self.inicializarCalendario()
 
-        # Colorea la aplicación
+        # Colorea la aplicacion
         colorInterfaz.color(self)
 
 
@@ -242,9 +242,9 @@ class Main:
         self.venlogin.connect('delete-event', lambda w, e: w.hide() or True)
         self.venjornada.connect('delete-event', lambda w, e: w.hide() or True)
 
-    # MÉTODOS DE SELECCIÓN PARA LOS TREEVIEW
+    # METODOS DE SELECCION PARA LOS TREEVIEW
     def seleccionaCamarero(self, widget):
-        '''Rellena los campos en la pestaña de Camareros cuando se selecciona el TreeView correspondiente'''
+        '''Rellena los campos en la pestana de Camareros cuando se selecciona el TreeView correspondiente'''
         model, iter = self.treeCamareros.get_selection().get_selected()
         if iter != None:
             self.lblCamarero.set_text(str(model.get_value(iter, 0)))
@@ -253,7 +253,7 @@ class Main:
             self.inputPassword.set_text("**********")
 
     def seleccionaProducto(self, widget):
-        '''Rellena los campos de la pestaña Productos cuando se selecciona el elemento en el TreeView'''
+        '''Rellena los campos de la pestana Productos cuando se selecciona el elemento en el TreeView'''
         model, iter = self.treeProductos.get_selection().get_selected()
         if iter != None:
             self.lblProducto.set_text(str(model.get_value(iter, 0)))
@@ -283,7 +283,7 @@ class Main:
             self.servicio = str(model.get_value(iter, 0))
 
     def seleccionaFactura(self, widget):
-        '''Recoge los datos del elemento seleccionado en el TreeView de la pestaña Facturas'''
+        '''Recoge los datos del elemento seleccionado en el TreeView de la pestana Facturas'''
         model, iter = self.treeFacturas.get_selection().get_selected()
         if iter != None:
             self.idFactura = model.get_value(iter, 0)
@@ -299,7 +299,7 @@ class Main:
             self.clienteNombre.set_text(str(model.get_value(iter,1)))
             self.clienteApellido.set_text(str(model.get_value(iter,2)))
 
-    # MÉTODOS RELACIONADOS CON LA GESTIÓN DE CAMAREROS
+    # METODOS RELACIONADOS CON LA GESTION DE CAMAREROS
     def altaCamarero(self, widget):
         gestionCamareros.altaCamareros(self, widget)
 
@@ -310,7 +310,7 @@ class Main:
         gestionCamareros.bajaCamarero(self, widget)
 
 
-    # MÉTODOS RELACIONADOS CON LA GESTIÓN DE PRODUCTOS
+    # METODOS RELACIONADOS CON LA GESTION DE PRODUCTOS
     def altaProducto(self, widget):
         gestionProductos.altaProducto(self, widget)
 
@@ -320,7 +320,7 @@ class Main:
     def bajaProducto(self, widget):
         gestionProductos.bajaProducto(self, widget)
 
-    # MÉTODOS RELACIONADOS CON LA GESTIÓN DE FACTURAS + LINEASFACTURAS
+    # METODOS RELACIONADOS CON LA GESTION DE FACTURAS + LINEASFACTURAS
     def altaCliente(self, widget):
         gestionFacturas.altaCliente(self, widget)
 
@@ -341,10 +341,10 @@ class Main:
 
     def imprimeFactura(self, widget):
         '''Imprimir factura
-            Comprueba que hay una factura seleccionada y que no pertenece al cliente anónimo,
-            llama al método para cambiar el estado de la mesa a Disponible,
-            llama al método encargado de generar el pdf con la factura,
-            llama al método encargado de cambiar el estado de la factura a pagado'''
+            Comprueba que hay una factura seleccionada y que no pertenece al cliente anonimo,
+            llama al metodo para cambiar el estado de la mesa a Disponible,
+            llama al metodo encargado de generar el pdf con la factura,
+            llama al metodo encargado de cambiar el estado de la factura a pagado'''
         if self.idFactura != "":
             if self.clienteFactura != "00000000T":
                 database.ocuparMesa("Disponible", self.idMesa)
@@ -355,7 +355,7 @@ class Main:
                 self.idFactura = ""
                 self.lblAviso.set_text("")
             else:
-                self.lblError.set_text("No se puede generar una factura para un cliente anónimo")
+                self.lblError.set_text("No se puede generar una factura para un cliente anonimo")
                 self.abrirError(widget)
                 self.lblAviso.set_text("")
         else:
@@ -363,10 +363,10 @@ class Main:
 
     def imprimeRecibo(self, widget):
         '''Imprimir recibo
-                Comprueba que hay una factura o mesa ocupada seleccionada,
-                llama al método para cambiar el estado de la mesa a Disponible,
-                llama al método encargado de generar el pdf con el recibo,
-                llama al método encargado de cambiar el estado de la factura a pagado'''
+            Comprueba que hay una factura o mesa ocupada seleccionada,
+            llama al metodo para cambiar el estado de la mesa a Disponible,
+            llama al metodo encargado de generar el pdf con el recibo,
+            llama al metodo encargado de cambiar el estado de la factura a pagado'''
         if self.idFactura != "" or self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
             if self.lblCFactura.get_text() != "Seleccione una mesa ocupada":
                 self.idFactura = self.lblCFactura.get_text()
@@ -383,9 +383,9 @@ class Main:
         else:
             self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ninguna mesa ocupada</span>")
 
-    # MÉTODOS AUXILIARES:
+    # METODOS AUXILIARES:
     def mayus(self, widget, date = None):
-        ''' Pone las iniciales y la letra del DNI en mayúsculas '''
+        ''' Pone las iniciales y la letra del DNI en mayusculas '''
         self.inputNombre.set_text(self.inputNombre.get_text().title())
         self.lblNombre.set_text(self.lblNombre.get_text().title())
         self.lblNombre.set_text(self.lblNombre.get_text().title())
@@ -394,14 +394,14 @@ class Main:
         self.clienteApellido.set_text(self.clienteApellido.get_text().title())
 
     def limpiarCam(self, widget):
-        ''' Resetea todos los atributos de la pestaña Camareros '''
+        ''' Resetea todos los atributos de la pestana Camareros '''
         self.lblCamarero.set_text("Seleccionar camarero")
         self.inputNombre.set_text("")
         self.inputPassword.set_text("")
         self.lblAviso.set_text("")
 
     def limpiarProd(self, widget):
-        ''' Resetea todos los atributos de la pestaña Productos '''
+        ''' Resetea todos los atributos de la pestana Productos '''
         self.lblProducto.set_text("Seleccionar producto")
         self.lblNombre.set_text("")
         self.lblPrecio.set_text("")
@@ -423,7 +423,7 @@ class Main:
         self.lblAviso.set_text("")
 
     def limpiarFact(self, widget):
-        ''' Resetea todos los atributos y variables recurso de la pestaña Facturas '''
+        ''' Resetea todos los atributos y variables recurso de la pestana Facturas '''
         self. lblFMesa.set_text("Seleccionar mesa")
         database.cargarFactura(self.facturas, 0) #Recarga el treeView para que muestre todas las facturas registradas
         self.mesa = ""
@@ -436,7 +436,7 @@ class Main:
 
     def inicializarCalendario(self):
         '''Inicializar el calendario
-            Pone la fecha actual en la pestaña de Home para que el resto de la aplicación
+            Pone la fecha actual en la pestana de Home para que el resto de la aplicacion
             pueda utilizarla en las gestiones necesarias'''
         dia = datetime.datetime.now().strftime("%d")
         mes = datetime.datetime.now().strftime("%m")
@@ -453,7 +453,7 @@ class Main:
 
     def actualizarProvincias(self, widget):
         '''Actualiza la lista de provincias
-            Recoge el evento de selección en la lista de comunidades y llama al método de cargar la combo'''
+            Recoge el evento de seleccion en la lista de comunidades y llama al metodo de cargar la combo'''
         self.comunidad = str(self.clienteComu.get_active_text())
         self.cargarProvincias(widget)
 
@@ -466,7 +466,7 @@ class Main:
 
     def actualizarMunicipios(self, widget):
         '''Actualiza la lista de municipios
-            Recoge el evento de selección en la lista de provincias y llama al método de cargar la combo'''
+            Recoge el evento de seleccion en la lista de provincias y llama al metodo de cargar la combo'''
         self.provincia = str(self.clienteProv.get_active_text())
         self.cargarMunicipios(widget)
 
@@ -480,7 +480,7 @@ class Main:
     def seleccionarCategoria(self, widget):
         '''Seleccionar categoria de productos
             Recoge el evento de los radiobutton relacionados con las categorias de los productos en la
-            pestaña Gestión de Productos y guarda en una variable la opción seleccionada por el usuario'''
+            pestana Gestion de Productos y guarda en una variable la opcion seleccionada por el usuario'''
         if self.categoria1.get_active():
             self.categoria = 'Entrante'
         if self.categoria2.get_active():
@@ -492,9 +492,9 @@ class Main:
 
     def terminarJornada(self, widget):
         '''Finalizar la jornada
-            Comprueba si la contraseña introducida corresponde al camarero que ha iniciado sesión,
+            Comprueba si la contrasena introducida corresponde al camarero que ha iniciado sesion,
             recorre la lista de mesas que hay cambiando el estado de cada una de ellas a Disponible,
-            por último recarga el panel lateral de las mesas y cierra la ventana generada'''
+            por ultimo recarga el panel lateral de las mesas y cierra la ventana generada'''
         user = self.lblHCamarero.get_text()
         password = self.jornadaPwd.get_text()
         if len(password):
@@ -506,13 +506,13 @@ class Main:
                     i = i + 1
                 self.cargaMesas()
                 self.lblAviso.set_markup("<span color='gray'><b>Jornada finalizada</b></span>")
-                print('Mesas liberadas con éxito')
+                print('Mesas liberadas con exito')
                 self.cerrarJornada(widget)
             else:
-                self.lblError.set_text("Contraseña no válida")
+                self.lblError.set_text("Password no valida")
                 self.abrirError(widget)
         else:
-            self.lblError.set_text("Debe introducir su contraseña")
+            self.lblError.set_text("Debe introducir su password")
             self.abrirError(widget)
 
     def buscaFactura(self, widget):
@@ -523,7 +523,7 @@ class Main:
         if len(dni) == 9:
             encontrado = database.cargarFactura2(self.facturas, dni)
             if encontrado == False:
-                self.lblError.set_text("No se ha encontrado ningún cliente con ese DNI")
+                self.lblError.set_text("No se ha encontrado ningun cliente con ese DNI")
                 self.abrirError(widget)
                 database.cargarFactura(self.facturas, 0)
         else:
@@ -531,7 +531,7 @@ class Main:
             self.abrirError(widget)
 
 
-    # MÉTODOS RELACIONADOS CON LA GESTIÓN DEL PANEL MESAS:
+    # METODOS RELACIONADOS CON LA GESTION DEL PANEL MESAS:
     def cargaMesas(self):
         '''Cargar el panel lateral de las mesas
             Obtiene un listado con los datos de las mesas de la base de datos,
@@ -549,11 +549,11 @@ class Main:
             i = i + 1
 
     def mesa1(self, widget):
-        '''Selección de la mesa
-            Recoge el estado de la mesa y llama al método encargado de cambiar de pestaña,
+        '''Seleccion de la mesa
+            Recoge el estado de la mesa y llama al metodo encargado de cambiar de pestana,
             carga las facturas asociadas con esa mesa,
-            si la mesa está disponible limpia el treeview de comandas y avisa de que la mesa no está ocupada,
-            si la mesa está ocupada carga las lineas de ventas en el treeview de comandas'''
+            si la mesa esta disponible limpia el treeview de comandas y avisa de que la mesa no esta ocupada,
+            si la mesa esta ocupada carga las lineas de ventas en el treeview de comandas'''
         self.estado = self.lblmesa1.get_text()
         database.cargarFactura(self.facturas, 1)
         self.lblCMesa.set_text(str(1))
@@ -571,11 +571,11 @@ class Main:
             self.comandas.clear()
 
     def mesa2(self, widget):
-        '''Selección de la mesa
-            Recoge el estado de la mesa y llama al método encargado de cambiar de pestaña,
+        '''Seleccion de la mesa
+            Recoge el estado de la mesa y llama al metodo encargado de cambiar de pestaNa,
             carga las facturas asociadas con esa mesa,
-            si la mesa está disponible limpia el treeview de comandas y avisa de que la mesa no está ocupada,
-            si la mesa está ocupada carga las lineas de ventas en el treeview de comandas'''
+            si la mesa esta disponible limpia el treeview de comandas y avisa de que la mesa no esta ocupada,
+            si la mesa esta ocupada carga las lineas de ventas en el treeview de comandas'''
         self.estado = self.lblmesa2.get_text()
         database.cargarFactura(self.facturas, 2)
         self.lblCMesa.set_text(str(2))
@@ -594,11 +594,11 @@ class Main:
             self.comandas.clear()
 
     def mesa3(self, widget):
-        '''Selección de la mesa
-            Recoge el estado de la mesa y llama al método encargado de cambiar de pestaña,
+        '''Seleccion de la mesa
+            Recoge el estado de la mesa y llama al metodo encargado de cambiar de pestaNa,
             carga las facturas asociadas con esa mesa,
-            si la mesa está disponible limpia el treeview de comandas y avisa de que la mesa no está ocupada,
-            si la mesa está ocupada carga las lineas de ventas en el treeview de comandas'''
+            si la mesa esta disponible limpia el treeview de comandas y avisa de que la mesa no esta ocupada,
+            si la mesa esta ocupada carga las lineas de ventas en el treeview de comandas'''
         self.estado = self.lblmesa3.get_text()
         database.cargarFactura(self.facturas, 3)
         self.lblCMesa.set_text(str(3))
@@ -617,11 +617,11 @@ class Main:
             self.comandas.clear()
 
     def mesa4(self, widget):
-        '''Selección de la mesa
-            Recoge el estado de la mesa y llama al método encargado de cambiar de pestaña,
+        '''Seleccion de la mesa
+            Recoge el estado de la mesa y llama al metodo encargado de cambiar de pestaNa,
             carga las facturas asociadas con esa mesa,
-            si la mesa está disponible limpia el treeview de comandas y avisa de que la mesa no está ocupada,
-            si la mesa está ocupada carga las lineas de ventas en el treeview de comandas'''
+            si la mesa esta disponible limpia el treeview de comandas y avisa de que la mesa no esta ocupada,
+            si la mesa esta ocupada carga las lineas de ventas en el treeview de comandas'''
         self.estado = self.lblmesa4.get_text()
         database.cargarFactura(self.facturas, 4)
         self.lblCMesa.set_text(str(4))
@@ -640,11 +640,11 @@ class Main:
             self.comandas.clear()
 
     def mesa5(self, widget):
-        '''Selección de la mesa
-            Recoge el estado de la mesa y llama al método encargado de cambiar de pestaña,
+        '''Seleccion de la mesa
+            Recoge el estado de la mesa y llama al metodo encargado de cambiar de pestana,
             carga las facturas asociadas con esa mesa,
-            si la mesa está disponible limpia el treeview de comandas y avisa de que la mesa no está ocupada,
-            si la mesa está ocupada carga las lineas de ventas en el treeview de comandas'''
+            si la mesa esta disponible limpia el treeview de comandas y avisa de que la mesa no esta ocupada,
+            si la mesa esta ocupada carga las lineas de ventas en el treeview de comandas'''
         self.estado = self.lblmesa5.get_text()
         database.cargarFactura(self.facturas, 5)
         self.lblCMesa.set_text(str(5))
@@ -663,11 +663,11 @@ class Main:
             self.comandas.clear()
 
     def mesa6(self, widget):
-        '''Selección de la mesa
-            Recoge el estado de la mesa y llama al método encargado de cambiar de pestaña,
+        '''Seleccion de la mesa
+            Recoge el estado de la mesa y llama al metodo encargado de cambiar de pestana,
             carga las facturas asociadas con esa mesa,
-            si la mesa está disponible limpia el treeview de comandas y avisa de que la mesa no está ocupada,
-            si la mesa está ocupada carga las lineas de ventas en el treeview de comandas'''
+            si la mesa esta disponible limpia el treeview de comandas y avisa de que la mesa no esta ocupada,
+            si la mesa esta ocupada carga las lineas de ventas en el treeview de comandas'''
         self.estado = self.lblmesa6.get_text()
         database.cargarFactura(self.facturas, 6)
         self.lblCMesa.set_text(str(6))
@@ -686,11 +686,11 @@ class Main:
             self.comandas.clear()
 
     def mesa7(self, widget):
-        '''Selección de la mesa
-            Recoge el estado de la mesa y llama al método encargado de cambiar de pestaña,
+        '''Seleccion de la mesa
+            Recoge el estado de la mesa y llama al metodo encargado de cambiar de pestana,
             carga las facturas asociadas con esa mesa,
-            si la mesa está disponible limpia el treeview de comandas y avisa de que la mesa no está ocupada,
-            si la mesa está ocupada carga las lineas de ventas en el treeview de comandas'''
+            si la mesa esta disponible limpia el treeview de comandas y avisa de que la mesa no esta ocupada,
+            si la mesa esta ocupada carga las lineas de ventas en el treeview de comandas'''
         self.estado = self.lblmesa7.get_text()
         database.cargarFactura(self.facturas, 7)
         self.lblCMesa.set_text(str(7))
@@ -709,11 +709,11 @@ class Main:
             self.comandas.clear()
 
     def mesa8(self, widget):
-        '''Selección de la mesa
-            Recoge el estado de la mesa y llama al método encargado de cambiar de pestaña,
+        '''Seleccion de la mesa
+            Recoge el estado de la mesa y llama al metodo encargado de cambiar de pestana,
             carga las facturas asociadas con esa mesa,
-            si la mesa está disponible limpia el treeview de comandas y avisa de que la mesa no está ocupada,
-            si la mesa está ocupada carga las lineas de ventas en el treeview de comandas'''
+            si la mesa esta disponible limpia el treeview de comandas y avisa de que la mesa no esta ocupada,
+            si la mesa esta ocupada carga las lineas de ventas en el treeview de comandas'''
         self.estado = self.lblmesa8.get_text()
         database.cargarFactura(self.facturas, 8)
         self.lblCMesa.set_text(str(8))
@@ -732,11 +732,11 @@ class Main:
             self.comandas.clear()
 
     def mesa9(self, widget):
-        '''Selección de la mesa
-            Recoge el estado de la mesa y llama al método encargado de cambiar de pestaña,
+        '''Seleccion de la mesa
+            Recoge el estado de la mesa y llama al metodo encargado de cambiar de pestana,
             carga las facturas asociadas con esa mesa,
-            si la mesa está disponible limpia el treeview de comandas y avisa de que la mesa no está ocupada,
-            si la mesa está ocupada carga las lineas de ventas en el treeview de comandas'''
+            si la mesa esta disponible limpia el treeview de comandas y avisa de que la mesa no esta ocupada,
+            si la mesa esta ocupada carga las lineas de ventas en el treeview de comandas'''
         self.mesa = 9
         self.estado = self.lblmesa9.get_text()
         database.cargarFactura(self.facturas, 9)
@@ -756,10 +756,10 @@ class Main:
             self.comandas.clear()
 
     def seleccionarPanel(self):
-        '''Cambiar de pestaña al clickar una mesa
-            Comprueba que la pestaña actual no sea la pestaña Gestión de Facturas,
-            si la mesa está disponible cambia a la pestaña para sentar al cliente,
-            si la mesa está ocupada cambia a la pestaña Gestión de comandas'''
+        '''Cambiar de pestana al clickar una mesa
+            Comprueba que la pestana actual no sea la pestana Gestion de Facturas,
+            si la mesa esta disponible cambia a la pestana para sentar al cliente,
+            si la mesa esta ocupada cambia a la pestana Gestion de comandas'''
         panel = self.Pestanas.get_current_page()
         if panel != 5:
             if self.estado == "No disponible":
@@ -767,7 +767,7 @@ class Main:
             else:
                 self.Pestanas.set_current_page(3)
 
-    # MÉTODOS RELACIONADOS CON LA GESTIÓN DE LAS VENTANAS:
+    # METODOS RELACIONADOS CON LA GESTION DE LAS VENTANAS:
     def abrirAbout(self, widget):
         self.venacerca.show()
 
@@ -788,17 +788,17 @@ class Main:
         panel = self.Pestanas.get_current_page()
         if panel == 1:
             if self.lblCamarero.get_text() == "Seleccionar camarero":
-                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún camarero</span>")
+                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningun camarero</span>")
             else:
                 self.venconfirma.show()
         if panel == 2:
             if self.lblProducto.get_text() == "Seleccionar producto":
-                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún producto</span>")
+                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningun producto</span>")
             else:
                 self.venconfirma.show()
         if panel == 3:
             if self.idcliente == "":
-                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningún cliente</span>")
+                self.lblAviso.set_markup("<span color='white'>No se ha seleccionado ningun cliente</span>")
             else:
                 self.venconfirma.show()
 
@@ -835,12 +835,12 @@ class Main:
             if str(fila[0]) != 'None' and str(fila[1]) != 'None':
                 self.venlogin.hide()
                 self.venprincipal.show()
-                print("Iniciando sesión")
+                print("Iniciando sesion")
                 self.lblHCamarero.set_text(user)
             else:
-                self.lblError.set_text("Usuario o contraseña no encontrado")
+                self.lblError.set_text("Usuario o password no encontrado")
                 self.abrirError(widget)
-                print("Error en el inicio de sesión")
+                print("Error en el inicio de sesion")
         else:
             self.lblError.set_text("Debe cubrir todos los campos")
             self.abrirError(widget)
@@ -850,7 +850,7 @@ class Main:
             Limpia las variables, cierra la ventana principal y abre la ventana de login'''
         self.loginUser.set_text("")
         self.loginPwd.set_text("")
-        print("Cerrando sesión")
+        print("Cerrando sesion")
         self.venprincipal.hide()
         self.venlogin.show()
 

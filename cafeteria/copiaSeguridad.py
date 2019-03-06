@@ -17,5 +17,5 @@ def creaCopia(self):
 	dir = os.getcwd()
 	fichzip.write(db, dir, zipfile.ZIP_DEFLATED)
 	fichzip.close()
-	print('Copia de seguridad realizada con éxito')
-	self.lblAviso.set_markup("<span color='white'>Copia de seguridad realizada con éxito</span>")
+	print('Copia de seguridad realizada con exito')
+	self.lblAviso.set_markup("<span color='white'>Copia de seguridad realizada con exito</span>")
